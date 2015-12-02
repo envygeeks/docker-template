@@ -2,7 +2,7 @@
 [![Coverage Status](https://coveralls.io/repos/envygeeks/docker-template/badge.svg?branch=master&service=github)][coveralls]
 [![Code Climate](https://codeclimate.com/github/envygeeks/docker-template/badges/gpa.svg)][codeclimate]
 
-[codeclimate]: https://codeclimate.com/github/envygeeks/mongoid-find_by
+[codeclimate]: https://codeclimate.com/github/envygeeks/docker-template
 [coveralls]: https://coveralls.io/github/envygeeks/docker-template?branch=master
 [travis]: https://travis-ci.org/envygeeks/docker-template
 
