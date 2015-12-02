@@ -1,0 +1,7 @@
+FROM scratch
+MAINTAINER <%= @maintainer %>
+ENV TERM=xterm
+ADD <%= @tar_gz %> /
+<% if @entrypoint %>
+  ENTRYPOINT ["<%= @entrypoint %>"]
+<% end %>

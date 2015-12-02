@@ -1,0 +1,7 @@
+#!/bin/sh
+# Copyright: 2015 Jordon Bedwell - Apache v2.0 License
+# Alias: rake spec
+
+set -e
+exec bundle exec \
+  rake spec
