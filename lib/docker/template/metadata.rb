@@ -42,6 +42,12 @@ module Docker
 
       #
 
+      def as_gem_version
+        "#{self["repo"]}@#{self["version"].fallback}"
+      end
+
+      #
+
       def aliased
         tag = from_root("tag")
         aliases = from_root("aliases")

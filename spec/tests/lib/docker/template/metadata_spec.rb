@@ -8,6 +8,11 @@ describe Docker::Template::Metadata do
   specify { expect(subject["hello"]).to eq "world" }
   let(:metadata) { described_class }
 
+  describe "#as_gem_version" do
+    subject { metadata.new("repo" => "hello", "versions" => { "all" => "3.2" }).as_gem_version }
+    it { is_expected.to eq "hello@3.2" }
+  end
+
   describe "#to_h" do
     context "when given a parent hash" do
       subject { metadata.new({}, :hello => :world).to_h }
