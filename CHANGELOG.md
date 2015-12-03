@@ -17,7 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added CodeClimate platform. [[9c0940e][9c0940e]]
 - Added RuboCop to CodeClimate platform. [[c332908][c332908]]
 
-## 0.2.0
+## 0.1.2
 ### Changed
 - Make sure bin/docker-template is available in the gem: [[fe24e40][fe24e40]]
 - Make sure the CodeClimate link is correct: [[a8b98dc][a8b98dc]]
