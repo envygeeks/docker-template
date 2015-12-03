@@ -127,7 +127,7 @@ module Docker
 
       def by_type
         return unless tag = aliased
-        type = @root_metadata["tags"][tag]
+        type = from_root("tags")[tag]
         return unless key?("type")
         return unless type
 
