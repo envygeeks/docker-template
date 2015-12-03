@@ -2,6 +2,7 @@ engines:
   rubocop:
     enabled: true
     checks:
+      Rubocop/Style/SpaceInsideBrackets: { enabled: false } # No good.
       Rubocop/Style/BracesAroundHashParameters: { enabled: false} # Stupid.
       Rubocop/Style/EmptyLinesAroundAccessModifier: { enabled: false } # This is silly.
       Rubocop/Style/EmptyLinesAroundModuleBody: { enabled: false } # This leads to false positives.
