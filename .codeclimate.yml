@@ -15,3 +15,5 @@ engines:
     - b86af833d6b2b1fa18da63471e2278d9 # Because CodeClimate adds .rubocop.yml
     - ee0a31701f95b21db4aff40647a56a3d # Because CodeClimate adds .rubocop.yml
     - cdc1cac1f5cb7afe72dca9f9bca8a237 # Because CodeClimate adds .rubocop.yml
+exclude_paths: [test/**/*, script/**/*]
+ratings: [lib/**/*]
