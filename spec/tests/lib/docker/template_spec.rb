@@ -12,6 +12,26 @@ describe Docker::Template do
   it { is_expected.to respond_to :get }
   let(:template) { described_class }
 
+  describe "#repo_is_root?" do
+    subject { template.repo_is_root? }
+    it { is_expected.to eq true }
+    before do
+      # "/non-existant" mocks "../../repos" not existing.
+      allow(template.root).to receive(:join).with("../..", template.config["repos_dir"]).and_return Pathname.new("/non-existant")
+      allow(template.root).to receive(:join).with("copy").and_return Pathname.new("/")
+    end
+  end
+
+  describe "#repo_root_for" do
+    subject { template.repo_root_for("simple") }
+    it { is_expected.to eq template.root }
+    before do
+      # "/non-existant" mocks "../../repos" not existing.
+      allow(template.root).to receive(:join).with("../..", template.config["repos_dir"]).and_return Pathname.new("/non-existant")
+      allow(template.root).to receive(:join).with("copy").and_return Pathname.new("/")
+    end
+  end
+
   describe "#gem_root" do
     subject { template.gem_root }
     it { is_expected.to be_a Pathname }

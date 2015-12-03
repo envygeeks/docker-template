@@ -31,6 +31,10 @@ module Docker
     autoload :Alias, "docker/template/alias"
     autoload :Auth, "docker/template/auth"
 
+    def repo_is_root?
+      root.join("copy").exist? && !root.join("../..", config["repos_dir"]).exist?
+    end
+
     def config
       return @config ||= begin
         Config.new
@@ -54,6 +58,12 @@ module Docker
       return @repos_root ||= begin
         root.join(config["repos_dir"])
       end
+    end
+
+    #
+
+    def repo_root_for(name)
+      repo_is_root?? root : repos_root.join(name)
     end
 
     # Provides the root to Docker template, wherever it is installed so that

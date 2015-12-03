@@ -8,7 +8,7 @@ module Docker
       class Copy
         def initialize(from, to)
           @root = Template.root.realpath
-          @repos_root = Template.repos_root.realpath
+          @repos_root = Template.repo_is_root?? Template.root.realpath : Template.repos_root.realpath
           @from = from.to_pathname
           @to = to.to_pathname
         end

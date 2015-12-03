@@ -63,7 +63,7 @@ module Docker
 
         Dir.chdir(@context) do
           @img = Docker::Image.build_from_dir(".", &logger)
-          @img.tag  rootfs??  @repo.to_rootfs_h  :  @repo.to_tag_h
+          @img.tag rootfs?? @repo.to_rootfs_h : @repo.to_tag_h
           push
         end
       rescue SystemExit => exit_

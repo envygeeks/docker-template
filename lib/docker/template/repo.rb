@@ -20,7 +20,7 @@ module Docker
 
       def initialize(base_metadata)
         raise ArgumentError, "Metadata not a hash" if !base_metadata.is_a?(Hash)
-        
+
         @base_metadata = base_metadata.freeze
         @sync_allowed  = type == "simple" ? true : false
         raise Error::InvalidRepoType, type if !Template.config.build_types.include?(type)
@@ -82,7 +82,7 @@ module Docker
 
       def root
         return @root ||= begin
-          Template.repos_root.join(name)
+          Template.repo_root_for(name)
         end
       end
 
@@ -152,7 +152,7 @@ module Docker
 
       def metadata
         return @metadata ||= begin
-          metadata = Template.repos_root.join(name)
+          metadata = Template.repo_root_for(name)
           metadata = Template.config.read_config_from(metadata)
           Metadata.new(metadata).merge(@base_metadata)
         end
