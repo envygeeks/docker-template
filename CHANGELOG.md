@@ -3,15 +3,12 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
-## [UNRELEASED]
+## 0.2.0
 ### Added
-
-### Planned
-- Detect if the user is in a sub-folder and allow building by stepping back.
-- Add `Metadata#as_gem_version` which merges the repo name with the version in `Metadata`
-- Use docker-template on a single "repo" without a "repos" directory.
-- Account for a user not having our specific keys in some places.
-- Clean up code in various ways.
+- A Git repo with only one repo can now act as repos. [[0b2ce57][0b2ce57]]
+- Add `Metadata#as_gem_version` which merges the repo name with the version in `Metadata` [[35df281][35df281]]
+- Account for a user not having our specific keys in some places. [[9a0e4fb][9a0e4fb]]
+- Clean up code in various ways. [[4d39ad7][4d39ad7]]
 
 ### Changed
 - Added CodeClimate platform. [[9c0940e][9c0940e]]
@@ -44,3 +41,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 [a8b98dc]: https://github.com/envygeeks/docker-template/commit/a8b98dc9400d01573f9e333bb0877aa97cb7cf92
 [c332908]: https://github.com/envygeeks/docker-template/commit/c3329088c639e5b9469e9ba45048f5123eedac84
 [9c0940e]: https://github.com/envygeeks/docker-template/commit/9c0940e4b6db565ed63a669b8104ce907dd9e78c
+[0b2ce57]: https://github.com/envygeeks/docker-template/commit/0b2ce5723d04112ba389831770c6ecd3e7f2dbce
+[35df281]: https://github.com/envygeeks/docker-template/commit/35df281accd797afca1d6aafc6b82409d179dd01
+[4d39ad7]: https://github.com/envygeeks/docker-template/commit/4d39ad7d95cde33aaf8f01178dbe73a9f1f14e73
+[9a0e4fb]: https://github.com/envygeeks/docker-template/commit/9a0e4fb79405966f0fae288d6c9e7f38a80d764a
