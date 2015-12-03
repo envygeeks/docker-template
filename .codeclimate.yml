@@ -5,15 +5,37 @@ engines:
       Rubocop/Lint/FormatParameterMismatch: { enabled: false } # Because it badly detects "%c" % 27
       Rubocop/Lint/UselessAccessModifier:   { enabled: false } # Because this is a useless check, we are explicit.
       Rubocop/Lint/AssignmentInCondition:   { enabled: false } # Because we often do !(var = val)
+      Rubocop/Style/AlignParameters:        { enabled: false } # Because we prefer 2s/4s
 
   fixme:
     enabled: true
     exclude_fingerprints:
+    - 2be24eeafc0f3316d5eb18097d9d3229 # Rubocop has no idea what it's doing in this case.
     - e6a45a3fb622ca145faa2141e4d641a9 # Because apparently RoboCop doesn't know what useless is.
     - e00463ba87b84ce062802709fc774669 # It badly detects "report a bug" as a "BUG" flag.
     - c42b72af850c2590419dfa0bb4d15004 # Because CodeClimate adds .rubocop.yml
     - b86af833d6b2b1fa18da63471e2278d9 # Because CodeClimate adds .rubocop.yml
     - ee0a31701f95b21db4aff40647a56a3d # Because CodeClimate adds .rubocop.yml
     - cdc1cac1f5cb7afe72dca9f9bca8a237 # Because CodeClimate adds .rubocop.yml
-exclude_paths: [test/**/*, script/**/*]
-ratings: { paths: [lib/**/*] }
+exclude_paths:
+- .rubocop.yml
+- .codeclimate.yml
+- .travis.yml
+- .gitignore
+- .rspec
+
+- Gemfile.lock
+- CHANGELOG.md
+- readme.md
+- README.md
+- Readme.md
+- ReadMe.md
+- COPYING
+- LICENSE
+
+- test/**/*
+- script/**/*
+- spec/**/*
+ratings:
+  paths:
+  - lib/**/*
