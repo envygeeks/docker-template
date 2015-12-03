@@ -73,12 +73,12 @@ describe Hash do
     end
   end
 
-  describe "has_keys?" do
-    subject { hash.has_keys?(:hello) }
+  describe "keys?" do
+    subject { hash.keys?(:hello) }
     it { is_expected.to eq true }
 
     context "with an invalid key" do
-      subject { hash.has_keys?(:invalid, :world) }
+      subject { hash.keys?(:invalid, :world) }
       it { is_expected.to eq false }
     end
   end

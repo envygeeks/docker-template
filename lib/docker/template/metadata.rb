@@ -26,6 +26,7 @@ module Docker
       def_delegator :@metadata, :delete
       def_delegator :@metadata, :each
       def_delegator :@metadata, :to_h
+      def_delegator :@metadata, :key?
       route_to_ivar :is_root, :@is_root, bool: true
       route_to_hash :for_all, :self, :all
 
@@ -46,7 +47,7 @@ module Docker
         aliases = from_root("aliases")
         tag = from_root("tag")
 
-        if aliases.has_key?(tag)
+        if aliases.key?(tag)
           return aliases[tag]
         end
       tag
@@ -118,7 +119,7 @@ module Docker
 
       def by_tag
         return unless tag = aliased
-        return unless has_key?("tag")
+        return unless key?("tag")
         hash = self["tag"]
         hash[tag]
       end
@@ -130,7 +131,7 @@ module Docker
       def by_type
         return unless tag = aliased
         type = @root_metadata["tags"][tag]
-        return unless has_key?("type")
+        return unless key?("type")
         return unless type
 
         hash = self["type"]
@@ -141,7 +142,7 @@ module Docker
 
       private
       def determine_key(key)
-        if is_root? && !has_key?(key) && Aliases.has_key?(key)
+        if is_root? && !key?(key) && Aliases.key?(key)
           key = Aliases[key]
         end
       key

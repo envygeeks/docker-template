@@ -10,7 +10,7 @@ describe Docker::Template::Parser do
   before do
     allow_any_instance_of(parser).to receive(:parse).and_wrap_original do |method, *args|
       args.unshift({}) unless args[0]
-      args[0][:as] = :hash unless args[0].has_key?(:as)
+      args[0][:as] = :hash unless args[0].key?(:as)
       method.call(*args)
     end
   end

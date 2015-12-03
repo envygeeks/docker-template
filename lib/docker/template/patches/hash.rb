@@ -15,7 +15,7 @@ class Hash
   #
 
   def any_keys?(*keys)
-    keys.map(&method(:has_key?)).any? do |val|
+    keys.map(&method(:key?)).any? do |val|
       val == true
     end
   end
@@ -28,10 +28,10 @@ class Hash
 
   #
 
-  def has_keys?(*keys)
+  def keys?(*keys)
     return false unless rtn = true && any?
     while rtn && key = keys.shift
-      rtn = has_key?(key) || false
+      rtn = key?(key) || false
     end
 
   rtn

@@ -19,6 +19,7 @@ module Docker
       def_delegator :@config, :to_h
       def_delegator :@config, :to_enum
       def_delegator :@config, :has_key?
+      def_delegator :@config, :key?
       def_delegator :@config, :each
       def_delegator :@config, :[]
 
@@ -71,7 +72,7 @@ module Docker
       #
 
       def has_default?(key)
-        return @config.has_key?(key)
+        return @config.key?(key)
       end
 
       #

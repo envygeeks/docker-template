@@ -39,7 +39,7 @@ describe Docker::Template::Config do
   it { is_expected.to respond_to :keys }
   it { is_expected.to respond_to :to_h }
   it { is_expected.to respond_to :to_enum }
-  it { is_expected.to respond_to :has_key? }
+  it { is_expected.to respond_to :key? }
   it { is_expected.to respond_to :each }
   it { is_expected.to respond_to :[] }
 end

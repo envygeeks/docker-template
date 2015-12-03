@@ -68,7 +68,7 @@ module Docker
       #
 
       def building_all?
-       !@base_metadata.has_key?("tag")
+       !@base_metadata.key?("tag")
       end
 
       #

@@ -49,7 +49,7 @@ module Docker
 
       private
       def progress_diff(id)
-        if @lines.has_key?(id)
+        if @lines.key?(id)
           return nil, @lines.size - @lines[id]
         end
 
