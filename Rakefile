@@ -15,6 +15,13 @@ task :build do
 end
 
 task :pry do
-  exec "bundle", "exec", "pry", "-Ilib/", \
+  sh "bundle", "exec", "pry", "-Ilib/", \
     "-rdocker/template"
+end
+
+task :analysis do
+  sh "docker", "run", "--rm", "--env=CODE_PATH=#{Dir.pwd}", \
+    "--volume=#{Dir.pwd}:/code", "--volume=/var/run/docker.sock:/var/run/docker.sock", \
+    "--volume=/tmp/cc:/tmp/cc", "-it", \
+    "codeclimate/codeclimate", "analyze"
 end
