@@ -11,7 +11,7 @@ class Pathname
   #
 
   def write(data)
-    File.write(self.to_s, data)
+    File.write(to_s, data)
   end
 
   #
@@ -25,7 +25,7 @@ class Pathname
   #
 
   def expanded_realpath
-    return @expanded_real_path ||= begin
+    @expanded_real_path ||= begin
       expanded_path.realpath
     end
   end
@@ -39,7 +39,7 @@ class Pathname
   #
 
   def glob(*args)
-    Dir.glob(self.join(*args)).map do |path|
+    Dir.glob(join(*args)).map do |path|
       self.class.new(path)
     end
   end

@@ -5,9 +5,9 @@
 module Docker
   module Template
     class Parser
-      SlashRegexp = /\//.freeze
-      SplitRegexp = /:|\//.freeze
-      ColonRegexp = /:/.freeze
+      SLASH_REGEXP = /\//.freeze
+      SPLIT_REGEXP = /:|\//.freeze
+      COLON_REGEXP = /:/.freeze
 
       def initialize(argv = [].freeze)
         @argv = argv.freeze
@@ -19,7 +19,7 @@ module Docker
 
       def all
         return @argv unless @argv.empty?
-        Docker::Template.repos_root.children.map do |path|
+        Template.repos_root.children.map do |path|
           path.basename.to_s
         end
       rescue Errno::ENOENT
@@ -34,22 +34,24 @@ module Docker
           raise Docker::Template::Error::BadRepoName, val if hash.empty?
           out += as == :repos ? Repo.new(hash).to_repos : [hash]
         end
-      out
+        out
       end
 
       #
 
       private
       def build_repo_hash(val)
-        data, hsh = val.split(SplitRegexp), {}
+        data = val.split(SPLIT_REGEXP)
+        hsh  = {}
+
         if data.size == 1
           hsh["repo"] = data[0]
 
-        elsif val =~ ColonRegexp && data.size == 2
+        elsif val =~ COLON_REGEXP && data.size == 2
           hsh["repo"] = data[0]
           hsh[ "tag"] = data[1]
 
-        elsif val =~ SlashRegexp && data.size == 2
+        elsif val =~ SLASH_REGEXP && data.size == 2
           hsh["user"] = data[0]
           hsh["repo"] = data[1]
 
@@ -58,7 +60,6 @@ module Docker
           hsh["repo"] = data[1]
           hsh[ "tag"] = data[2]
         end
-
         hsh
       end
     end

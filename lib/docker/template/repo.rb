@@ -12,6 +12,7 @@ module Docker
     class Repo
       extend Forwardable, Routable
 
+      def_delegator :builder, :build
       route_to_hash :name, :@base_metadata, :repo
       route_to_hash [:tag, :type, :user], :metadata
       def_delegator :@base_metadata, :to_h
@@ -19,25 +20,17 @@ module Docker
       def_delegator :metadata, :tags
 
       def initialize(base_metadata)
-        raise ArgumentError, "Metadata not a hash" if !base_metadata.is_a?(Hash)
+        raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
 
         @base_metadata = base_metadata.freeze
         @sync_allowed  = type == "simple" ? true : false
-        raise Error::InvalidRepoType, type if !Template.config.build_types.include?(type)
-        raise Error::RepoNotFound, name if !root.exist?
+        raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
+        raise Error::RepoNotFound, name unless root.exist?
       end
 
       def builder
         const = Template.const_get(type.capitalize)
         const.new(self)
-      end
-
-      # Simply initializes the the builder and passes itself onto
-      # it so that it the builder can take over and do it's job cleanly
-      # without us needing to care about what's going on.
-
-      def build
-        return builder.build
       end
 
       #
@@ -68,7 +61,7 @@ module Docker
       #
 
       def building_all?
-       !@base_metadata.key?("tag")
+        !@base_metadata.key?("tag")
       end
 
       #
@@ -81,7 +74,7 @@ module Docker
       #
 
       def root
-        return @root ||= begin
+        @root ||= begin
           Template.repo_root_for(name)
         end
       end
@@ -90,9 +83,9 @@ module Docker
 
       def to_tag_h
         {
-          "force" => true,
-           "repo" => "#{user}/#{name}",
-            "tag" => tag,
+          "tag"   => tag,
+          "repo"  => "#{user}/#{name}",
+          "force" => true
         }
       end
 
@@ -102,9 +95,9 @@ module Docker
         prefix = metadata["local_prefix"]
 
         {
-          "force" => true,
-           "repo" => "#{prefix}/rootfs",
-            "tag" => name
+          "tag"   => name,
+          "repo"  => "#{prefix}/rootfs",
+          "force" => true
         }
       end
 
@@ -133,11 +126,12 @@ module Docker
 
       def to_repos
         if building_all?
-          base, set = to_h, Set.new
+          set  = Set.new
+          base = to_h
+
           tags.each do |tag|
-            set.add(self.class.new(base.merge({
-              "tag" => tag
-            })))
+            base = base.merge("tag" => tag)
+            set << self.class.new(base)
           end
 
           set
@@ -151,7 +145,7 @@ module Docker
       #
 
       def metadata
-        return @metadata ||= begin
+        @metadata ||= begin
           metadata = Template.repo_root_for(name)
           metadata = Template.config.read_config_from(metadata)
           Metadata.new(metadata).merge(@base_metadata)
@@ -172,7 +166,7 @@ module Docker
           "BUILD_TYPE" => type,
           "COPY" => copy_dir,
           "TAR" => tar_gz,
-          "TAG" => tag,
+          "TAG" => tag
         }).to_env
       end
     end

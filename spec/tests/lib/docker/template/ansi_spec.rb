@@ -10,7 +10,7 @@ describe Docker::Template::Ansi do
     specify("", :clear => true) { expect(ansi.has?(subject[:stdout])).to eq true }
   end
 
-  Docker::Template::Ansi::Colors.keys.map do |color|
+  Docker::Template::Ansi::COLORS.keys.map do |color|
     it { is_expected.to respond_to color }
   end
 

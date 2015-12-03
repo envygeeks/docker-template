@@ -4,9 +4,7 @@
 
 require "guard/rspec/dsl"
 guard :rspec, :cmd => "bundle exec rspec -fLuna::RSpec::Formatters::Checks" do
-  dsl  = Guard::RSpec::Dsl.new(self)
+  dsl = Guard::RSpec::Dsl.new(self)
+  dsl.watch_spec_files_for(dsl.ruby.lib_files)
   watch(dsl.rspec.spec_files)
-  dsl.watch_spec_files_for(
-    dsl.ruby.lib_files
-  )
 end

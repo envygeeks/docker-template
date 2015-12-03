@@ -6,7 +6,7 @@ module Docker
   module Template
     class Stream
       def initialize
-        @lines  = {}
+        @lines = {}
       end
 
       #
@@ -38,9 +38,9 @@ module Docker
         end
 
         before, diff = progress_diff(id)
-        $stdout.print  before if before
+        $stdout.print before if before
         str = stream["progress"] || stream["status"]
-        str = "%s: %s\r" % [id, str]
+        str = "#{id}: #{str}\r"
 
         $stdout.print(Ansi.jump(str, both: diff))
       end
@@ -55,6 +55,7 @@ module Docker
 
         @lines[id] = @lines.size
         before = "\n" unless @lines.size == 1
+        # rubocop:disable RedundantReturn
         return before, 0
       end
     end

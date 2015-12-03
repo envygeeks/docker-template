@@ -12,7 +12,9 @@ require "erb"
 require "set"
 
 module Docker
-  module Template module_function
+  module Template
+    module_function
+
     autoload :Util, "docker/template/util"
     autoload :Config, "docker/template/config"
     autoload :Ansi, "docker/template/ansi"
@@ -36,7 +38,7 @@ module Docker
     end
 
     def config
-      return @config ||= begin
+      @config ||= begin
         Config.new
       end
     end
@@ -44,7 +46,7 @@ module Docker
     #
 
     def root
-      return @root ||= begin
+      @root ||= begin
         Pathname.new(Dir.pwd)
       end
     end
@@ -55,7 +57,7 @@ module Docker
     # guarantees that an absolute path will work.
 
     def repos_root
-      return @repos_root ||= begin
+      @repos_root ||= begin
         root.join(config["repos_dir"])
       end
     end
@@ -67,11 +69,11 @@ module Docker
     end
 
     # Provides the root to Docker template, wherever it is installed so that
-    # we can do things, mostly ignore files for the profiler.  Otherwise it's
+    # we can do things, mostly ignore files for the profiler. Otherwise it's
     # not really used, it's just an encapsulator.
 
     def gem_root
-      return @gem_root ||= begin
+      @gem_root ||= begin
         path = File.expand_path("../../", __dir__)
         Pathname.new(path)
       end
@@ -81,7 +83,7 @@ module Docker
     # from our templates and use it if you wish to.
 
     def template_root
-      return @template_root ||= begin
+      @template_root ||= begin
         gem_root.join("lib/docker/template/templates")
       end
     end

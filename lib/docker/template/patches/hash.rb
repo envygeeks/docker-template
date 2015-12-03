@@ -4,11 +4,10 @@
 
 class Hash
   def to_env
-    inject({}) do |hsh, (key, val)|
+    each_with_object({}) do |(key, val), hsh|
       val = val.is_a?(Array) ? val.join(" ") : val.to_s
       key = key.to_s.upcase
       hsh[key] = val
-    hsh
     end
   end
 
@@ -23,7 +22,7 @@ class Hash
   #
 
   def leftover_keys?(*keys)
-    return (self.keys - keys).any?
+    (self.keys - keys).any?
   end
 
   #
@@ -33,22 +32,21 @@ class Hash
     while rtn && key = keys.shift
       rtn = key?(key) || false
     end
-
-  rtn
+    rtn
   end
 
   #
 
   def to_env_ary
-    inject([]) do |array, (key, val)|
-      array.push("#{key}=#{val}")
+    each_with_object([]) do |(key, val), ary|
+      ary << "#{key}=#{val}"
     end
   end
 
   #
 
   def deep_merge(newh)
-    merge(newh) do |key, oval, nval|
+    merge(newh) do |_, oval, nval|
       if oval.is_a?(self.class) && nval.is_a?(self.class)
         then oval.deep_merge(nval) else nval
       end
@@ -58,19 +56,16 @@ class Hash
   #
 
   def stringify
-    inject({}) do |hsh, (key, val)|
+    each_with_object({}) do |(key, val), hsh|
       hsh[key.to_s] = val.is_a?(Array) || val.is_a?(Hash) ? val.stringify : val.to_s
-    hsh
     end
   end
 
   #
 
   def stringify_keys
-    inject({}) do |hsh, (key, val)|
+    each_with_object({}) do |(key, val), hsh|
       hsh[key.to_s] = val
-
-    hsh
     end
   end
 end

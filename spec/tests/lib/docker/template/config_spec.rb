@@ -6,7 +6,7 @@ require "rspec/helper"
 describe Docker::Template::Config do
   let(:config) { Docker::Template.config }
   describe "#initialize" do
-    Docker::Template::Config::Defaults.each do |key, _|
+    Docker::Template::Config::DEFAULTS.each do |key, _|
       it { is_expected.to have_key key }
     end
   end

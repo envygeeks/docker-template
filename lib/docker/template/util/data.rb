@@ -18,7 +18,7 @@ module Docker
         end
 
         def _binding
-          return binding
+          binding
         end
       end
     end

@@ -4,7 +4,7 @@ module Docker
       module_function
 
       def auth!
-        return unless login = get_info
+        return unless login = credentials
         login["auths"].each do |server, auth|
           username, password = Base64.decode64(auth["auth"]).split(":", 2)
           Docker.authenticate!({
@@ -16,9 +16,9 @@ module Docker
         end
       end
 
-      def get_info
+      def credentials
         path = Pathname.new("~/.docker/config.json").expand_path
-        return JSON.parse(path.read) if path.exist?
+        JSON.parse(path.read) if path.exist?
       end
     end
   end

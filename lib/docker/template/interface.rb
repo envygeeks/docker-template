@@ -32,12 +32,11 @@ module Docker
 
       private
       def sync
-        if wants_sync?
-          Parser.new.parse.each do |repo|
-            next unless repo.syncable?
-            repo.builder.tap(&:sync). \
-              unlink(sync: false)
-          end
+        return unless wants_sync?
+        Parser.new.parse.each do |repo|
+          next unless repo.syncable?
+          repo.builder.tap(&:sync) \
+            .unlink(sync: false)
         end
       end
 
@@ -45,7 +44,7 @@ module Docker
 
       private
       def argv_without_flags
-        return @argv.select do |val|
+        @argv.select do |val|
           !["--sync", "--push"].include?(val)
         end
       end
@@ -81,9 +80,9 @@ module Docker
 
       private
       def self.discover
-        rtn = bins.select do |path|
+        rtn = bins.find do |path|
           path.basename.fnmatch?("docker") && path.executable_real?
-        end.first
+        end
 
         if rtn
           rtn.to_s

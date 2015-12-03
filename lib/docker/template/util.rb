@@ -4,7 +4,9 @@
 
 module Docker
   module Template
-    module Util module_function
+    module Util
+      module_function
+
       autoload :Copy, "docker/template/util/copy"
       autoload :Data, "docker/template/util/data"
 
@@ -24,15 +26,28 @@ module Docker
       #
 
       def create_dockerhub_context(builder, context)
-        tags = builder.repo.root.join("tags")
-        readme = builder.repo.root.children.select { |val| val.to_s =~ /readme/i }.first
-        context = tags.join(builder.repo.aliased) if builder.aliased?
-        dir = tags.join(builder.repo.tag)
-
+        dir = builder.repo.root.join("tags", builder.repo.tag)
+        context = get_context(builder, context)
         FileUtils.mkdir_p dir
-        $stdout.puts Ansi.yellow("Storing a Docker context for #{builder.repo}")
+
+        $stdout.puts Ansi.yellow("Copying context for #{builder.repo}")
+        Util::Copy.file(readme_file(builder), dir)
         Util::Copy.directory(context, dir)
-        Util::Copy.file(readme, dir)
+      end
+
+      #
+
+      def get_context(builder, context)
+        return context unless builder.aliased?
+        builder.repo.root.join("tags", builder.repo.aliased)
+      end
+
+      #
+
+      def readme_file(builder)
+        builder.repo.root.children.find do |val|
+          val.to_s =~ /readme/i
+        end
       end
     end
   end

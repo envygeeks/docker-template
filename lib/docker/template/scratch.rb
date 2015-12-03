@@ -77,7 +77,7 @@ module Docker
         # and stream the logs after it's exited if we have given no output,
         # we want you to always get the output that was given.
 
-        if !output_given
+        unless output_given
           img.streaming_logs "stdout" => true, "stderr" => true do |type, str|
             type == :stdout ? $stdout.print(str) : $stderr.print(Ansi.red(str))
           end
@@ -87,10 +87,7 @@ module Docker
           raise Error::BadExitStatus, status
         end
       ensure
-        if img
-          img.stop rescue nil
-          img.delete
-        end
+        img.tap(&:stop).delete("force" => true) if img
       end
 
       #
@@ -130,7 +127,7 @@ module Docker
       def start_args
         {
           "Binds" => [
-            "#{@copy.to_s}:#{@copy.to_s}:ro", "#{@tar_gz.to_s}:#{@tar_gz.to_s}"
+            "#{@copy}:#{@copy}:ro", "#{@tar_gz}:#{@tar_gz}"
           ]
         }
       end

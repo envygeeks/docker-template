@@ -30,18 +30,15 @@ module Docker
         def directory
           FileUtils.cp_r(@from.children, @to, :dereference_root => false)
           @from.all_children.select(&:symlink?).each do |path|
+            path = @to.join(path.relative_path_from(@from))
             resolved = path.realpath
-            pth = path.relative_path_from(@from)
-            pth = @to.join(path)
 
             unless in_path?(resolved)
-              raise Errno::EPERM, "#{pth} not in #{@root}"
+              raise Errno::EPERM, "#{path} not in #{@root}"
             end
 
-            FileUtils.rm_r(pth)
-            FileUtils.cp_r(resolved, pth, {
-              :dereference_root => false
-            })
+            FileUtils.rm_r(path)
+            FileUtils.cp_r(resolved, path, :dereference_root => false)
           end
         end
 
@@ -56,9 +53,7 @@ module Docker
         #
 
         def file
-          if !@from.symlink?
-            return FileUtils.cp(@from, @to)
-          end
+          return FileUtils.cp(@from, @to) unless @from.symlink?
 
           resolved = @from.realpath
           allowed = resolved.in_path?(@root)
@@ -73,8 +68,8 @@ module Docker
         private
         def in_path?(resolved)
           resolved.in_path?(@repos_root) || \
-          resolved.in_path?(@from.realpath) || \
-          resolved.in_path?(@root)
+            resolved.in_path?(@from.realpath) || \
+            resolved.in_path?(@root)
         end
       end
     end

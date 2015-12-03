@@ -4,7 +4,8 @@ class DockerContainerMock
     @mocked = [
       :delete,
       :streaming_logs,
-      :attach
+      :attach,
+      :stop
     ]
   end
 

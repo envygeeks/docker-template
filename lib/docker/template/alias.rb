@@ -18,7 +18,7 @@ module Docker
 
       private
       def prebuild
-          repo = @aliased.parent_repo
+        repo   = @aliased.parent_repo
         simple = @aliased.repo.type == "simple"
         @aliased.class.new(repo, @aliased.rootfs_img) unless simple
         @aliased.class.new(repo).build if simple

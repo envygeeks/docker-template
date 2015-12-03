@@ -18,12 +18,13 @@ module Docker
       def_delegator :@config, :keys
       def_delegator :@config, :to_h
       def_delegator :@config, :to_enum
+      def_delegator :@config, :key?, :has_default?
       def_delegator :@config, :has_key?
       def_delegator :@config, :key?
       def_delegator :@config, :each
       def_delegator :@config, :[]
 
-      Defaults = {
+      DEFAULTS = {
         "type" => "simple",
         "user" => "envygeeks",
         "local_prefix" => "local",
@@ -34,24 +35,24 @@ module Docker
         "copy_dir" => "copy",
         "tag" => "latest",
 
-        "aliases" => {},
-           "pkgs" => { "tag" => {}, "type" => {}, "all" => nil },
-        "entries" => { "tag" => {}, "type" => {}, "all" => nil },
-       "releases" => { "tag" => {}, "type" => {}, "all" => nil },
-       "versions" => { "tag" => {}, "type" => {}, "all" => nil },
-            "env" => { "tag" => {}, "type" => {}, "all" => nil },
-           "tags" => {}
+        "env"      => { "tag" => {}, "type" => {}, "all" => nil },
+        "pkgs"     => { "tag" => {}, "type" => {}, "all" => nil },
+        "entries"  => { "tag" => {}, "type" => {}, "all" => nil },
+        "releases" => { "tag" => {}, "type" => {}, "all" => nil },
+        "versions" => { "tag" => {}, "type" => {}, "all" => nil },
+        "aliases"  => {},
+        "tags"     => {}
       }.freeze
 
-      EmptyDefaults = {
+      EMPTY_DEFAULTS = {
         "tags" => { "latest" => "normal" }
       }
 
       #
 
       def initialize
-        @config = Defaults.deep_merge(read_config_from)
-        @config = @config.merge(EmptyDefaults) do |key, oval, nval|
+        @config = DEFAULTS.deep_merge(read_config_from)
+        @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
           oval.nil? || oval.empty?? nval : oval
         end
 
@@ -71,14 +72,8 @@ module Docker
 
       #
 
-      def has_default?(key)
-        return @config.key?(key)
-      end
-
-      #
-
       def build_types
-        return @build_types ||= %W(simple scratch).freeze
+        @build_types ||= %W(simple scratch).freeze
       end
     end
   end

@@ -10,12 +10,12 @@ module Docker
       # Provides aliases for the root element so you can do something like:
       #   * data["release"].fallback
 
-      Aliases = {
-          "entry" =>  "entries",
+      ALIASES = {
+        "entry" => "entries",
         "release" => "releases",
         "version" => "versions",
-         "script" =>  "scripts",
-          "image" =>   "images"
+        "script" => "scripts",
+        "image" => "images"
       }
 
       def_delegator :@metadata, :keys
@@ -35,22 +35,18 @@ module Docker
         @root_metadata = root_metadata || {}
         @metadata = metadata || {}
 
-        if is_root?
-          @base = Template.config
-          @root_metadata = @metadata
-        end
+        return unless is_root?
+        @root_metadata = @metadata
+        @base = Template.config
       end
 
       #
 
       def aliased
-        aliases = from_root("aliases")
         tag = from_root("tag")
-
-        if aliases.key?(tag)
-          return aliases[tag]
-        end
-      tag
+        aliases = from_root("aliases")
+        return aliases[tag] if aliases.key?(tag)
+        tag
       end
 
       # Queries providing a default value if on the root repo hash otherwise
@@ -73,8 +69,8 @@ module Docker
 
       #
 
-      def merge(_new)
-        @metadata.merge!(_new)
+      def merge(new_)
+        @metadata.merge!(new_)
         self
       end
 
@@ -87,18 +83,19 @@ module Docker
       #
 
       def as_hash
-        {}.merge(for_all.to_h). \
-           merge(by_type.to_h). \
-           merge(by_tag. to_h)
+        {} \
+          .merge(for_all.to_h) \
+          .merge(by_type.to_h) \
+          .merge(by_tag. to_h)
       end
 
       #
 
       def as_set
-        Set.new. \
-          merge(for_all.to_a). \
-          merge(by_type.to_a). \
-          merge(by_tag .to_a)
+        Set.new \
+          .merge(for_all.to_a) \
+          .merge(by_type.to_a) \
+          .merge(by_tag .to_a)
       end
 
       #
@@ -142,10 +139,10 @@ module Docker
 
       private
       def determine_key(key)
-        if is_root? && !key?(key) && Aliases.key?(key)
-          key = Aliases[key]
+        if is_root? && !key?(key) && ALIASES.key?(key)
+          key = ALIASES[key]
         end
-      key
+        key
       end
 
       #

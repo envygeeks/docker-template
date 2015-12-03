@@ -14,17 +14,15 @@ module Docker
 
       def sync
         copy_build_and_verify unless @context
-        Util.create_dockerhub_context( \
-          self, @context)
+        Util.create_dockerhub_context(self, @context)
       end
 
       #
 
       def unlink(img: false, sync: true)
-        self.sync if sync && @repo.syncable?
         @img.delete "force" => true if @img && img
-        @context.rmtree if @context && \
-          @context.directory?
+        @context.rmtree if @context && @context.directory?
+        self.sync if sync && @repo.syncable?
       end
 
       #

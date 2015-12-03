@@ -2,12 +2,12 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-$:.unshift(File.expand_path("../lib", __FILE__))
+$LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
 require "docker/template/version"
 
 Gem::Specification.new do |spec|
   spec.authors = ["Jordon Bedwell"]
-  spec.executables << 'docker-template'
+  spec.executables << "docker-template"
   spec.version = Docker::Template::VERSION
   spec.files = %W(Rakefile Gemfile README.md LICENSE) + Dir["{lib,bin}/**/*"]
   spec.description = "Build and template awesome Docker images a variety of ways."

@@ -35,9 +35,9 @@ module Docker
 
       def parent_repo
         return false unless aliased?
-        @parent_repo ||= Repo.new(@repo.to_h.merge({
-          "tag" => @repo.aliased
-        }))
+        @parent_repo ||= begin
+          Repo.new(@repo.to_h.merge("tag" => @repo.aliased))
+        end
       end
 
       #
@@ -58,20 +58,24 @@ module Docker
 
         Ansi.clear
         Util.notify_build(@repo, rootfs: rootfs?)
-        logger = Stream.new.method(:log)
         copy_build_and_verify
-
-        Dir.chdir(@context) do
-          @img = Docker::Image.build_from_dir(".", &logger)
-          @img.tag rootfs?? @repo.to_rootfs_h : @repo.to_tag_h
-          push
-        end
+        chdir_build
       rescue SystemExit => exit_
         unlink img: true
         raise exit_
       ensure
         if rootfs?
           unlink img: false else unlink
+        end
+      end
+
+      #
+
+      def chdir_build
+        Dir.chdir(@context) do
+          @img = Docker::Image.build_from_dir(".", &Stream.new.method(:log))
+          @img.tag rootfs?? @repo.to_rootfs_h : @repo.to_tag_h
+          push
         end
       end
 

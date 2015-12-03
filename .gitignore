@@ -3,6 +3,7 @@
 /coverage
 /objects.txt
 /Gemfile.lock
+/.analysis
 /opts.yml
 /.hidden
 /vendor

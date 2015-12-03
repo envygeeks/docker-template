@@ -3,9 +3,7 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-$:.unshift(File.expand_path(
-  "../lib", __dir__
-))
+$LOAD_PATH.unshift(File.expand_path("../lib", __dir__))
 
 trap :SIGINT do
   $stderr.puts "\nApparently that's all for now."
@@ -20,5 +18,5 @@ rescue LoadError
   require "docker/template"
 end
 
-Docker::Template::Interface. \
-  start($0)
+Docker::Template::Interface \
+  .start($PROGRAM_NAME)
