@@ -9,6 +9,7 @@ require "docker"
 require "forwardable"
 require "json"
 require "erb"
+require "set"
 
 module Docker
   module Template module_function

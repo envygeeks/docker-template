@@ -7,8 +7,9 @@ require "docker/template/version"
 
 Gem::Specification.new do |spec|
   spec.authors = ["Jordon Bedwell"]
+  spec.executables << 'docker-template'
   spec.version = Docker::Template::VERSION
-  spec.files = %W(Rakefile Gemfile README.md LICENSE) + Dir["lib/**/*"]
+  spec.files = %W(Rakefile Gemfile README.md LICENSE) + Dir["{lib,bin}/**/*"]
   spec.description = "Build and template awesome Docker images a variety of ways."
   spec.summary = "Build and template Docker images a variety of ways."
   spec.homepage = "http://github.com/envygeeks/docker-template/"
@@ -17,6 +18,7 @@ Gem::Specification.new do |spec|
   spec.name = "docker-template"
   spec.license = "MIT"
   spec.has_rdoc = false
+  spec.bindir = "bin"
 
   spec.add_runtime_dependency("json", "~> 1.8")
   spec.add_runtime_dependency("docker-api", "~> 1.23")
