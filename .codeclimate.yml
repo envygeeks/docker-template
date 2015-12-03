@@ -1,11 +1,13 @@
 engines:
   rubocop:
+    enabled: true
     checks:
       Rubocop/Lint/FormatParameterMismatch: { enabled: false } # Because it badly detects "%c" % 27
       Rubocop/Lint/UselessAccessModifier:   { enabled: false } # Because this is a useless check, we are explicit.
       Rubocop/Lint/AssignmentInCondition:   { enabled: false } # Because we often do !(var = val)
 
   fixme:
+    enabled: true
     exclude_fingerprints:
     - e6a45a3fb622ca145faa2141e4d641a9 # Because apparently RoboCop doesn't know what useless is.
     - e00463ba87b84ce062802709fc774669 # It badly detects "report a bug" as a "BUG" flag.
