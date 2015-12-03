@@ -2,7 +2,7 @@ engines:
   rubocop:
     enabled: true
     checks:
-      Rubocop/Style/EmptyLinesAroundAccessModifier { enabled: false } # This is silly.
+      Rubocop/Style/EmptyLinesAroundAccessModifier: { enabled: false } # This is silly.
       Rubocop/Lint/FormatParameterMismatch: { enabled: false } # Because it badly detects "%c" % 27
       Rubocop/Lint/UselessAccessModifier:   { enabled: false } # Because this is a useless check, we are explicit.
       Rubocop/Lint/AssignmentInCondition:   { enabled: false } # Because we often do !(var = val)
