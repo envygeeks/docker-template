@@ -11,6 +11,10 @@ require "json"
 require "erb"
 require "set"
 
+# Set some defaults, as well as increase the timeout since sometimes Alpine dl is slow.
+Excon.defaults[:headers]["User-Agent"] = "docker-template/#{Docker::Template::VERSION}"
+Excon.defaults[:read_timeout] = 480
+
 module Docker
   module Template
     module_function
