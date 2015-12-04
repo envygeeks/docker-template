@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
+### Added
+- Added a User-Agent so Docker and other stuff can identify our software. [[8dde7fa][8dde7fa]]
+- Added a default timeout of 480 to Excon. [[8dde7fa][8dde7fa]]
+
 ### Fixed
 - Fix detection of directory is repo, it should use the *current directory* not 2 directories back. [[53b720e][53b720e]]
 
@@ -50,3 +54,4 @@ project adheres to [Semantic Versioning](http://semver.org/).
 [4d39ad7]: https://github.com/envygeeks/docker-template/commit/4d39ad7d95cde33aaf8f01178dbe73a9f1f14e73
 [9a0e4fb]: https://github.com/envygeeks/docker-template/commit/9a0e4fb79405966f0fae288d6c9e7f38a80d764a
 [53b720e]: https://github.com/envygeeks/docker-template/commit/53b720e1c6e8af6db65e6af7e5c59c86e2bd1d66
+[8dde7fa]: https://github.com/envygeeks/docker-template/commit/8dde7fa9fd0867abf6602b87c28ff261adc2d06b
