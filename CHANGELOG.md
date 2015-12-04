@@ -4,31 +4,31 @@ All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
-### Added
+#### Added
 - Added a User-Agent so Docker and other stuff can identify our software. [[8dde7fa][8dde7fa]]
 - Added a default timeout of 480 to Excon. [[8dde7fa][8dde7fa]]
 
-### Fixed
+#### Fixed
 - Fix detection of directory is repo, it should use the *current directory* not 2 directories back. [[53b720e][53b720e]]
 
 ## 0.2.0
-### Added
+#### Added
 - A Git repo with only one repo can now act as repos. [[0b2ce57][0b2ce57]]
 - Add `Metadata#as_gem_version` which merges the repo name with the version in `Metadata` [[35df281][35df281]]
 - Account for a user not having our specific keys in some places. [[9a0e4fb][9a0e4fb]]
 - Clean up code in various ways. [[4d39ad7][4d39ad7]]
 
-### Changed
+#### Changed
 - Added CodeClimate platform. [[9c0940e][9c0940e]]
 - Added RuboCop to CodeClimate platform. [[c332908][c332908]]
 
 ## 0.1.2
-### Changed
+#### Changed
 - Make sure bin/docker-template is available in the gem: [[fe24e40][fe24e40]]
 - Make sure the CodeClimate link is correct: [[a8b98dc][a8b98dc]]
 
 ## 0.1.0
-### Added
+#### Added
 - Building images: `docker-template repo repo`: [[e8fc4a6][e8fc4a6]]
 - The ability to push to Docker hub: `docker-template --push`: [[e8fc4a6][e8fc4a6]]
 - The ability to store contexts for Docker Hub: `docker-template --sync`: [[e8fc4a6][e8fc4a6]]
