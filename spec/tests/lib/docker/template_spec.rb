@@ -17,7 +17,7 @@ describe Docker::Template do
     it { is_expected.to eq true }
     before do
       # "/non-existant" mocks "../../repos" not existing.
-      allow(template.root).to receive(:join).with("../..", template.config["repos_dir"]).and_return Pathname.new("/non-existant")
+      allow(template.root).to receive(:join).with(template.config["repos_dir"]).and_return Pathname.new("/non-existant")
       allow(template.root).to receive(:join).with("copy").and_return Pathname.new("/")
     end
   end
@@ -27,7 +27,7 @@ describe Docker::Template do
     it { is_expected.to eq template.root }
     before do
       # "/non-existant" mocks "../../repos" not existing.
-      allow(template.root).to receive(:join).with("../..", template.config["repos_dir"]).and_return Pathname.new("/non-existant")
+      allow(template.root).to receive(:join).with(template.config["repos_dir"]).and_return Pathname.new("/non-existant")
       allow(template.root).to receive(:join).with("copy").and_return Pathname.new("/")
     end
   end

@@ -34,7 +34,7 @@ module Docker
     autoload :Auth, "docker/template/auth"
 
     def repo_is_root?
-      root.join("copy").exist? && !root.join("../..", config["repos_dir"]).exist?
+      root.join("copy").exist? && !root.join(config["repos_dir"]).exist?
     end
 
     def config
