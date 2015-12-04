@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file. This
 project adheres to [Semantic Versioning](http://semver.org/).
 
+## [UNRELEASED]
+### Fixed
+- Fix detection of directory is repo, it should use the *current directory* not 2 directories back. [[53b720e][53b720e]]
+
 ## 0.2.0
 ### Added
 - A Git repo with only one repo can now act as repos. [[0b2ce57][0b2ce57]]
@@ -45,3 +49,4 @@ project adheres to [Semantic Versioning](http://semver.org/).
 [35df281]: https://github.com/envygeeks/docker-template/commit/35df281accd797afca1d6aafc6b82409d179dd01
 [4d39ad7]: https://github.com/envygeeks/docker-template/commit/4d39ad7d95cde33aaf8f01178dbe73a9f1f14e73
 [9a0e4fb]: https://github.com/envygeeks/docker-template/commit/9a0e4fb79405966f0fae288d6c9e7f38a80d764a
+[53b720e]: https://github.com/envygeeks/docker-template/commit/53b720e1c6e8af6db65e6af7e5c59c86e2bd1d66
