@@ -2,27 +2,28 @@ engines:
   rubocop:
     enabled: true
     checks:
-      Rubocop/Style/SpaceInsideBrackets: { enabled: false } # No good.
-      Rubocop/Style/BracesAroundHashParameters: { enabled: false} # Stupid.
-      Rubocop/Style/EmptyLinesAroundAccessModifier: { enabled: false } # This is silly.
-      Rubocop/Style/EmptyLinesAroundModuleBody: { enabled: false } # This leads to false positives.
-      Rubocop/Lint/FormatParameterMismatch: { enabled: false } # Because it badly detects "%c" % 27.
-      Rubocop/Lint/UselessAccessModifier:   { enabled: false } # Because this is a useless check, we are explicit.
-      Rubocop/Lint/AssignmentInCondition:   { enabled: false } # Because we often do !(var = val)
-      Rubocop/Style/SpaceAroundOperators:   { enabled: false } # ?? looks nicer, sorry.
-      Rubocop/Style/AlignParameters:        { enabled: false } # Because I prefer 2s/4s.
-      Rubocop/Style/SignalException:        { enabled: false } # I prefer raising.
-      Rubocop/Style/Documentation:          { enabled: false } # What the hell?
-      Rubocop/Style/DoubleNegation:         { enabled: false }
-      Rubocop/Style/UnneededCapitalW:       { enabled: false }
-      Rubocop/Style/IfUnlessModifier:       { enabled: false }
-      Rubocop/Style/RescueModifier:         { enabled: false }
-      Rubocop/Style/RegexpLiteral:          { enabled: false }
-      Rubocop/Style/GuardClause:            { enabled: false }
-      Rubocop/Style/FileName:               { enabled: false }
+      Rubocop/Style/SpaceInsideParens:              { enabled: false }
+      Rubocop/Style/SpaceInsideBrackets:            { enabled: false }
+      Rubocop/Style/BracesAroundHashParameters:     { enabled: false }
+      Rubocop/Style/EmptyLinesAroundAccessModifier: { enabled: false }
+      Rubocop/Style/EmptyLinesAroundModuleBody:     { enabled: false }
+      Rubocop/Lint/FormatParameterMismatch:         { enabled: false }
+      Rubocop/Lint/UselessAccessModifier:           { enabled: false }
+      Rubocop/Lint/AssignmentInCondition:           { enabled: false }
+      Rubocop/Style/SpaceAroundOperators:           { enabled: false }
+      Rubocop/Style/AlignParameters:                { enabled: false }
+      Rubocop/Style/SignalException:                { enabled: false }
+      Rubocop/Style/Documentation:                  { enabled: false }
+      Rubocop/Style/DoubleNegation:                 { enabled: false }
+      Rubocop/Style/UnneededCapitalW:               { enabled: false }
+      Rubocop/Style/IfUnlessModifier:               { enabled: false }
+      Rubocop/Style/RescueModifier:                 { enabled: false }
+      Rubocop/Style/RegexpLiteral:                  { enabled: false }
+      Rubocop/Style/GuardClause:                    { enabled: false }
+      Rubocop/Style/FileName:                       { enabled: false }
     exclude_fingerprints:
-    - 2be24eeafc0f3316d5eb18097d9d3229 # Rubocop has no idea what it's doing in this case.
-    - e6a45a3fb622ca145faa2141e4d641a9 # Because apparently RoboCop doesn't know what useless is.
+    - 2be24eeafc0f3316d5eb18097d9d3229
+    - e6a45a3fb622ca145faa2141e4d641a9
   fixme:
     enabled: false
 exclude_paths:
