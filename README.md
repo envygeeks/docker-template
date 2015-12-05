@@ -1,9 +1,9 @@
 [![Build Status](https://travis-ci.org/envygeeks/docker-template.svg?branch=master)][travis]
-[![Coverage Status](https://coveralls.io/repos/envygeeks/docker-template/badge.svg?branch=master&service=github)][coveralls]
+[![Test Coverage](https://codeclimate.com/github/envygeeks/docker-template/badges/coverage.svg)][coverage]
 [![Code Climate](https://codeclimate.com/github/envygeeks/docker-template/badges/gpa.svg)][codeclimate]
 
 [codeclimate]: https://codeclimate.com/github/envygeeks/docker-template
-[coveralls]: https://coveralls.io/github/envygeeks/docker-template?branch=master
+[coverage]: https://codeclimate.com/github/envygeeks/docker-template/coverage
 [travis]: https://travis-ci.org/envygeeks/docker-template
 
 # Docker Template
