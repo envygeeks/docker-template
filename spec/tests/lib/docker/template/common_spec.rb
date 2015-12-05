@@ -5,6 +5,7 @@
 require "rspec/helper"
 describe Docker::Template::Common do
   include_context :docker_mocks
+  after { scratch.unlink }
 
   let :scratch do
     Docker::Template::Scratch.new(Docker::Template::Repo.new({
@@ -15,11 +16,6 @@ describe Docker::Template::Common do
   before do
     allow(scratch).to receive( :build_context).and_return(nil)
     allow(scratch).to receive(:verify_context).and_return(nil)
-    scratch.send(:copy_build_and_verify)
-  end
-
-  after do
-    scratch.unlink rescue nil
   end
 
   describe "#push" do
@@ -31,6 +27,7 @@ describe Docker::Template::Common do
   end
 
   describe "#copy_build_and_verify" do
+    before { scratch.send(:copy_build_and_verify) }
     subject { scratch.instance_variable_get(:@copy).all_children.map(&:to_path) }
     it { is_expected.to include match %r!\/hello\Z! }
   end
