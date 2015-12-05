@@ -13,13 +13,12 @@ module Docker
       extend Forwardable, Routable
 
       def_delegator :builder, :build
-      route_to_hash :name, :@base_metadata, :repo
-      route_to_hash [:tag, :type, :user], :metadata
+      route_to_hash [:tag, :type, :user, :name], :metadata
       def_delegator :@base_metadata, :to_h
       def_delegator :metadata, :aliased
       def_delegator :metadata, :tags
 
-      def initialize(base_metadata)
+      def initialize(base_metadata = {})
         raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
 
         @base_metadata = base_metadata.freeze
@@ -146,9 +145,9 @@ module Docker
 
       def metadata
         @metadata ||= begin
-          metadata = Template.repo_root_for(name)
+          metadata = Template.repo_root_for(@base_metadata["repo"])
           metadata = Template.config.read_config_from(metadata)
-          Metadata.new(metadata).merge(@base_metadata)
+          Metadata.new(metadata).merge_base_metadata(@base_metadata)
         end
       end
 

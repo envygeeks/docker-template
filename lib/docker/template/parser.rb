@@ -19,6 +19,7 @@ module Docker
 
       def all
         return @argv unless @argv.empty?
+        return Repo.new.name.to_a if Template.repo_is_root?
         Template.repos_root.children.map do |path|
           path.basename.to_s
         end

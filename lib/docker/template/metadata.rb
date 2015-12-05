@@ -82,6 +82,16 @@ module Docker
 
       #
 
+      def merge_base_metadata(hash)
+        return unless is_root?
+        @metadata["name"] = hash["repo"] unless  key?("name")
+        @metadata[ "tag"] = hash[ "tag"] if hash.key?( "tag")
+        @metadata["repo"] = hash["repo"]
+        self
+      end
+
+      #
+
       def as_string_set
         as_set.to_a.join(" ")
       end

@@ -30,6 +30,7 @@ module Docker
         "local_prefix" => "local",
         "rootfs_base_img" => "envygeeks/ubuntu:tiny",
         "maintainer" => "Jordon Bedwell <jordon@envygeeks.io>",
+        "name" => Template.root.basename.to_s,
         "dockerhub_cache_dir" => "cache",
         "dockerhub_cache" => false,
         "repos_dir" => "repos",
