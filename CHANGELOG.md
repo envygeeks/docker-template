@@ -6,7 +6,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [UNRELEASED]
 #### Added
 - Added a User-Agent so Docker and other stuff can identify our software. [[8dde7fa][8dde7fa]]
-- Move `dockerhub_copy` to `dockerhub_cache` and add `dockerhub_cache_dir` so you can set the folder name. [[c8ead9e][c8ead9e]]
+- Move `dockerhub_copy` to `dockerhub_cache`; add `dockerhub_cache_dir` so you can set the folder name. [[c8ead9e][c8ead9e]]
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml. [[70eee80][70eee80]]
 - Added a default timeout of 480 to Excon. [[8dde7fa][8dde7fa]]
 
