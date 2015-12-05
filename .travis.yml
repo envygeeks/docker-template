@@ -29,3 +29,18 @@ notifications:
 branches:
   only:
   - master
+addons:
+  code_climate:
+    repo_token:
+      secure: "\
+        3R+7bdlMXVNYtEI/3j+jycs1ENreTNny2sl19Too9VePSQyV2N1BCgyVqQU1H4Wj+5gS28\
+        2852KEVVtLDEngux7cwn1NfEi8Jo9mTCtYzB8SV2/kct+s2+xOL+ctSxXqPFTeHlaPA3PK\
+        93zx25Wcou64fNAZ7+xpegeWw901mIlLZfQ3uOAht7DENs+WKVzkpS3JwW9NUpSRpymk4d\
+        AnYmr03eg825i7XOjin9aE8oAeHzfalCJtpCFm0BhAVWGSmTVmItcLVaFVpVfhwG1P3grq\
+        wkyvZXFUBj2iZxuge2NzNabXMgOuoSOo3tQ8Abz1mgXLMtMuv+f63xVTEhHXTAK9QvEMLN\
+        LeAmi6ubjfLHZ90ue6JgiHDB+GpuhmtAfPlmPCByJkR33RCV3Y+ktAkEkaqOWQA6g8acAZ\
+        LJSoa2yiR7YcojF6C39ggd1Cy28HNd+PpRZzDJ2QJgu2JBWroZFukL13550Ir85isjb13X\
+        BBNmrzLNdR9LumYAMGpoeEAps8skE01QJCWcCrA6X73ykkGjLrhExqbe984DJJ9pisJ7vp\
+        PNwjdv8B95AXuE6ujflug/9LjUyevnGWPFmoRtgxj5CqzsyFRIthYMpZwFV6p0ff5Tq2Z6\
+        HgRmvWpZ8AVc/n2EiobOZ1zEAt+gzykmO8+1BuT/xDsFdAa/+NO0w=\
+      "

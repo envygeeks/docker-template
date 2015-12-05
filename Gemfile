@@ -6,6 +6,10 @@ source "https://rubygems.org"
 gem "rake", :require => false
 gemspec
 
+group :test do
+  gem "codeclimate-test-reporter", :require => false
+end
+
 group :development do
   gem "guard-rspec", :require => false
   gem "benchmark-ips", :require => false

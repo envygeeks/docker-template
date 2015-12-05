@@ -23,6 +23,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency("json", "~> 1.8")
   spec.add_runtime_dependency("docker-api", "~> 1.23")
   spec.add_development_dependency("luna-rspec-formatters", "~> 3.4")
-  spec.add_development_dependency("envygeeks-coveralls", "~> 1.1")
   spec.add_development_dependency("rspec", "~> 3.4")
 end
