@@ -27,10 +27,10 @@ describe Docker::Template::Util do
 
   describe "#create_dockerhub_context" do
     let(:context) { builder.instance_variable_get(:@context) }
-    after { builder.repo.root.join("tags").rmtree rescue true; builder.unlink }
+    after { builder.repo.root.join(repo.metadata["dockerhub_cache_dir"]).rmtree rescue true; builder.unlink }
     before { builder.send(:copy_build_and_verify); silence_io { util.create_dockerhub_context(builder, context) }}
     let(:repo) { Docker::Template::Repo.new("repo" => "simple", "tag" => "latest") }
-    subject { builder.repo.root.join("tags", builder.repo.tag) }
+    subject { builder.repo.root.join(repo.metadata["dockerhub_cache_dir"], builder.repo.tag) }
     let(:builder) { Docker::Template::Simple.new(repo) }
 
     it { is_expected.to exist }

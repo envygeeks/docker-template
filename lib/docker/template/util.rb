@@ -26,7 +26,7 @@ module Docker
       #
 
       def create_dockerhub_context(builder, context)
-        dir = builder.repo.root.join("tags", builder.repo.tag)
+        dir = builder.repo.root.join(builder.repo.metadata["dockerhub_cache_dir"], builder.repo.tag)
         context = get_context(builder, context)
         FileUtils.mkdir_p dir
 

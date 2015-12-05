@@ -14,11 +14,11 @@ describe Docker::Template::Simple do
     specify { expect(subject.instance_variable_get(:@context)).not_to exist }
     before { silence_io { subject.build }}
 
-    context "when dockerhub_copy = true" do
-      before { the_metadata["dockerhub_copy"] = true }
+    context "when dockerhub_cache = true" do
+      before { the_metadata["dockerhub_cache"] = true }
       let(:the_metadata) { repo.metadata.instance_variable_get(:@metadata) }
       it { expect(Docker::Template::Util).to receive :create_dockerhub_context }
-      after { the_metadata["dockerhub_copy"] = false}
+      after { the_metadata["dockerhub_cache"] = false}
       after { subject.unlink }
     end
 

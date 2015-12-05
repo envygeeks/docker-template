@@ -42,7 +42,7 @@ module Docker
       #
 
       def syncable?
-        metadata["dockerhub_copy"] && @sync_allowed
+        metadata["dockerhub_cache"] && @sync_allowed
       end
 
       #
