@@ -6,6 +6,8 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [UNRELEASED]
 #### Added
 - Added a User-Agent so Docker and other stuff can identify our software. [[8dde7fa][8dde7fa]]
+- Move `dockerhub_copy` to `dockerhub_cache` and add `dockerhub_cache_dir` so you can set the folder name. [[c8ead9e][c8ead9e]]
+- Added support for naming a repo different than the folder name.  Use `name` in opts.yml. [[70eee80][70eee80]]
 - Added a default timeout of 480 to Excon. [[8dde7fa][8dde7fa]]
 
 #### Fixed
@@ -55,3 +57,5 @@ project adheres to [Semantic Versioning](http://semver.org/).
 [9a0e4fb]: https://github.com/envygeeks/docker-template/commit/9a0e4fb79405966f0fae288d6c9e7f38a80d764a
 [53b720e]: https://github.com/envygeeks/docker-template/commit/53b720e1c6e8af6db65e6af7e5c59c86e2bd1d66
 [8dde7fa]: https://github.com/envygeeks/docker-template/commit/8dde7fa9fd0867abf6602b87c28ff261adc2d06b
+[70eee80]: https://github.com/envygeeks/docker-template/commit/70eee80907daec1a8b45207e3029b95c042204e6
+[c8ead9e]: https://github.com/envygeeks/docker-template/commit/c8ead9e365e7dfc98555b1dedd7a5330790aec0c
