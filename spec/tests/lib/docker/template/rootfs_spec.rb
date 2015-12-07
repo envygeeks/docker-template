@@ -12,7 +12,7 @@ RSpec.describe Docker::Template::Rootfs do
 
   describe "#data" do
     subject { rootfs.new(repo).data }
-    it { is_expected.to match %r!\AFROM [a-z]+/ubuntu:tiny! }
+    it { is_expected.to match %r!\AFROM [a-z]+/ubuntu! }
     it { is_expected.not_to be_empty }
   end
 

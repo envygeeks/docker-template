@@ -28,7 +28,7 @@ module Docker
         "type" => "simple",
         "user" => "envygeeks",
         "local_prefix" => "local",
-        "rootfs_base_img" => "envygeeks/ubuntu:tiny",
+        "rootfs_base_img" => "envygeeks/ubuntu",
         "maintainer" => "Jordon Bedwell <jordon@envygeeks.io>",
         "name" => Template.root.basename.to_s,
         "dockerhub_cache_dir" => "cache",
