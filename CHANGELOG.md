@@ -5,9 +5,10 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
 #### Added
-- Added a User-Agent so Docker and other stuff can identify our software. [[8dde7fa][8dde7fa]]
+- Some aliased tags can have their own merged values, so aliased tag name can merge into tag name. [[fa27cb3][fa27cb3]]
 - Move `dockerhub_copy` to `dockerhub_cache`; add `dockerhub_cache_dir` so you can set the folder name. [[c8ead9e][c8ead9e]]
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml. [[70eee80][70eee80]]
+- Added a User-Agent so Docker and other stuff can identify our software. [[8dde7fa][8dde7fa]]
 - Added a default timeout of 480 to Excon. [[8dde7fa][8dde7fa]]
 
 #### Changed
@@ -67,3 +68,4 @@ project adheres to [Semantic Versioning](http://semver.org/).
 [f42bcf0]: https://github.com/envygeeks/docker-template/commit/f42bcf097b03ccaf8f00dd09beb63c5bd84f1c93
 [7a53643]: https://github.com/envygeeks/docker-template/commit/7a536431264dd726e087c860a05d0fdedb6a7410
 [f998d11]: https://github.com/envygeeks/docker-template/commit/f998d11287365b236ef1f31634cc2661b529ba9f
+[fa27cb3]: https://github.com/envygeeks/docker-template/commit/fa27cb3026fcfa3759beeacbe9bee97164a356be
