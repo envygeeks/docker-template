@@ -10,7 +10,12 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml. [[70eee80][70eee80]]
 - Added a default timeout of 480 to Excon. [[8dde7fa][8dde7fa]]
 
+#### Changed
+- Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny` [[7a53643][7a53643]]
+- Remove `Util#get_context` because we always copy the context anyways. [[f998d11][f998d11]]
+
 #### Fixed
+- Make sure RSpec helpers is always available first. [[f42bcf0][f42bcf0]]
 - Fix detection of directory is repo, it should use the *current directory* not 2 directories back. [[53b720e][53b720e]]
 
 ## 0.2.0
@@ -59,3 +64,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 [8dde7fa]: https://github.com/envygeeks/docker-template/commit/8dde7fa9fd0867abf6602b87c28ff261adc2d06b
 [70eee80]: https://github.com/envygeeks/docker-template/commit/70eee80907daec1a8b45207e3029b95c042204e6
 [c8ead9e]: https://github.com/envygeeks/docker-template/commit/c8ead9e365e7dfc98555b1dedd7a5330790aec0c
+[f42bcf0]: https://github.com/envygeeks/docker-template/commit/f42bcf097b03ccaf8f00dd09beb63c5bd84f1c93
+[7a53643]: https://github.com/envygeeks/docker-template/commit/7a536431264dd726e087c860a05d0fdedb6a7410
+[f998d11]: https://github.com/envygeeks/docker-template/commit/f998d11287365b236ef1f31634cc2661b529ba9f
