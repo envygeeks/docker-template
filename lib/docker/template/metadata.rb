@@ -131,10 +131,12 @@ module Docker
       # "tag" key with the given tags. ("tags" is a `Hash`)
 
       def by_tag
-        return unless tag = aliased
+        a_tag = aliased
+        tag = from_root("tag")
         return unless key?("tag")
         hash = self["tag"]
-        hash[tag]
+        a_tag == tag ? hash[tag] : merge_or_override(hash[tag] \
+          , hash[a_tag])
       end
 
       # Pull data based on the type given in { "tags" => { tag => type }}
@@ -168,6 +170,16 @@ module Docker
         val = @base[key]
         return self.class.new(val, @root_metadata) if val.is_a?(Hash)
         val
+      end
+
+      #
+
+      private
+      def merge_or_override(val, a_val)
+        return a_val unless val
+        return val if (val && val.is_a?(String)) || !a_val || (val && !a_val.is_a?(val.class))
+        return a_val.merge(val) if val.respond_to?(:merge)
+        return a_val + val if val.respond_to?(:+)
       end
     end
   end

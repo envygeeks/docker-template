@@ -168,4 +168,50 @@ describe Docker::Template::Metadata do
     subject { metadata.new("tags" => { "hello" => "world" }).tags }
     it { is_expected.to eq ["hello"] }
   end
+
+  describe "#merge_or_override" do
+    let(:instance) { metadata.new({}, {}) }
+    def isend(*vals)
+      instance.send(
+        :merge_or_override, *vals
+      )
+    end
+
+    context "[1], '2'" do
+      subject {  isend([1], "2") }
+      it { is_expected.to eq [1] }
+    end
+
+    context "'1', [2]" do
+      subject {  isend("1", [2]) }
+      it { is_expected.to eq "1" }
+    end
+
+    context "nil, [1]" do
+      subject {  isend(nil, [1]) }
+      it { is_expected.to eq [1] }
+    end
+
+    context "[1], nil" do
+      subject {  isend([1], nil) }
+      it { is_expected.to eq [1] }
+    end
+
+    context "[1], [2]" do
+      subject { isend([ 1 ], [ 2] ) }
+      it { is_expected.to include 2 }
+      it { is_expected.to include 1 }
+    end
+
+    context "{ 1 => 1}, { 2 => 2}" do
+      subject do
+        instance.send(:merge_or_override, { 1 => 1 }, {
+          2 => 2
+        })
+      end
+
+      it { is_expected.to include 2 => 2 }
+      it { is_expected.to include 1 => 1 }
+    end
+  end
 end
