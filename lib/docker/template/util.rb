@@ -26,20 +26,14 @@ module Docker
       #
 
       def create_dockerhub_context(builder, context)
-        dir = builder.repo.root.join(builder.repo.metadata["dockerhub_cache_dir"], builder.repo.tag)
-        context = get_context(builder, context)
-        FileUtils.mkdir_p dir
+        dir = builder.repo. metadata["dockerhub_cache_dir"]
+        dir = builder.repo.root.join(dir, builder.repo.tag)
+        dir.rmtree if dir.exist?
 
+        FileUtils.mkdir_p dir
         $stdout.puts Ansi.yellow("Copying context for #{builder.repo}")
         Util::Copy.file(readme_file(builder), dir)
         Util::Copy.directory(context, dir)
-      end
-
-      #
-
-      def get_context(builder, context)
-        return context unless builder.aliased?
-        builder.repo.root.join("tags", builder.repo.aliased)
       end
 
       #
