@@ -103,7 +103,7 @@ module Docker
 
       private
       def copy_global
-        return if rootfs?
+        return if rootfs? || Template.repo_is_root?
         dir = Template.root.join(@repo.metadata["copy_dir"])
         Util::Copy.directory(dir, @copy)
       end
