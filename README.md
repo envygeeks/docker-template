@@ -1,7 +1,9 @@
 [![Build Status](https://travis-ci.org/envygeeks/docker-template.svg?branch=master)][travis]
 [![Test Coverage](https://codeclimate.com/github/envygeeks/docker-template/badges/coverage.svg)][coverage]
 [![Code Climate](https://codeclimate.com/github/envygeeks/docker-template/badges/gpa.svg)][codeclimate]
+[![Dependency Status](https://gemnasium.com/envygeeks/docker-template.svg)][gemnasium]
 
+[gemnasium]: https://gemnasium.com/envygeeks/docker-template
 [codeclimate]: https://codeclimate.com/github/envygeeks/docker-template
 [coverage]: https://codeclimate.com/github/envygeeks/docker-template/coverage
 [travis]: https://travis-ci.org/envygeeks/docker-template
