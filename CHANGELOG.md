@@ -22,9 +22,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 0.2.0
 #### Added
-- A Git repo with only one repo can now act as repos.
-- Add `Metadata#as_gem_version` which merges the repo name with the version in `Metadata`
-- Account for a user not having our specific keys in some places.
+- A Git repo with only one repo can now act as repos. [#3]
+- Add `Metadata#as_gem_version` which merges the repo name with the version in `Metadata` [#1]
+- Use `#from_root` instead of `@root_metadata` so we can fallback. [#4]
 - Clean up code in various ways.
 
 #### Changed
