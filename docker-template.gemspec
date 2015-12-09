@@ -21,5 +21,5 @@ Gem::Specification.new do |spec|
   spec.bindir = "bin"
 
   spec.add_runtime_dependency("json", "~> 1.8")
-  spec.add_runtime_dependency("docker-api", "~> 1.23")
+  spec.add_runtime_dependency("docker-api", "~> 1.24")
 end
