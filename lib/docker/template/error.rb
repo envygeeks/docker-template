@@ -9,6 +9,7 @@ module Docker
       autoload :BadRepoName, "docker/template/error/bad_repo_name"
       autoload :BadExitStatus, "docker/template/error/bad_exit_status"
       autoload :InvalidTargzFile, "docker/template/error/invalid_targz_file"
+      autoload :InvalidYAMLFile, "docker/template/error/invalid_yaml_file"
       autoload :NoSetupContextFound, "docker/template/error/no_setup_context_found"
       autoload :NoRootfsCopyDir, "docker/template/error/no_rootfs_copy_dir"
       autoload :InvalidRepoType, "docker/template/error/invalid_repo_type"

@@ -17,6 +17,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Fixed
 - Prevent a double copy with all/* when the repo is the root.
+- Detect empty and invalid `opts.yml` and either ship a blank hash or raise.
 - Fix detection of directory is repo, it should use the *current directory* not 2 directories back.
 - Make sure RSpec helpers is always available first.
 

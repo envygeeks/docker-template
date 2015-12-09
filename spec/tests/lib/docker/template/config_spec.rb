@@ -12,12 +12,28 @@ describe Docker::Template::Config do
   end
 
   describe "#read_config_from" do
-    subject { config.read_config_from(Docker::Template.repos_root.join("config")) }
+    let(:repo_root) { Docker::Template.repos_root }
     it { is_expected.to eq "maintainer" => "Some Girl <lyfe@thug.programmer>" }
+    subject { config.read_config_from(path) }
+    let(:path) { repo_root.join("config") }
 
-    context "with a bad file" do
-      subject { config.read_config_from(Pathname.new("bad_file")) }
+    context "when empty" do
+      let(:path) { repo_root.join("empty") }
+      subject { config.read_config_from(path) }
       it { is_expected.to be_a Hash }
+    end
+
+    context "when non-existant" do
+      let(:path) { Pathname.new("bad_file") }
+      subject { config.read_config_from(path) }
+      it { is_expected.to be_a Hash }
+    end
+
+    context "when invalid" do
+      let(:path) { repo_root.join("invalid") }
+      let(:error) { Docker::Template::Error::InvalidYAMLFile }
+      specify { expect(&subject).to raise_error error }
+      subject { -> { config.read_config_from(path) }}
     end
   end
 
