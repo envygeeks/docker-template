@@ -9,6 +9,8 @@ class DockerContainerMock
     ]
   end
 
+  #
+
   def json
     {
       "State" => {
@@ -17,9 +19,13 @@ class DockerContainerMock
     }
   end
 
+  #
+
   def start(*args, &block)
     self
   end
+
+  #
 
   def method_missing(method, *args, &block)
     if @mocked.include?(method)

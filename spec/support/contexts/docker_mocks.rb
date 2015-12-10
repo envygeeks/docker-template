@@ -1,8 +1,27 @@
 shared_context :docker_mocks do
-  let(:docker_image_mock) { DockerImageMock.new }
-  let(:docker_container_mock) { DockerContainerMock.new }
   before do
-    allow(Docker::Container).to receive(:create).and_return docker_container_mock
-    allow(Docker::Image).to receive(:build_from_dir).and_return docker_image_mock
+    allow(Docker::Container).to receive(:create) do
+      docker_container_mock
+    end
+  end
+
+  #
+
+  let :docker_container_mock do
+    DockerContainerMock.new
+  end
+
+  #
+
+  before do
+    allow(Docker::Image).to receive(:build_from_dir) do
+      docker_image_mock
+    end
+  end
+
+  #
+
+  let :docker_image_mock do
+    DockerImageMock.new
   end
 end

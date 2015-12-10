@@ -5,10 +5,11 @@
 module Docker
   module Template
     class Common
-      CopyMethods = [
-        :setup_context, :copy_global,
-        :copy_all, :copy_type, :copy_tag, :build_context,
-        :verify_context].freeze
+      COPY = [
+        :setup_context, :copy_global, :copy_all, :copy_type, :copy_tag,
+          :build_context, :verify_context].freeze
+
+      #
 
       def push
         return if rootfs? || !Interface.push?
@@ -62,6 +63,7 @@ module Docker
         Util.notify_build(@repo, rootfs: rootfs?)
         copy_build_and_verify
         chdir_build
+
       rescue SystemExit => exit_
         unlink img: true
         raise exit_
@@ -85,14 +87,13 @@ module Docker
 
       private
       def copy_build_and_verify
-        unless respond_to?(:setup_context, true)
-          raise Error::NoSetupContextFound
-        end
-
-        CopyMethods.each do |val|
+        raise Error::NoSetupContextFound unless respond_to?(:setup_context, true)
+        COPY.map do |val|
           send(val) if respond_to?(val, true)
         end
       end
+
+      #
 
       private
       def copy_tag
