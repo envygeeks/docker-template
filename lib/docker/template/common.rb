@@ -27,8 +27,10 @@ module Docker
 
       #
 
-      def rootfs?
-        false
+      [:rootfs, :simple, :scratch].each do |sym|
+        define_method "#{sym}?" do
+          @repo.type == sym.to_s
+        end
       end
 
       #

@@ -12,12 +12,6 @@ module Docker
 
       #
 
-      def rootfs?
-        true
-      end
-
-      #
-
       def data
         Template.get(:rootfs, {
           :rootfs_base_img => @repo.metadata["rootfs_base_img"]
