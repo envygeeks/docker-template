@@ -4,8 +4,8 @@ module Docker
       module_function
 
       def auth!
-        return unless login = credentials
-        login["auths"].each do |server, auth|
+        return unless credentials
+        credentials["auths"].each do |server, auth|
           username, password = Base64.decode64(auth["auth"]).split(":", 2)
           Docker.authenticate!({
             "username" => username,
