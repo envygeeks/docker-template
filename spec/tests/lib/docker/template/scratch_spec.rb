@@ -6,9 +6,20 @@ require "rspec/helper"
 describe Docker::Template::Scratch do
   include_context :docker_mocks
 
-  subject { scratch.new(repo) }
-  let(:repo) { Docker::Template::Repo.new("repo" => "scratch", "tag" => "latest") }
-  let(:scratch) { described_class }
+  subject do
+    scratch.new(repo)
+  end
+
+  let :repo do
+    Docker::Template::Repo.new({
+      "repo" => "scratch",
+       "tag" =>  "latest"
+    })
+  end
+
+  let :scratch do
+    described_class
+  end
 
   before do
     allow_any_instance_of(scratch).to receive(:verify_context).and_return nil
@@ -16,60 +27,151 @@ describe Docker::Template::Scratch do
     allow_any_instance_of(scratch).to receive( :start_args).and_return({})
   end
 
+  #
+
   describe "#data" do
-    subject { instance.data }
-    let(:instance) { scratch.new(repo).tap { |obj| obj.send(:setup_context) }}
-    it { is_expected.to match %r!MAINTAINER #{Regexp.escape(repo.metadata["maintainer"])}! }
-    it { is_expected.to match %r!^ADD .*\.tar\.gz /$!m }
-    it { is_expected.not_to(be_empty) }
-    after { instance.unlink }
-  end
-
-  describe "#setup_context" do
-    before { instance.send(:setup_context) }
-    it { is_expected.to include match(/Dockerfile\Z/) }
-    subject { instance.instance_variable_get(:@context).children.map(&:to_path) }
-    let(:instance) { scratch.new(repo) }
-    after { instance.unlink }
-  end
-
-  describe "#unlink" do
-    before { silence_io { subject.build }}
-
-    context "(img: true)" do
-      specify { expect(docker_image_mock).to receive(:delete) }
-      after { subject.unlink(img: true) }
+    after do
+      instance.unlink
     end
 
-    context do
-      specify { expect(pathname).to_not exist }
-      let(:pathname) { subject.instance_variable_get(:@context) }
-      before { subject.unlink }
+    subject do
+      instance.data
     end
-  end
 
-  describe "#build_context" do
-    after do |ex|
-      if !ex.metadata[:nobuild]
-        subject.send(:build_context)
+    let :instance do
+      scratch.new(repo).tap do |obj|
+        obj.send :setup_context
       end
     end
 
-    it { is_expected.to receive(:build_rootfs) }
-    specify { expect(docker_container_mock).to receive :stop }
-    specify { expect(docker_container_mock).to receive :delete }
-    specify { expect(Docker::Container).to receive :create }
-    specify { expect(docker_container_mock).to receive(:attach) }
+    it "adds the TARGZ file" do
+      expect(subject).to match %r!^ADD .*\.tar\.gz /$!m
+    end
+
+    it "adds the MAINTAINER" do
+      expect(subject).to match %r!MAINTAINER #{
+        Regexp.escape(repo.metadata["maintainer"])
+      }!
+    end
+
+    it "should not return empty data" do
+      expect(subject).not_to \
+        be_empty
+    end
+  end
+
+  #
+
+  describe "#setup_context" do
+    after do
+      instance.unlink
+    end
+
+    subject do
+      instance.instance_variable_get(:@context).children.map do |val|
+        val.to_path
+      end
+    end
+
+    let :instance do
+      scratch.new(repo)
+    end
+
+    before do
+      instance.send :setup_context
+    end
+
+    it "should copy the Dockerfile" do
+      expect(subject).to include match(/\/Dockerfile\Z/)
+    end
+  end
+
+  #
+
+  describe "#unlink" do
+    before do
+      silence_io do
+        subject.build
+      end
+    end
+
+    context "(img: true)" do
+      after do
+        subject.unlink(img: true)
+      end
+
+      it "should delete the image" do
+        expect(docker_image_mock).to \
+          receive(:delete)
+      end
+    end
+
+    context do
+      let :pathname do
+        subject.instance_variable_get(:@context)
+      end
+
+      before do
+        subject.unlink
+      end
+
+      it "should remove the context" do
+        expect(pathname).not_to \
+          exist
+      end
+    end
+  end
+
+  #
+
+  describe "#build_context" do
+    after do |ex|
+      unless ex.metadata[:nobuild]
+        subject.send :build_context
+      end
+    end
+
+    it "should stop the rootfs container once it's done" do
+      expect(docker_container_mock).to \
+        receive :stop
+    end
+
+    it "should delete the rootfs container" do
+      expect(docker_container_mock).to \
+        receive :delete
+    end
 
     context "when nothing logged" do
-      before { allow(docker_container_mock).to receive :attach }
-      specify { expect(docker_container_mock).to receive(:streaming_logs) }
+      before do
+        allow(docker_container_mock).to \
+          receive :attach
+      end
+
+      it "should pull the logs out of the stream" do
+        expect(docker_container_mock).to \
+          receive(:streaming_logs)
+      end
     end
 
     context "when an image exists badly" do
-      before { allow(docker_container_mock).to receive(:json).and_return("State" => { "ExitCode" => 1 }) }
-      specify(nil, :nobuild => true) { expect { subject.send(:build_context) }.to raise_error \
-        Docker::Template::Error::BadExitStatus }
+      before do
+        allow(docker_container_mock).to receive :json do
+          {
+            "State" => {
+              "ExitCode" => 1
+            }
+          }
+        end
+      end
+
+      it "should raise an error", :nobuild do
+        expect_it = expect do
+          subject.send :build_context
+        end
+
+        expect_it.to raise_error \
+          Docker::Template::Error::BadExitStatus
+      end
     end
   end
 end

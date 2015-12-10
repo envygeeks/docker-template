@@ -10,6 +10,17 @@ module Docker
         @repo = repo
       end
 
+      # Caches and builds the master rootfs for repos, this is cached
+      # on the class because it could be used many times in a single build
+      # so we make sure to keep it around so you don't have tons of
+      # replication going about slowing down all of the builds.
+
+      def self.rootfs_for(repo)
+        (@rootfs ||= {})[repo.name] ||= begin
+          Rootfs.new(repo).tap(&:build)
+        end
+      end
+
       #
 
       def data
@@ -42,20 +53,17 @@ module Docker
       #
 
       private
-      def build_rootfs
-        @rootfs ||= begin
-          self.class.rootfs_for(@repo)
-        end
+      def copy_dockerfile
+        data = self.data % @tar_gz.basename
+        dockerfile = @context.join("Dockerfile")
+        dockerfile.write(data)
       end
 
-      # Caches and builds the master rootfs for repos, this is cached
-      # on the class because it could be used many times in a single build
-      # so we make sure to keep it around so you don't have tons of
-      # replication going about slowing down all of the builds.
+      #
 
-      def self.rootfs_for(repo)
-        (@rootfs ||= {})[repo.name] ||= begin
-          Rootfs.new(repo).tap(&:build)
+      def verify_context
+        unless @tar_gz.size > 0
+          raise Error::InvalidTargzFile, @tar_gz
         end
       end
 
@@ -63,7 +71,7 @@ module Docker
 
       private
       def build_context
-        build_rootfs
+        @rootfs ||= self.class.rootfs_for(@repo)
 
         output_given = false
         img = Container.create(create_args)
@@ -87,27 +95,11 @@ module Docker
       # the logs after it's exited if we have given no output, we want you to
       # always get the output that was given.
 
+      private
       def output_oldlogs(img)
         img.streaming_logs "stdout" => true, "stderr" => true do |type, str|
           type == :stdout ? $stdout.print(str) : $stderr.print(Ansi.red(str))
         end
-      end
-
-      #
-
-      def verify_context
-        unless @tar_gz.size > 0
-          raise Error::InvalidTargzFile, @tar_gz
-        end
-      end
-
-      #
-
-      private
-      def copy_dockerfile
-        data = self.data % @tar_gz.basename
-        dockerfile = @context.join("Dockerfile")
-        dockerfile.write(data)
       end
 
       #
