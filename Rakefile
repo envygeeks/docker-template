@@ -32,7 +32,7 @@ task :analysis do
 
   file = File.open(".analysis", "w+")
   Open3.popen3(cmd.shelljoin) do |_, out, err, _|
-    while data = out.gets
+    while (data = out.gets)
       file.write data
       if data =~ /\A==/
         $stdout.print ansi.yellow(data)
@@ -47,7 +47,7 @@ task :analysis do
       end
     end
 
-    while data = err.gets
+    while (data = err.gets)
       file.write data
       $stderr.print ansi.red(data)
     end
