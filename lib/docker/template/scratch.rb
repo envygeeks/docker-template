@@ -72,22 +72,25 @@ module Docker
           output_given = true
         end
 
-        # NOTE: Sometimes the instance exists too quickly for attach to even
-        # work, through the remote API, so we need to detect those situations
-        # and stream the logs after it's exited if we have given no output,
-        # we want you to always get the output that was given.
-
-        unless output_given
-          img.streaming_logs "stdout" => true, "stderr" => true do |type, str|
-            type == :stdout ? $stdout.print(str) : $stderr.print(Ansi.red(str))
-          end
-        end
-
+        output_oldlogs img unless output_given
         if (status = img.json["State"]["ExitCode"]) != 0
           raise Error::BadExitStatus, status
         end
       ensure
-        img.tap(&:stop).delete("force" => true) if img
+        if img
+          then img.tap(&:stop).delete("force" => true)
+        end
+      end
+
+      # Sometimes the instance exists too quickly for attach to even work,
+      # through the remote API, so we need to detect those situations and stream
+      # the logs after it's exited if we have given no output, we want you to
+      # always get the output that was given.
+
+      def output_oldlogs(img)
+        img.streaming_logs "stdout" => true, "stderr" => true do |type, str|
+          type == :stdout ? $stdout.print(str) : $stderr.print(Ansi.red(str))
+        end
       end
 
       #

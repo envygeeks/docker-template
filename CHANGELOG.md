@@ -13,6 +13,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 #### Changed
 - Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny`
+- Move the secondary logger out of Scratch#build_context and into it's own method.
 - Remove `Util#get_context`; we always copy the context anyways.
 
 #### Fixed
