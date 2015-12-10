@@ -42,15 +42,31 @@ module Docker
         !!(str =~ MATCH)
       end
 
-      # Jump the cursor up and then back down or just up and down.  This is
-      # useful when streaming async downloads from something like Docker.  It
-      # also works better than using `tput`
+      # Jump the cursor, moving it up and then back down to it's spot,
+      # allowing you to do fancy things like multiple output (downloads) the
+      # way that Docker does them in an async way without breaking term.
 
-      def jump(str = "", up: nil, down: nil, both: nil)
+      def jump(str, num)
         str = clear_line(str)
+        format("%c[%dA%s%c[%dB", 27, num, str, 27, num)
+      end
 
-        return format("%c[%dA%s%c[%dB", 27, up || both, str, 27, down || both) if (up && down) || both
-        up ? format("%c[%dA%s", 27, up, str) : format("%s%c[%dB", str, 27, down)
+      # Move the cursor up `num` lines. This method does not move the
+      # cursor back down to it's original position.  You either need to use
+      # `#jump` for that, or you need to use `#down` manually.
+
+      def up(str, num)
+        str = clear_line(str)
+        format("%s%c[%dB", str, 27, num)
+      end
+
+      # Move the cusor down `num` lines.  This method does not move the
+      # cursor back up to where it started if you are "jumping".  You either
+      # need to use `#jump`, or `#up` manually.
+
+      def down(str, num)
+        str = clear_line(str)
+        format("%c[%dA%s", 27, num, str)
       end
 
       # Reset the color back to the default color so that you do not leak any

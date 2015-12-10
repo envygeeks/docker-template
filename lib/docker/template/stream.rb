@@ -42,7 +42,7 @@ module Docker
         str = stream["progress"] || stream["status"]
         str = "#{id}: #{str}\r"
 
-        $stdout.print(Ansi.jump(str, both: diff))
+        $stdout.print(Ansi.jump(str, diff))
       end
 
       #

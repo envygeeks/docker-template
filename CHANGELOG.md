@@ -14,6 +14,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 #### Changed
 - Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny`
 - Move the secondary logger out of Scratch#build_context and into it's own method.
+- Split `Ansi.jump` into `Ansi.jump`, `Ansi.down`, and `Ansi.up` for simpler interaction with the API.
 - Remove `Util#get_context`; we always copy the context anyways.
 
 #### Fixed

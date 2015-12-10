@@ -40,19 +40,17 @@ describe Docker::Template::Ansi do
   end
 
   describe "#jump" do
-    describe "(up: \\d)" do
-      subject { ansi.jump("hello", up: 1024) }
-      it { is_expected.to match %r!\[1024A! }
-    end
+    subject { ansi.jump("hello", 1024) }
+    it { is_expected.to match %r!\[1024A|\[1024B\Z! }
+  end
 
-    context "(down: \\d)" do
-      subject { ansi.jump("hello", down: 1024) }
-      it { is_expected.to match %r!\[1024B! }
-    end
+  describe "#up" do
+    subject { ansi.jump("hello", 1024) }
+    it { is_expected.to match %r!\[1024A! }
+  end
 
-    context "(both: \\d)" do
-      subject { ansi.jump("hello", both: 1024) }
-      it { is_expected.to match %r!\[1024A|\[1024B\Z! }
-    end
+  context "#down" do
+    subject { ansi.jump("hello", 1024) }
+    it { is_expected.to match %r!\[1024B! }
   end
 end
