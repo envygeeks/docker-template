@@ -61,6 +61,13 @@ module Docker
 
       #
 
+      def copy_cleanup
+        @rootfs ||= self.class.rootfs_for(@repo)
+        @rootfs.cleanup(@copy)
+      end
+
+      #
+
       def verify_context
         unless @tar_gz.size > 0
           raise Error::InvalidTargzFile, @tar_gz

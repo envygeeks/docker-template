@@ -11,7 +11,6 @@ module Docker
       autoload :InvalidTargzFile, "docker/template/error/invalid_targz_file"
       autoload :InvalidYAMLFile, "docker/template/error/invalid_yaml_file"
       autoload :NoSetupContextFound, "docker/template/error/no_setup_context_found"
-      autoload :NoRootfsCopyDir, "docker/template/error/no_rootfs_copy_dir"
       autoload :InvalidRepoType, "docker/template/error/invalid_repo_type"
       autoload :NoRootfsMkimg, "docker/template/error/no_rootfs_mkimg"
       autoload :NotImplemented, "docker/template/error/not_implemented"

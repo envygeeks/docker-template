@@ -5,9 +5,17 @@
 module Docker
   module Template
     class Common
-      COPY = [
-        :setup_context, :copy_global, :copy_all, :copy_type, :copy_tag,
-          :build_context, :verify_context].freeze
+      COPY = %W(setup_context copy_global copy_simple copy_all copy_type \
+        copy_tag copy_cleanup build_context verify_context).freeze
+
+      #
+
+      def simple_copy?
+        @repo.copy_dir.exist? && \
+          !@repo.copy_dir.join("tag").exist? && \
+          !@repo.copy_dir.join("type").exist? && \
+          !@repo.copy_dir.join("all").exist?
+      end
 
       #
 
@@ -28,7 +36,13 @@ module Docker
 
       #
 
-      [:rootfs, :simple, :scratch].each do |sym|
+      def rootfs?
+        self.is_a?(Rootfs)
+      end
+
+      #
+
+      [:simple, :scratch].each do |sym|
         define_method "#{sym}?" do
           @repo.type == sym.to_s
         end
@@ -87,19 +101,13 @@ module Docker
 
       private
       def copy_build_and_verify
-        raise Error::NoSetupContextFound unless respond_to?(:setup_context, true)
-        COPY.map do |val|
-          send(val) if respond_to?(val, true)
+        if !respond_to?(:setup_context, true)
+          raise Error::NoSetupContextFound
+        else
+          COPY.map do |val|
+            send(val) if respond_to?(val, true)
+          end
         end
-      end
-
-      #
-
-      private
-      def copy_tag
-        return if rootfs?
-        dir = @repo.copy_dir("tag", @repo.tag)
-        Util::Copy.directory(dir, @copy)
       end
 
       #
@@ -114,8 +122,27 @@ module Docker
       #
 
       private
+      def copy_simple
+        return unless simple_copy?
+        Util::Copy.directory(@repo.copy_dir, \
+          @copy)
+      end
+
+      #
+
+      private
+      def copy_tag
+        return if rootfs? || simple_copy?
+        dir = @repo.copy_dir("tag", @repo.tag)
+        Util::Copy.directory(dir, @copy)
+      end
+
+      #
+
+      private
       def copy_type
-        return unless !rootfs? && build_type = @repo.metadata["tags"][@repo.tag]
+        build_type = @repo.metadata["tags"][@repo.tag]
+        return if rootfs? || simple_copy? || !build_type
         dir = @repo.copy_dir("type", build_type)
         Util::Copy.directory(dir, @copy)
       end
@@ -124,7 +151,7 @@ module Docker
 
       private
       def copy_all
-        return if rootfs?
+        return if rootfs? || simple_copy?
         dir = @repo.copy_dir("all")
         Util::Copy.directory(dir, @copy)
       end

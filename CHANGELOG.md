@@ -7,6 +7,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Aliased tags can have their own merged values.
 - Move `dockerhub_copy` to `dockerhub_cache`; add `dockerhub_cache_dir`.
+- Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore if you don't want to.
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml.
 - Added a User-Agent so Docker and other stuff can identify our software.
 - Added a default timeout of 480 to Excon.

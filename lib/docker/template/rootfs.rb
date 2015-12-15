@@ -18,17 +18,27 @@ module Docker
         })
       end
 
-      # In a typical situation we do not remove the rootfs img and don't
-      # recommend removing it as it's better cached by Docker, if you wish
-      # to delete it we will.  Now, here we only remove it if we get told
-      # to exit, since we will be in the middle of a build and probably
-      # not have tagged yet, unless we are downstream, we will remove
-      # it so you have no broken images on your system.
+      #
+
+      def keep?
+        @repo.metadata["keep_rootfs"]
+      end
+
+      #
+
+      def cleanup(dir)
+        return unless simple_copy?
+        file = dir.join("usr/local/bin/mkimg")
+        file.delete if file.exist?
+      end
+
+      #
 
       def unlink(img: true)
-        keep = @repo.metadata["keep_rootfs"]
-        @img.delete "force" => true if img && @img && !keep
-        @context.rmtree if @context && @context.directory?
+        @context.rmtree if @context.directory?
+        if img && @img && !keep?
+          @img.delete "force" => true
+        end
       rescue Docker::Error::NotFoundError
         nil
       end
@@ -48,11 +58,20 @@ module Docker
 
       private
       def copy_rootfs
+        return simple_rootfs_copy if simple_copy?
         dir = @repo.copy_dir("rootfs")
-        Util::Copy.new(dir, @copy).directory
-      rescue Errno::ENOENT => error_
-        if error_.message !~ /\/(copy|rootfs)\Z/
-          raise error_ else raise Error::NoRootfsCopyDir
+        Util::Copy.directory( \
+          dir, @copy)
+      end
+
+      #
+
+      private
+      def simple_rootfs_copy
+        file = @repo.copy_dir.join("usr/local/bin/mkimg")
+
+        if file.file?
+          Util::Copy.new(file, @copy).file
         end
       end
 

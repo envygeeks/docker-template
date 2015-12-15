@@ -43,7 +43,12 @@ describe Docker::Template::Common do
     end
 
     context do
-      before { allow(Docker::Template::Auth).to receive(:auth!).and_return nil }
+      before do
+        allow(Docker::Template::Auth).to receive :auth! do
+          nil
+        end
+      end
+
       it "should try to push" do
         expect(docker_image_mock).to receive(:push) do
           nil
@@ -55,12 +60,143 @@ describe Docker::Template::Common do
   #
 
   describe "#copy_build_and_verify" do
-    after { scratch.send :copy_build_and_verify }
+    after do
+      scratch.send :copy_build_and_verify
+    end
+
     Docker::Template::Common::COPY.each do |method|
       it "should message #{method}" do
         expect(scratch).to receive(method) do
           nil
         end
+      end
+    end
+  end
+
+  #
+
+  context do
+    before do |ex|
+      scratch.send :setup_context
+      allow(scratch).to receive( :rootfs?).and_return ex.metadata[ :rootfs]
+      allow(scratch).to receive(:scratch?).and_return ex.metadata[:scratch]
+      allow(scratch).to receive( :simple?).and_return ex.metadata[ :simple]
+      allow(scratch).to receive(:simple_copy?).and_return \
+        ex.metadata[:simple_copy]
+    end
+
+    #
+
+    describe "#copy_global" do
+      after do
+        scratch.send :copy_global
+      end
+
+      [:scratch, :simple].each do |val|
+        context "when it's #{val}", val do
+          it "should copy" do
+            expect(Docker::Template::Util::Copy).to receive :directory do
+              nil
+            end
+          end
+        end
+      end
+    end
+
+    #
+
+    describe "#copy_simple", :simple do
+      after do
+        scratch.send :copy_simple
+      end
+
+      it "should copy", :simple_copy do
+        expect(Docker::Template::Util::Copy).to receive :directory do
+          nil
+        end
+      end
+
+      context "when !simple_copy?" do
+        it "should not copy" do
+          expect(Docker::Template::Util::Copy).not_to receive :directory do
+            nil
+          end
+        end
+      end
+    end
+
+    #
+
+    shared_examples :copy do
+      context "when it's scratch", :scratch do
+        it "should copy" do
+          expect(Docker::Template::Util::Copy).to receive :directory do
+            nil
+          end
+        end
+
+        #
+
+        context "when simple_copy?", :simple_copy do
+          it "should not copy" do
+            expect(Docker::Template::Util::Copy).not_to receive :directory do
+              nil
+            end
+          end
+        end
+      end
+
+      #
+
+      context "when it's simple", :simple do
+        it "should copy" do
+          expect(Docker::Template::Util::Copy).to receive :directory do
+            nil
+          end
+        end
+
+        #
+
+        context "when simple_copy?", :simple_copy do
+          it "should not copy" do
+            expect(Docker::Template::Util::Copy).not_to receive :directory do
+              nil
+            end
+          end
+        end
+      end
+
+      #
+
+      context "when it's a rootfs", :rootfs do
+        it "should not copy" do
+          expect(Docker::Template::Util::Copy).not_to receive :directory do
+            nil
+          end
+        end
+
+        #
+
+        context "when simple_copy?", :simple_copy do
+          it "should not copy" do
+            expect(Docker::Template::Util::Copy).not_to receive :directory do
+              nil
+            end
+          end
+        end
+      end
+    end
+
+    #
+
+    [:copy_tag, :copy_type, :copy_all].each do |method|
+      describe "##{method}" do
+        after do
+          scratch.send method
+        end
+
+        # SHARED_EXAMPLES
+        it_behaves_like :copy
       end
     end
   end
@@ -76,10 +212,9 @@ describe Docker::Template::Common do
       end
     end
 
-    shared_examples :shared_build_examples do
+    shared_examples :build do
       it "should build from the context" do
-        expect(Docker::Image).to receive \
-          :build_from_dir
+        expect(Docker::Image).to receive :build_from_dir
       end
 
       it "should tag the image" do
@@ -89,8 +224,7 @@ describe Docker::Template::Common do
       end
 
       it "should cleanup" do
-        expect(subject).to receive(:unlink) \
-          .and_call_original
+        expect(subject).to receive(:unlink).and_call_original
       end
 
       it "should not throw any errors" do
@@ -119,8 +253,6 @@ describe Docker::Template::Common do
     #
 
     context "when the type is simple" do
-      it_behaves_like :shared_build_examples
-
       subject do
         Docker::Template::Simple.new(repo)
       end
@@ -131,19 +263,14 @@ describe Docker::Template::Common do
           "tag"  => "latest"
         })
       end
+
+      # SHARED EXAMPLES!
+      it_behaves_like :build
     end
 
     #
 
     context "when @repo.type == scratch" do
-      it_behaves_like :shared_build_examples
-
-      before do
-        allow(subject).to receive(:verify_context).and_return nil
-        allow(subject).to receive(:create_args).and_return({})
-        allow(subject).to receive( :start_args).and_return({})
-      end
-
       let :repo do
         Docker::Template::Repo.new({
           "repo" => "scratch",
@@ -154,6 +281,15 @@ describe Docker::Template::Common do
       subject do
         Docker::Template::Scratch.new(repo)
       end
+
+      before do
+        allow(subject).to receive(:verify_context).and_return nil
+        allow(subject).to receive(:create_args).and_return({})
+        allow(subject).to receive( :start_args).and_return({})
+      end
+
+      # SHARED EXAMPLES!
+      it_behaves_like :build
     end
   end
 end

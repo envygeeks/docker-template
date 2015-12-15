@@ -6,49 +6,105 @@ require "rspec/helper"
 RSpec.describe Docker::Template::Rootfs do
   include_context :docker_mocks
 
-  let(:rootfs) { described_class }
-  let(:repo) { in_data { Docker::Template::Repo.new("repo" => "scratch", "tag" => "latest") }}
-  subject { rootfs.new(repo) }
-
-  describe "#data" do
-    subject { rootfs.new(repo).data }
-    it { is_expected.to match %r!\AFROM [a-z]+/ubuntu! }
-    it { is_expected.not_to be_empty }
+  let :rootfs do
+    described_class
   end
 
-  describe "#build" do
-    after do |ex|
-      unless ex.metadata[:skip_build]
-        ex.metadata[:noisy] ? subject.build : silence_io do
-          subject.build
-        end
+  let :repo do
+    in_data do
+      Docker::Template::Repo.new({
+        "repo" => "scratch",
+        "tag"  =>  "latest",
+      })
+    end
+  end
+
+  subject do
+    rootfs.new(repo)
+  end
+
+  describe "#data" do
+    subject do
+      rootfs.new(repo).data
+    end
+
+    it "should add the FROM line" do
+      expect(subject).to match %r!\AFROM [a-z]+/ubuntu!
+    end
+  end
+
+  describe "#copy_rootfs" do
+    after do
+      subject.send :copy_rootfs
+    end
+
+    it "should copy" do
+      expect(Docker::Template::Util::Copy).to receive :directory do
+        nil
       end
     end
 
-    specify { expect(Docker::Template::Ansi).to receive :clear }
-    specify(nil, :noisy => true) { expect(Docker::Template::Util).to receive :notify_build }
-    specify(nil, :skip_build => true) { expect { silence_io { subject.build }}.not_to raise_error }
-    specify { is_expected.to receive(:unlink).and_call_original }
-    specify { expect(Docker::Image).to receive :build_from_dir }
-    specify { expect(docker_image_mock).to receive :tag }
+    context "when simple_copy?" do
+      before do
+        allow(subject).to receive(:simple_copy?) do
+          true
+        end
+      end
+
+
+      it "should do a simple copy" do
+        expect(subject).to receive :simple_rootfs_copy do
+          nil
+        end
+      end
+    end
   end
 
   describe "#unlink" do
-    specify { expect(subject.instance_variable_get(:@context)).to_not exist }
-    before { silence_io { subject.build }}
+    before do
+      silence_io do
+        subject.build
+      end
+    end
+
+    it "should delete the context it created" do
+      expect(subject.instance_variable_get(:@context)).not_to exist
+    end
 
     context "(img: true)" do
       context do
-        specify { expect(docker_image_mock).to receive(:delete) }
-        after { subject.unlink(img: true) }
+        it "should delete the image" do
+          expect(docker_image_mock).to receive :delete do
+            nil
+          end
+        end
+
+        after do
+          subject.unlink(img: true)
+        end
       end
 
       context "when metadata['keep_rootfs'] = true" do
-        before { user_metadata["keep_rootfs"] = true }
-        let(:user_metadata) { subject.instance_variable_get(:@repo).metadata.instance_variable_get(:@metadata) }
-        specify { expect(docker_image_mock).not_to receive :delete }
-        after { user_metadata["keep_rootfs"] = false }
-        after { subject.unlink }
+        before do
+          user_metadata["keep_rootfs"] = true
+        end
+
+        let :user_metadata do
+          subject.instance_variable_get(:@repo).metadata. \
+            instance_variable_get(:@metadata)
+        end
+
+        it "should not delete the rootfs img" do
+          expect(docker_image_mock).not_to receive :delete do
+            nil
+          end
+        end
+
+        after do
+          subject.unlink
+          user_metadata["keep_rootfs"] = \
+            false
+        end
       end
     end
   end
@@ -67,23 +123,8 @@ RSpec.describe Docker::Template::Rootfs do
       end
     end
 
-    specify { expect(&subject).to raise_error Docker::Template::Error::NoRootfsMkimg }
-  end
-
-  context "when no copy directory exists" do
-    subject do
-      -> do
-        silence_io do
-          in_data do
-            rootfs.new(Docker::Template::Repo.new({
-              "repo" =>   "bad2",
-               "tag" => "latest"
-            })).build
-          end
-        end
-      end
+    it "should raise an error" do
+      expect(&subject).to raise_error Docker::Template::Error::NoRootfsMkimg
     end
-
-    specify { expect(&subject).to raise_error Docker::Template::Error::NoRootfsCopyDir }
   end
 end
