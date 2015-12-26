@@ -114,7 +114,7 @@ module Docker
       private
       def create_args
         {
-          "Env"     => @repo.to_env_hash(tar_gz: @tar_gz, copy_dir: @copy).to_env_ary,
+          "Env"     => @repo.to_env(tar_gz: @tar_gz, copy_dir: @copy).to_env_ary,
           "Name"    => ["rootfs", @repo.name, @repo.tag, "image"].join("-"),
           "Image"   => @rootfs.img.id,
           "Volumes" => {

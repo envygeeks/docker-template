@@ -343,16 +343,16 @@ describe Docker::Template::Repo do
 
   #
 
-  describe "#to_env_hash" do
+  describe "#to_env" do
     it "should return a hash to you" do
-      expect(mocked_repos.to_repo.to_env_hash).to be_a Hash
+      expect(mocked_repos.to_repo.to_env).to be_a Hash
     end
 
     #
 
     context "(tar_gz: val)" do
       it "should include the tar_gz" do
-        expect(mocked_repos.to_repo.to_env_hash(tar_gz: "val")).to \
+        expect(mocked_repos.to_repo.to_env(tar_gz: "val")).to \
         include({
           "TAR_GZ" => "val"
         })
@@ -363,7 +363,7 @@ describe Docker::Template::Repo do
 
     context "copy_dir: val" do
       it "should include the copy_dir" do
-        expect(mocked_repos.to_repo.to_env_hash(copy_dir: "val")).to \
+        expect(mocked_repos.to_repo.to_env(copy_dir: "val")).to \
         include({
           "COPY" => "val"
         })

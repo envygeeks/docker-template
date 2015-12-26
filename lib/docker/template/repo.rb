@@ -48,7 +48,7 @@ module Docker
 
       def to_s(type = nil)
         type ||= :image
-        
+
         if type == :image
           "#{user}/#{name}:#{tag}"
         else
@@ -153,7 +153,7 @@ module Docker
 
       #
 
-      def to_env_hash(tar_gz: nil, copy_dir: nil)
+      def to_env(tar_gz: nil, copy_dir: nil)
         metadata["env"].as_hash.merge({
           "REPO" => name,
           "NAME" => name,
