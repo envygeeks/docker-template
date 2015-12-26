@@ -304,6 +304,55 @@ describe Docker::Template::Metadata do
 
   #
 
+  describe "#alias?" do
+    before do
+      subject.merge({
+        "aliases" => { "hello" => "default" },
+        "tag" => "hello"
+      })
+    end
+
+    it "should return true" do
+      expect(subject.alias?).to eq true
+    end
+
+    context "when the tag is not in the aliases field" do
+      before do
+        subject.merge({
+          "tag" => "default"
+        })
+      end
+
+      it "should return false" do
+        expect(subject.alias?).to eq false
+      end
+    end
+  end
+
+  #
+
+  describe "#complex_alias?" do
+    before do
+      subject.merge({
+        "aliases" => { "hello" => "default" },
+        "tag" => "hello",
+        "env" => {
+          "tag" => {
+            "hello" => {
+              "world" => "true"
+            }
+          }
+        }
+      })
+    end
+
+    it "should return true" do
+      expect(subject.complex_alias?).to eq true
+    end
+  end
+
+  #
+
   describe "#tags" do
     subject do
       described_class.new("tags" => {

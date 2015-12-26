@@ -13,9 +13,10 @@ module Docker
       extend Forwardable, Routable
 
       def_delegator :builder, :build
+      def_delegator :metadata, :complex_alias?
       route_to_hash [:tag, :type, :user, :name], :metadata
       def_delegator :@base_metadata, :to_h
-      def_delegator :metadata, :aliased
+      def_delegator :metadata, :alias?
       def_delegator :metadata, :tags
 
       def initialize(base_metadata = {})

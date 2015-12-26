@@ -30,6 +30,54 @@ describe Docker::Template::Common do
 
   #
 
+  describe "#alias?" do
+    it "should return false" do
+      expect(mocked_repos.to_normal.alias?).to eq false
+    end
+
+    context "when a simple alias" do
+      before do
+        mocked_repos.with_opts({
+          "aliases" => { "hello" => "true" },
+          "tags" => {
+            "default" => "normal"
+          }
+        })
+      end
+
+      it "should return true" do
+        expect(mocked_repos.with_init("tag" => "hello") \
+          .to_normal.alias?).to eq true
+      end
+    end
+
+    context "when a complex alias" do
+      before do
+        mocked_repos.with_opts({
+          "aliases" => { "hello" => "default" },
+          "tags" => {
+            "default" => "normal"
+          },
+
+          "env" => {
+            "tag" => {
+              "hello" => [
+                "world"
+              ]
+            }
+          }
+        })
+      end
+
+      it "should return false" do
+        expect(mocked_repos.with_init("tag" => "hello").to_normal \
+          .alias?).to eq false
+      end
+    end
+  end
+
+  #
+
   describe "#push" do
     before do
       allow(Docker::Template::Interface).to receive :push? do

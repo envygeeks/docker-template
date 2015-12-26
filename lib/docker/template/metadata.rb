@@ -42,6 +42,22 @@ module Docker
 
       #
 
+      def complex_alias?
+        return false unless alias?
+        data = @root_metadata.select { |key, val| val.is_a?(Hash) && val.key?("tag") }
+        data.any? do |key, val|
+          val["tag"].key?(from_root("tag"))
+        end
+      end
+
+      #
+
+      def alias?
+        aliased != from_root("tag")
+      end
+
+      #
+
       def as_gem_version
         "#{self["repo"]}@#{self["version"].fallback}"
       end
@@ -144,7 +160,7 @@ module Docker
       # sub-key and the values.
 
       def by_type
-        return unless tag = aliased
+        tag = aliased
         type = from_root("tags")[tag]
         return unless key?("type")
         return unless type

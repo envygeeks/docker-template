@@ -31,8 +31,8 @@ module Docker
 
       #
 
-      def aliased?
-        @repo.tag != @repo.aliased && !rootfs?
+      def alias?
+        !@repo.complex_alias? && @repo.alias? && !rootfs?
       end
 
       #
@@ -50,7 +50,7 @@ module Docker
       #
 
       def parent_repo
-        return false unless aliased?
+        return false unless alias?
         @parent_repo ||= begin
           Repo.new(@repo.to_h.merge("tag" => @repo.aliased))
         end
@@ -59,10 +59,10 @@ module Docker
       #
 
       def parent_img
-        return false unless aliased?
+        return false unless alias?
         @parent_img ||= Docker::Image.get(parent_repo.to_s)
       rescue Docker::Error::NotFoundError
-        if aliased?
+        if alias?
           nil
         end
       end
@@ -70,7 +70,7 @@ module Docker
       #
 
       def build
-        return Alias.new(self).build if aliased?
+        return Alias.new(self).build if alias?
 
         Ansi.clear
         Util.notify_build(@repo, rootfs: rootfs?)
