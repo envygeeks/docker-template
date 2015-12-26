@@ -25,7 +25,7 @@ module Docker
       def_delegator :@config, :[]
 
       DEFAULTS = {
-        "type" => "simple",
+        "type" => "normal",
         "user" => "envygeeks",
         "local_prefix" => "local",
         "rootfs_base_img" => "envygeeks/ubuntu",
@@ -80,7 +80,7 @@ module Docker
       #
 
       def build_types
-        @build_types ||= %W(simple scratch).freeze
+        @build_types ||= %W(normal scratch).freeze
       end
 
       #

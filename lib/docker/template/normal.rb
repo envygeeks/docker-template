@@ -4,7 +4,7 @@
 
 module Docker
   module Template
-    class Simple < Common
+    class Normal < Common
       attr_reader :repo
       def initialize(repo)
         @repo = repo

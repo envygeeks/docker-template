@@ -33,7 +33,7 @@ module Docker
     autoload :Common, "docker/template/common"
     autoload :Rootfs, "docker/template/rootfs"
     autoload :Scratch, "docker/template/scratch"
-    autoload :Simple, "docker/template/simple"
+    autoload :Normal, "docker/template/normal"
     autoload :Alias, "docker/template/alias"
     autoload :Auth, "docker/template/auth"
 

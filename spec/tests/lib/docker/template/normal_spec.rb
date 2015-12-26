@@ -3,14 +3,14 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Simple do
+describe Docker::Template::Normal do
   include_contexts :docker, :repos
 
   #
 
   subject do
     mocked_repos.with_init("tag" => "latest")
-    mocked_repos.to_simple
+    mocked_repos.to_normal
   end
 
   #

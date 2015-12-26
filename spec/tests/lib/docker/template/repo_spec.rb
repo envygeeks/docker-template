@@ -161,10 +161,10 @@ describe Docker::Template::Repo do
 
     #
 
-    context "when simple" do
+    context "when normal" do
       it_should_behave_like :building_all
       let :type do
-        "simple"
+        "normal"
       end
     end
 

@@ -58,7 +58,7 @@ describe Docker::Template::Util do
 
     let :template do
       mocked_repos.as :normal
-      mocked_repos.to_simple
+      mocked_repos.to_normal
     end
 
     #

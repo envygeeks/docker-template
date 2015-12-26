@@ -37,7 +37,7 @@ describe Docker::Template do
     describe "#repo_root_for" do
       context "when there is no repo dir" do
         it "should return the templates root as repo root" do
-          expect(template.repo_root_for("simple")).to eq template.root
+          expect(template.repo_root_for("normal")).to eq template.root
         end
       end
     end

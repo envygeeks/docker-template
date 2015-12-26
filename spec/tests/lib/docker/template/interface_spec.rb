@@ -41,7 +41,7 @@ describe Docker::Template::Interface do
 
     context "when --sync is given" do
       before do
-        allow_any_instance_of(Docker::Template::Simple).to receive :sync
+        allow_any_instance_of(Docker::Template::Normal).to receive :sync
         allow_any_instance_of(Docker::Template::  Repo).to receive :syncable? do
           true
         end
@@ -66,7 +66,7 @@ describe Docker::Template::Interface do
       #
 
       it "should unlink with syncing disabled since it explicitly syncs" do
-        expect_any_instance_of(Docker::Template::Simple).to \
+        expect_any_instance_of(Docker::Template::Normal).to \
         receive(:unlink).with({
           sync: false
         })
@@ -91,7 +91,7 @@ describe Docker::Template::Interface do
         #
 
         specify do
-          klass = Docker::Template::Simple
+          klass = Docker::Template::Normal
           expect_any_instance_of(klass).not_to receive :sync
         end
       end
@@ -101,7 +101,7 @@ describe Docker::Template::Interface do
 
     context "when --sync is not given" do
       it "should not sync" do
-        klass = Docker::Template::Simple
+        klass = Docker::Template::Normal
         expect_any_instance_of(klass).not_to receive :sync
       end
     end

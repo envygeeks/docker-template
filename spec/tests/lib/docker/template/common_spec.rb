@@ -97,7 +97,7 @@ describe Docker::Template::Common do
       subject.send :setup_context
       allow(subject).to receive( :rootfs?).and_return ex.metadata[ :rootfs]
       allow(subject).to receive(:scratch?).and_return ex.metadata[:scratch]
-      allow(subject).to receive( :simple?).and_return ex.metadata[ :simple]
+      allow(subject).to receive( :normal?).and_return ex.metadata[ :normal]
       allow(subject).to receive(:simple_copy?).and_return \
         ex.metadata[:simple_copy]
     end
@@ -111,7 +111,7 @@ describe Docker::Template::Common do
 
       #
 
-      [:scratch, :simple].each do |val|
+      [:scratch, :normal].each do |val|
         context "when it's #{val}", val do
           it "should copy" do
             expect(Docker::Template::Util::Copy).to receive :directory do
@@ -281,7 +281,7 @@ describe Docker::Template::Common do
 
     #
 
-    context "when @subject.type == simple", :repo_type => :normal do
+    context "when @subject.type == normal", :repo_type => :normal do
       it_behaves_like :build
     end
 

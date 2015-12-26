@@ -105,7 +105,7 @@ module Mocks
 
     #
 
-    [:scratch, :simple, :rootfs].each do |val|
+    [:scratch, :normal, :rootfs].each do |val|
       define_method "to_#{val}" do
         Docker::Template.const_get(val.capitalize).new(to_repo)
       end

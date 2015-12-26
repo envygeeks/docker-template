@@ -43,7 +43,7 @@ module Docker
 
       #
 
-      [:simple, :scratch].each do |sym|
+      [:normal, :scratch].each do |sym|
         define_method("#{sym}?") { @repo.type == sym.to_s }
       end
 

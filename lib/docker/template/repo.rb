@@ -22,7 +22,7 @@ module Docker
         raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
 
         @base_metadata = base_metadata.freeze
-        @sync_allowed  = type == "simple" ? true : false
+        @sync_allowed  = type == "normal" ? true : false
         raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
         raise Error::RepoNotFound, name unless root.exist?
       end
