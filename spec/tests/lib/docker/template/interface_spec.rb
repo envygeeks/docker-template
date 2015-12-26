@@ -136,6 +136,8 @@ describe Docker::Template::Interface do
       file = File.join(tmpbin, "docker")
       ENV["PATH"] = "#{tmpbin}:#{ENV["PATH"]}"
       FileUtils.touch file
+      FileUtils.chmod("u+rx", \
+        file)
     end
 
     #
@@ -160,7 +162,8 @@ describe Docker::Template::Interface do
       #
 
       it "should not raise an error" do
-        expect { described_class.discover }.not_to raise_error
+        expect { described_class.discover }.not_to \
+          raise_error
       end
     end
   end
