@@ -68,33 +68,42 @@ describe Docker::Template::Repo do
   #
 
   describe "#to_s" do
-    context "without a user" do
-      before do
-        mocked_repos.with_opts({
-          "user" => "hello"
-        })
+    context "when no type or type = :image" do
+      context "without a user" do
+        before do
+          mocked_repos.with_opts({
+            "user" => "hello"
+          })
+        end
+
+        #
+
+        it "should use the default user" do
+          expect(mocked_repos.to_repo.to_s).to match %r!\Ahello/[a-z]+:[a-z]+\Z!
+        end
       end
 
       #
 
-      it "should use the default user" do
-        expect(mocked_repos.to_repo.to_s).to match %r!\Ahello/[a-z]+:[a-z]+\Z!
+      context "without a tag" do
+        before do
+          mocked_repos.with_opts({
+            "tag" => "hello"
+          })
+        end
+
+        #
+
+        it "should use the default tag" do
+          expect(mocked_repos.to_repo.to_s).to match %r!\A[a-z]+/[a-z]+:hello!
+        end
       end
     end
 
-    #
-
-    context "without a tag" do
-      before do
-        mocked_repos.with_opts({
-          "tag" => "hello"
-        })
-      end
-
-      #
-
-      it "should use the default tag" do
-        expect(mocked_repos.to_repo.to_s).to match %r!\A[a-z]+/[a-z]+:hello!
+    context "when type == :rootfs" do
+      it "should use the repo name as the tag" do
+        prefix = Docker::Template.config["local_prefix"]
+        expect(mocked_repos.to_repo.to_s(:rootfs)).to eq "#{prefix}/rootfs:default"
       end
     end
   end
@@ -166,15 +175,6 @@ describe Docker::Template::Repo do
       let :type do
         "scratch"
       end
-    end
-  end
-
-  #
-
-  describe "#to_rootfs_s" do
-    it "should use the repo name as the tag" do
-      prefix = Docker::Template.config["local_prefix"]
-      expect(mocked_repos.to_repo.to_rootfs_s).to eq "#{prefix}/rootfs:default"
     end
   end
 

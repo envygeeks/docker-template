@@ -46,8 +46,15 @@ module Docker
 
       #
 
-      def to_s
-        "#{user}/#{name}:#{tag}"
+      def to_s(type = nil)
+        type ||= :image
+        
+        if type == :image
+          "#{user}/#{name}:#{tag}"
+        else
+          prefix = metadata["local_prefix"]
+          "#{prefix}/rootfs:#{name}"
+        end
       end
 
       #
@@ -61,13 +68,6 @@ module Docker
 
       def building_all?
         !@base_metadata.key?("tag")
-      end
-
-      #
-
-      def to_rootfs_s
-        prefix = metadata["local_prefix"]
-        "#{prefix}/rootfs:#{name}"
       end
 
       #
