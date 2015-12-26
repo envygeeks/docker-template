@@ -34,9 +34,7 @@ module Docker
       def sync
         return unless wants_sync?
         Parser.new.parse.each do |repo|
-          next unless repo.syncable?
-          repo.builder.tap(&:sync) \
-            .unlink(sync: false)
+          !repo.syncable?? next : repo.builder.tap(&:sync).unlink(sync: false)
         end
       end
 

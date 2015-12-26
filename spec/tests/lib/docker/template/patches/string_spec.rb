@@ -5,7 +5,8 @@
 require "rspec/helper"
 describe String do
   describe "#to_a" do
-    subject { "hello world".to_a }
-    it { is_expected.to eq ["hello", "world"] }
+    it "splits by spaces and returns the result as an array" do
+      expect("hello world".to_a).to eq %W(hello world)
+    end
   end
 end

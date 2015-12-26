@@ -4,48 +4,105 @@
 
 require "rspec/helper"
 describe Docker::Template::Simple do
-  include_context :docker_mocks
+  include_contexts :docker, :repos
 
-  let(:simple) { described_class }
-  let(:repo) { in_data { Docker::Template::Repo.new("repo" => "simple", "tag" => "latest")}}
-  subject { simple.new(repo) }
+  #
+
+  subject do
+    mocked_repos.with_init("tag" => "latest")
+    mocked_repos.to_simple
+  end
+
+  #
+
+  before do
+    mocked_repos.as :normal
+  end
+
+  #
 
   describe "#unlink" do
-    specify { expect(subject.instance_variable_get(:@context)).not_to exist }
-    before { silence_io { subject.build }}
+    before do
+      subject.send :setup_context
+      subject.unlink
+    end
+
+    #
+
+    it "should delete the context folder" do
+      expect(subject.instance_variable_get(:@context)) \
+        .not_to exist
+    end
+
+    #
 
     context "when dockerhub_cache = true" do
-      before { the_metadata["dockerhub_cache"] = true }
-      let(:the_metadata) { repo.metadata.instance_variable_get(:@metadata) }
-      it { expect(Docker::Template::Util).to receive :create_dockerhub_context }
-      after { the_metadata["dockerhub_cache"] = false}
-      after { subject.unlink }
-    end
+      let :user_metadata do
+        subject.repo.metadata.instance_variable_get(:@metadata)
+      end
 
-    context "(img: true)" do
-      after { subject.unlink(img: true) }
-      specify { expect(docker_image_mock).to receive :delete }
-    end
-  end
+      #
 
-  describe "#setup_context" do
-    before { instance.send(:setup_context) }
-    it { is_expected.to include match(/Dockerfile\Z/) }
-    subject { instance.instance_variable_get(:@context).children.map(&:to_path) }
-    let(:instance) { simple.new(repo) }
-    after { instance.unlink }
-  end
+      before do
+        user_metadata["dockerhub_cache"] = true
+      end
 
-  describe "#copy_dockerfile" do
-    let :instance do
-      simple.new(repo).tap do |obj|
-        obj.send(:setup_context)
-        obj.send(:copy_dockerfile)
+      #
+
+      it "should copy the context for Dockerhub" do
+        expect(Docker::Template::Util).to receive \
+          :create_dockerhub_context
+      end
+
+      #
+
+      after do
+        subject.unlink # Needs to be before!!!
+        user_metadata["dockerhub_cache"] = false
       end
     end
 
-    after { instance.unlink }
-    subject { instance.instance_variable_get(:@context).join("Dockerfile").read }
-    it { is_expected.to eq "latest\n" }
+    #
+
+    context "(img: true)" do
+      before do
+        subject.instance_variable_set(:@img, image_mock)
+      end
+
+      #
+
+      it "should try to delete the image" do
+        expect(image_mock).to receive \
+          :delete
+      end
+
+      #
+
+      after do
+        subject.unlink(img: true)
+        subject.remove_instance_variable(:@img)
+      end
+    end
+  end
+
+  #
+
+  describe "#setup_context" do
+    before do
+      subject.send :setup_context
+    end
+
+    #
+
+    it "should copy the Dockerfile" do
+      expect(subject.instance_variable_get(:@context).all_children.map(&:to_s)).to \
+        include match(/Dockerfile\Z/)
+    end
+
+    #
+
+    after do
+      subject.unlink
+    end
   end
 end

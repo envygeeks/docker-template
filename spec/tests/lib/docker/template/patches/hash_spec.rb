@@ -4,13 +4,20 @@
 
 require "rspec/helper"
 describe Hash do
-  subject { hash }
+  subject do
+    hash
+  end
+
+  #
+
   let :hash do
     {
       :hello => :world,
       :world => :hello
     }
   end
+
+  #
 
   describe "#stringify" do
     let :hash do
@@ -30,7 +37,9 @@ describe Hash do
       }
     end
 
-    specify do
+    #
+
+    it "should stringify the hash" do
       expect(subject.stringify).to eq({
         "hello" => "world",
         "world" => [
@@ -48,48 +57,75 @@ describe Hash do
     end
   end
 
+  #
+
   describe "#stringify_keys" do
-    subject { hash.stringify_keys }
-    it { is_expected.to eq "hello" => :world, "world" => :hello }
+    it "converts keys that support it to strings" do
+      expect(subject.stringify_keys).to eq({
+        "hello" => :world, "world" => :hello
+      })
+    end
   end
+
+  #
 
   describe "#any_keys?" do
-    subject { hash.any_keys?(:hello, :world) }
-    it { is_expected.to eq true }
+    it "should be true if all keys exist" do
+      expect(subject.any_keys?(:hello, :world)).to eq true
+    end
+
+    #
 
     context "with an invalid key" do
-      subject { hash.any_keys?(:invalid, :hello) }
-      it { is_expected.to eq true }
+      it "should still return true if one key exists" do
+        expect(hash.any_keys?(:invalid, :hello)).to eq true
+      end
     end
   end
+
+  #
 
   describe "#leftover_keys?" do
-    subject { hash.leftover_keys?(:hello) }
-    it { is_expected.to eq true }
+    it "should return true if there are any keys after removing the key" do
+      expect(hash.leftover_keys?(:hello)).to eq true
+    end
+
+    #
 
     context "when all keys are tapped" do
-      subject { hash.leftover_keys?(:hello, :world) }
-      it { is_expected.to eq false }
+      it "should return false" do
+        expect(hash.leftover_keys?(:hello, :world)).to eq false
+      end
     end
   end
+
+  #
 
   describe "keys?" do
-    subject { hash.keys?(:hello) }
-    it { is_expected.to eq true }
+    it "should accept a single key, like #key?" do
+      expect(hash.keys?(:hello))
+    end
 
-    context "with an invalid key" do
-      subject { hash.keys?(:invalid, :world) }
-      it { is_expected.to eq false }
+    #
+
+    context "with a single invalid key" do
+      it "should return false" do
+        expect(hash.keys?(:invalid, :hello, :world)).to eq false
+      end
     end
   end
+
+  #
 
   describe "#to_env_ary" do
     subject { hash.to_env_ary }
     it { is_expected.to eq ["hello=world", "world=hello"] }
   end
 
+  #
+
   describe "#deep_merge" do
-    specify do
+    it "should handle hashception" do
       hash1 = { :hello => { :world1 => 1 }}
       hash2 = { :hello => {
         :world2 => 2
@@ -99,16 +135,6 @@ describe Hash do
       expect(result[:hello]).to include({
         :world2 => 2
       })
-    end
-
-    specify do
-      hash1 = { :hello => { :world => 1 }}
-      hash2 = {
-        :hello => :world
-      }
-
-      result = hash1.deep_merge(hash2)
-      expect(result[:hello]).to eq :world
     end
   end
 end

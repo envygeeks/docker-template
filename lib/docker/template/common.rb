@@ -5,6 +5,7 @@
 module Docker
   module Template
     class Common
+      attr_reader :context
       COPY = %W(setup_context copy_global copy_simple copy_all copy_type \
         copy_tag copy_cleanup build_context verify_context).freeze
 
@@ -43,9 +44,7 @@ module Docker
       #
 
       [:simple, :scratch].each do |sym|
-        define_method "#{sym}?" do
-          @repo.type == sym.to_s
-        end
+        define_method("#{sym}?") { @repo.type == sym.to_s }
       end
 
       #

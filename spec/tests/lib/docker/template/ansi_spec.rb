@@ -4,21 +4,17 @@
 
 require "rspec/helper"
 describe Docker::Template::Ansi do
-  let :ansi do
-    described_class
-  end
-
-  #
-
   describe "#clear" do
     subject do
       capture_io do
-        ansi.clear
+        described_class.clear
       end
     end
 
+    #
+
     it "gives ansi to clear the screen", :clear do
-      expect(ansi.has?(subject[:stdout])).to be_truthy
+      expect(described_class.has?(subject[:stdout])).to be_truthy
     end
   end
 
@@ -33,55 +29,39 @@ describe Docker::Template::Ansi do
   #
 
   describe "#clear_line" do
-    subject do
-      ansi.clear_line("hello")
-    end
-
     it "gives ansi to clear the line" do
-      expect(ansi.has?(subject)).to be_truthy
+      expect(subject.has?(subject.clear_line("hello"))).to be_truthy
     end
   end
 
   #
 
   describe "#has?" do
-    subject do
-      ansi.has?(ansi.blue("hello"))
-    end
-
     it "should detect ansi" do
-      expect(subject).to be_truthy
+      expect(subject.blue("hello")).to be_truthy
     end
   end
 
   #
 
   describe "#strip" do
-    subject do
-      ansi.strip(ansi.red("hello"))
+    it "should strip ansi" do
+      expect(subject.strip(subject.red("hello"))).to eq "hello"
     end
 
-    it "should strip ansi" do
-      expect(subject).to eq "hello"
-    end
+    #
 
     context "with reset" do
-      subject do
-        ansi.strip(ansi.red(ansi.reset("hello")))
-      end
-
       it "should strip the reset too" do
-        expect(subject).to eq "hello"
+        expect(subject.strip(subject.red(subject.reset("hello")))).to eq "hello"
       end
     end
 
-    context "with multiple colors" do
-      subject do
-        ansi.strip(ansi.red(ansi.yellow("hello")))
-      end
+    #
 
+    context "with multiple colors" do
       it "should strip it all" do
-        expect(subject).to eq "hello"
+        expect(subject.strip(subject.red(subject.yellow("hello")))).to eq "hello"
       end
     end
   end
@@ -89,12 +69,8 @@ describe Docker::Template::Ansi do
   #
 
   describe "#jump" do
-    subject do
-      ansi.jump("hello", 1024)
-    end
-
     it "should give ansi to jump up and down" do
-      expect(subject).to match %r!\[1024A|\[1024B\Z!
+      expect(subject.jump("hello", 1024)).to match %r!\[1024A|\[1024B\Z!
     end
   end
 end

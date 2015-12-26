@@ -4,37 +4,73 @@
 
 require "rspec/helper"
 describe Docker::Template::Util do
-  let(:util) { described_class }
+  include_context :repos
+
+  #
 
   describe "#notify_alias" do
-    let(:repo) { Docker::Template::Repo.new("repo" => "scratch", "tag" => "alias") }
-    specify { expect(subject[:stdout]).to match %r!aliasing [a-z]+/[a-z]+:[a-z]+ -> [a-z]+/[a-z]+:[a-z]+!i }
-    specify { expect(Docker::Template::Ansi.has?(subject[:stdout])).to eq true }
-    let(:builder) { Docker::Template::Scratch.new(repo) }
-    subject { capture_io { util.notify_alias(builder) }}
+    it "should have some color" do
+      capture = capture_io { subject.notify_alias(mocked_repos.to_scratch) }
+      expect(Docker::Template::Ansi.has?(capture[:stdout])).to eq true
+    end
   end
 
+  #
+
   describe "#notify_build" do
-    let(:repo) { Docker::Template::Repo.new("repo" => "simple") }
-    it { is_expected.to include :stdout => %r!building:[:a-z\s]+/simple:latest!i }
-    subject { capture_io { util.notify_build(repo) }}
+    it "should output the user, tag and repo" do
+      capture = capture_io { subject.notify_build(mocked_repos.to_repo) }
+      expect(capture).to include({
+        :stdout => %r!building:[:a-z\s]+/default:latest!i
+      })
+    end
+
+    #
 
     context "(rootfs: true)" do
-      subject { capture_io { util.notify_build(repo, rootfs: true) }}
-      it { is_expected.to include :stdout => %r!building[:a-z\s]+/rootfs:simple!i }
+      it "should output a rootfs image if told to" do
+        capture = capture_io do
+          subject.notify_build(mocked_repos.to_repo, {
+            rootfs: true
+          })
+        end
+
+        #
+
+        expect(capture).to include({
+          :stdout => %r!building[:a-z\s]+/rootfs:default!i
+        })
+      end
     end
   end
 
   describe "#create_dockerhub_context" do
-    let(:context) { builder.instance_variable_get(:@context) }
-    after { builder.repo.root.join(repo.metadata["dockerhub_cache_dir"]).rmtree rescue true; builder.unlink }
-    before { builder.send(:copy_build_and_verify); silence_io { util.create_dockerhub_context(builder, context) }}
-    let(:repo) { Docker::Template::Repo.new("repo" => "simple", "tag" => "latest") }
-    subject { builder.repo.root.join(repo.metadata["dockerhub_cache_dir"], builder.repo.tag) }
-    let(:builder) { Docker::Template::Simple.new(repo) }
+    before do
+      template.send :copy_build_and_verify
 
-    it { is_expected.to exist }
-    specify { expect(subject.children.map(&:basename).map(&:to_path)).to eq \
-      context.children.map(&:basename).map(&:to_path) }
+      silence_io do
+        Docker::Template::Util.create_dockerhub_context \
+          template, template.context
+      end
+    end
+
+    #
+
+    let :template do
+      mocked_repos.as :normal
+      mocked_repos.to_simple
+    end
+
+    #
+
+    it "should copy the context to the repo root" do
+      expect(mocked_repos.to_repo.root.join("cache")).to exist
+    end
+
+    #
+
+    after do
+      template.unlink
+    end
   end
 end

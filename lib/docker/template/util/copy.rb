@@ -28,17 +28,20 @@ module Docker
         # from it. The same for the copy folder.
 
         def directory
-          FileUtils.cp_r(@from.children, @to, :dereference_root => false)
+          FileUtils.mkdir_p(@to) if !@to.exist?
+          FileUtils.cp_r(@from.children, @to, {
+            :dereference_root => false
+          })
+
           @from.all_children.select(&:symlink?).each do |path|
             path = @to.join(path.relative_path_from(@from))
             resolved = path.realpath
 
-            unless in_path?(resolved)
-              raise Errno::EPERM, "#{path} not in #{@root}"
-            end
-
             FileUtils.rm_r(path)
-            FileUtils.cp_r(resolved, path, :dereference_root => false)
+            raise Errno::EPERM, "#{path} not in #{@root}" unless in_path?(resolved)
+            FileUtils.cp_r(resolved, path, {
+              :dereference_root => false
+            })
           end
         end
 

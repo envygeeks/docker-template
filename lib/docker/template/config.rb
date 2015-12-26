@@ -53,12 +53,13 @@ module Docker
       #
 
       def initialize
-        @config = DEFAULTS.deep_merge(read_config_from)
-        @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
-          oval.nil? || oval.empty?? nval : oval
-        end
+        setup
+      end
 
-        @config.freeze
+      #
+
+      def reload
+        setup
       end
 
       # Allows you to read a configuration file from a root and get back
@@ -66,7 +67,7 @@ module Docker
       # wish to merge it (if you even care to merge it.)
 
       def read_config_from(dir = Docker::Template.root)
-        file = Dir[dir.join("*.{json,yml}")].first
+        file = Dir[dir.join("opts.{json,yml}")].first
         return {} unless file && (file = Pathname.new(file)).file?
         return JSON.parse(file.read).stringify if file.extname == ".json"
         out = YAML.load_file(file)
@@ -80,6 +81,19 @@ module Docker
 
       def build_types
         @build_types ||= %W(simple scratch).freeze
+      end
+
+      #
+
+      private
+      def setup
+        @config = DEFAULTS.deep_merge(read_config_from)
+        @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
+          oval.nil? || oval.empty?? nval : oval
+        end
+
+        @config \
+          .freeze
       end
     end
   end

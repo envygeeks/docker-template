@@ -4,21 +4,28 @@
 
 require "rspec/helper"
 describe Docker::Template::Common do
-  include_context :docker_mocks
+  include_contexts :docker, :repos
 
-  after do
-    scratch.unlink
+  #
+
+  after do |ex|
+    unless ex.metadata[:skip_unlink]
+      subject.unlink
+    end
   end
 
-  let :scratch do
-    Docker::Template::Scratch.new(Docker::Template::Repo.new({
-      "repo" => "scratch"
-    }))
+  #
+
+  subject do
+    mocked_repos.to_scratch
   end
 
-  before do
-    allow(scratch).to receive( :build_context).and_return nil
-    allow(scratch).to receive(:verify_context).and_return nil
+  #
+
+  before do |ex|
+    mocked_repos.as ex.metadata[:repo_type] || :scratch
+    allow(subject).to receive( :build_context).and_return nil
+    allow(subject).to receive(:verify_context).and_return nil
   end
 
   #
@@ -30,17 +37,23 @@ describe Docker::Template::Common do
       end
     end
 
+    #
+
     after do
       silence_io do
-        scratch.build
+        subject.build
       end
     end
+
+    #
 
     it "should try to auth" do
       expect(Docker::Template::Auth).to receive :auth! do
         nil
       end
     end
+
+    #
 
     context do
       before do
@@ -49,8 +62,10 @@ describe Docker::Template::Common do
         end
       end
 
+      #
+
       it "should try to push" do
-        expect(docker_image_mock).to receive(:push) do
+        expect(image_mock).to receive(:push) do
           nil
         end
       end
@@ -61,12 +76,14 @@ describe Docker::Template::Common do
 
   describe "#copy_build_and_verify" do
     after do
-      scratch.send :copy_build_and_verify
+      subject.send :copy_build_and_verify
     end
+
+    #
 
     Docker::Template::Common::COPY.each do |method|
       it "should message #{method}" do
-        expect(scratch).to receive(method) do
+        expect(subject).to receive(method) do
           nil
         end
       end
@@ -77,11 +94,11 @@ describe Docker::Template::Common do
 
   context do
     before do |ex|
-      scratch.send :setup_context
-      allow(scratch).to receive( :rootfs?).and_return ex.metadata[ :rootfs]
-      allow(scratch).to receive(:scratch?).and_return ex.metadata[:scratch]
-      allow(scratch).to receive( :simple?).and_return ex.metadata[ :simple]
-      allow(scratch).to receive(:simple_copy?).and_return \
+      subject.send :setup_context
+      allow(subject).to receive( :rootfs?).and_return ex.metadata[ :rootfs]
+      allow(subject).to receive(:scratch?).and_return ex.metadata[:scratch]
+      allow(subject).to receive( :simple?).and_return ex.metadata[ :simple]
+      allow(subject).to receive(:simple_copy?).and_return \
         ex.metadata[:simple_copy]
     end
 
@@ -89,8 +106,10 @@ describe Docker::Template::Common do
 
     describe "#copy_global" do
       after do
-        scratch.send :copy_global
+        subject.send :copy_global
       end
+
+      #
 
       [:scratch, :simple].each do |val|
         context "when it's #{val}", val do
@@ -107,14 +126,18 @@ describe Docker::Template::Common do
 
     describe "#copy_simple", :simple do
       after do
-        scratch.send :copy_simple
+        subject.send :copy_simple
       end
+
+      #
 
       it "should copy", :simple_copy do
         expect(Docker::Template::Util::Copy).to receive :directory do
           nil
         end
       end
+
+      #
 
       context "when !simple_copy?" do
         it "should not copy" do
@@ -192,7 +215,7 @@ describe Docker::Template::Common do
     [:copy_tag, :copy_type, :copy_all].each do |method|
       describe "##{method}" do
         after do
-          scratch.send method
+          subject.send method
         end
 
         # SHARED_EXAMPLES
@@ -212,36 +235,42 @@ describe Docker::Template::Common do
       end
     end
 
+    #
+
     shared_examples :build do
       it "should build from the context" do
         expect(Docker::Image).to receive :build_from_dir
       end
 
+      #
+
       it "should tag the image" do
-        expect(docker_image_mock).to receive :tag do
+        expect(image_mock).to receive :tag do
           nil
         end
       end
 
-      it "should cleanup" do
+      #
+
+      it "should cleanup", :skip_unlink do
         expect(subject).to receive(:unlink).and_call_original
       end
 
-      it "should not throw any errors" do
-        expect_it = expect do
-          silence_io do
-            subject.build
-          end
-        end
+      #
 
-        expect_it.not_to raise_error
+      it "should not throw any errors" do
+        expect { silence_io { subject.build }}.not_to raise_error
       end
+
+      #
 
       it "should notify of the build", :noisey do
         expect(Docker::Template::Util).to receive :notify_build do
           nil
         end
       end
+
+      #
 
       it "should clear the screen" do
         expect(Docker::Template::Ansi).to receive :clear do
@@ -252,38 +281,14 @@ describe Docker::Template::Common do
 
     #
 
-    context "when the type is simple" do
-      subject do
-        Docker::Template::Simple.new(repo)
-      end
-
-      let :repo do
-        Docker::Template::Repo.new({
-          "repo" => "simple",
-          "tag"  => "latest"
-        })
-      end
-
-      # SHARED EXAMPLES!
+    context "when @subject.type == simple", :repo_type => :normal do
       it_behaves_like :build
     end
 
     #
 
-    context "when @repo.type == scratch" do
-      let :repo do
-        Docker::Template::Repo.new({
-          "repo" => "scratch",
-           "tag" =>  "latest"
-        })
-      end
-
-      subject do
-        Docker::Template::Scratch.new(repo)
-      end
-
+    context "when @subject.type == scratch" do
       before do
-        allow(subject).to receive(:verify_context).and_return nil
         allow(subject).to receive(:create_args).and_return({})
         allow(subject).to receive( :start_args).and_return({})
       end

@@ -8,6 +8,8 @@ describe Docker::Template::Routable do
     Hello.new
   end
 
+  #
+
   before :all do
     class Hello
       extend Docker::Template::Routable
@@ -28,11 +30,16 @@ describe Docker::Template::Routable do
     Object.send(:remove_const, :Hello)
   end
 
+  #
+
   specify { expect(subject. world).to eq "world" }
   specify { expect(subject.shouting?).to eq true }
   specify { expect(subject. hello).to eq "world" }
-  specify { expect(subject.not_shouting?).not_to eq(subject.shouting?) }
-  
+  specify { expect(subject.not_shouting?).not_to \
+    eq(subject.shouting?) }
+
+  #
+
   it { is_expected.to respond_to :world }
   it { is_expected.to respond_to :not_shouting? }
   it { is_expected.to respond_to :shouting? }

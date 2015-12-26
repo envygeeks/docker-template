@@ -4,55 +4,135 @@
 
 require "rspec/helper"
 describe Docker::Template::Util::Copy do
-  let(:tmp) { Pathname.new(Dir.mktmpdir) }
-  let(:tmp_file) { Pathname.new(Tempfile.new("file-")).tap(&:unlink) }
-  let(:copy) { described_class }
-  subject { copy }
+  include_context :repos
 
-  def sym(num)
-    Docker::Template.repos_root.join("sym#{num}/copy/rootfs")
+  #
+
+  subject do
+    described_class
   end
 
-  after :each do
-    tmp.rmtree
-    if tmp_file.exist?
-      then tmp_file.unlink
-    end
+  #
+
+  before do
+    mocked_repos.as :simple_normal
   end
+
+  #
 
   describe "#directory" do
-    context do
-      subject { -> { copy.new(sym(1), tmp).directory }}
-      specify { expect(&subject).to raise_error Errno::EPERM }
+    let :tmpdir do
+      [
+        Pathname.new(Dir.mktmpdir),
+        Pathname.new(Dir.mktmpdir) \
+          .tap(&:rmtree)
+      ]
     end
 
+    #
+
+    after :each do
+      tmpdir.map do |dir|
+        dir.rmtree rescue nil
+      end
+    end
+
+    #
+
+    context "when the symlink is not in the path" do
+      before do
+        dir = mocked_repos.join("copy/hello")
+        mocked_repos.external_symlink(tmpdir.first, dir)
+      end
+
+      #
+
+      it "should raise a permission error" do
+        expect { subject.directory(mocked_repos.join("copy"), tmpdir.last) }.to \
+          raise_error Errno::EPERM
+      end
+    end
+
+    #
+
     context do
-      before { copy.new(sym(2), tmp).directory }
-      subject { tmp.join("usr/local/bin/mkimg").symlink? }
-      it { is_expected.to eq false }
+      before do
+        mocked_repos.symlink("copy/hello", "copy/world")
+        mocked_repos.  touch("copy/hello")
+        subject.directory(mocked_repos.join("copy"), \
+          tmpdir.first)
+      end
+
+      #
+
+      it "should copy it" do
+        expect(tmpdir.first.join("world")).to exist
+      end
+
+      #
+
+      it "should resolve it" do
+        expect(tmpdir.first.join("world").symlink?).to \
+          eq false
+      end
     end
   end
 
   describe "#file" do
-    context do
-      subject { -> { copy.new(Docker::Template.repos_root.join("sym3/file"), tmp_file).file }}
-      specify { expect(&subject).to raise_error Errno::EPERM }
+    let :tmpfile do
+      [
+        Pathname.new(Tempfile.new("file-")),
+        Pathname.new(Tempfile.new("file-")) \
+          .tap(&:unlink)
+      ]
     end
 
-    context do
-      subject { tmp_file }
-      before { copy.new(file, tmp_file).file }
-      let(:file) { Docker::Template.repos_root.join("../opts.yml") }
-      specify { expect(subject.read).to eq file.read }
-      it { is_expected.to exist }
+    #
+
+    after :each do
+      tmpfile.map do |file|
+        file.unlink rescue nil
+      end
     end
 
+    #
+
+    context "when the symlink is not in the path" do
+      before do
+        file = mocked_repos.join("copy/hello")
+        mocked_repos.external_symlink(tmpfile.first, file)
+      end
+
+      #
+
+      it "should raise a permission error" do
+        expect { subject.file(mocked_repos.join("copy/hello"), tmpfile.last) }.to \
+          raise_error Errno::EPERM
+      end
+    end
+
+    #
+
     context do
-      subject { tmp_file }
-      before { copy.new(file, tmp_file).file }
-      let(:file) { Docker::Template.repos_root.join("sym4/opts.yml") }
-      specify { expect(subject.read).to eq file.read }
-      it { is_expected.to exist }
+      before do
+        mocked_repos.symlink("copy/hello", "copy/world")
+        mocked_repos.  touch("copy/hello")
+        subject.file(mocked_repos.join("copy/world"), \
+          tmpfile.first)
+      end
+
+      #
+
+      it "should copy it" do
+        expect(tmpfile.first).to exist
+      end
+
+      #
+
+      it "should resolve it" do
+        expect(tmpfile.first.symlink?).to \
+          eq false
+      end
     end
   end
 end

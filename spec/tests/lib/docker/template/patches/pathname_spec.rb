@@ -4,32 +4,59 @@
 
 require "rspec/helper"
 describe Pathname do
-  let(:root) { Docker::Template.repos_root }
-  subject { root }
+  include_context :repos
+
+  subject do
+    mocked_repos.as :normal
+    Docker::Template.repos_root
+  end
+
+  #
 
   describe "#in_path?" do
-    subject { root.in_path?(Dir.pwd) }
-    it { is_expected.to eq true }
-
-    context "when it doesn't exist" do
-      subject { -> { Pathname.new("tmp").in_path?(Dir.pwd) }}
-      specify { expect(&subject).to raise_error Errno::ENOENT }
+    it "should report true if true" do
+      expect(subject.in_path?(Dir.pwd)).to eq true
     end
+
+    #
+
+    context "when the dir/file doesn't exist" do
+      it "should throw an error" do
+        expect { Pathname.new("tmp").in_path?(Dir.pwd) }.to raise_error \
+          Errno::ENOENT
+      end
+    end
+
+    #
 
     context "when it's not in the root" do
-      subject { root.in_path?("/tmp") }
-      it { is_expected.to eq false }
+      it "should return false" do
+        expect(subject.in_path?(__dir__)).to eq false
+      end
     end
   end
 
+  #
+
   describe "#all_children" do
-    subject { root.all_children.map(&:to_s).sort }
-    it { is_expected.to eq Dir.glob(Docker::Template.repos_root.join("**/*")).sort }
+    it "should return all the (sub-)children of a folder" do
+      expect(subject.all_children.map(&:to_s).sort).to eq \
+        Dir.glob(Docker::Template.repos_root.join("**/*")).sort
+    end
   end
 
+  #
+
   describe "#glob" do
-    subject { root.glob("**/*") }
-    specify { expect(subject.map(&:to_s).sort).to eq Dir.glob(Docker::Template.repos_root.join("**/*")).sort }
-    specify { expect(subject.first).to be_a Pathname }
+    it "should return Pathnames" do
+      expect(subject.glob("**/*").first).to be_a Pathname
+    end
+
+    #
+
+    it "works" do
+      expect(subject.glob("**/*").map(&:to_s).sort).to eq \
+        Dir.glob(Docker::Template.repos_root.join("**/*")).sort
+    end
   end
 end

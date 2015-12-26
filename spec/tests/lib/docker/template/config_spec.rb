@@ -4,51 +4,91 @@
 
 require "rspec/helper"
 describe Docker::Template::Config do
-  let(:config) { Docker::Template.config }
+  subject do
+    Docker::Template.config
+  end
+
+  #
+
   describe "#initialize" do
     Docker::Template::Config::DEFAULTS.each do |key, _|
       it { is_expected.to have_key key }
     end
   end
 
+  #
+
   describe "#read_config_from" do
-    let(:repo_root) { Docker::Template.repos_root }
-    it { is_expected.to eq "maintainer" => "Some Girl <lyfe@thug.programmer>" }
-    subject { config.read_config_from(path) }
-    let(:path) { repo_root.join("config") }
+    include_context :repos do
+      before do
+        mocked_repos.as(:normal).with_opts({
+          "maintainer" => "Some Girl <lyfe@thug.programmer>"
+        })
+      end
 
-    context "when empty" do
-      let(:path) { repo_root.join("empty") }
-      subject { config.read_config_from(path) }
-      it { is_expected.to be_a Hash }
-    end
+      subject do
+        root = mocked_repos.to_repo.root
+        Docker::Template.config.read_config_from(root)
+      end
 
-    context "when non-existant" do
-      let(:path) { Pathname.new("bad_file") }
-      subject { config.read_config_from(path) }
-      it { is_expected.to be_a Hash }
-    end
+      #
 
-    context "when invalid" do
-      let(:path) { repo_root.join("invalid") }
-      let(:error) { Docker::Template::Error::InvalidYAMLFile }
-      specify { expect(&subject).to raise_error error }
-      subject { -> { config.read_config_from(path) }}
+      it "should read the configuration" do
+        expect(subject).to include({
+          "maintainer" => "Some Girl <lyfe@thug.programmer>"
+        })
+      end
+
+      #
+
+      context "when empty" do
+        before do
+          mocked_repos.write("opts.yml", "")
+        end
+
+        it "returns a hash" do
+          expect(subject).to be_a Hash
+        end
+      end
+
+      context "when non-existant" do
+        it "returns a hash" do
+          expect(subject).to be_a Hash
+        end
+      end
+
+      context "when invalid" do
+        before do
+          mocked_repos.write("opts.yml", "[hello]")
+        end
+
+        it "should raise an error" do
+          expect { mocked_repos.to_repo }.to raise_error \
+            Docker::Template::Error::InvalidYAMLFile
+        end
+      end
     end
   end
 
   describe "#build_types" do
-    subject { config.build_types }
-    it { is_expected.to be_an Array }
+    it "returns an array of build types" do
+      expect(subject.build_types).to be_an Array
+    end
   end
 
+  #
+
   describe "#has_default?" do
-    subject { config.has_default?("user") }
-    it { is_expected.to eq true }
+    it "should return true if the value is in DEFAULTS" do
+      expect(subject.has_default?("user")).to eq true
+    end
+
+    #
 
     context "with a non-existant key" do
-      subject { config.has_default?("hello") }
-      it { is_expected.to eq false }
+      it "should return false" do
+        expect(subject.has_default?("hello")).to eq false
+      end
     end
   end
 

@@ -10,62 +10,72 @@ describe Docker::Template do
   it { is_expected.to respond_to :gem_root }
   it { is_expected.to respond_to :root }
   it { is_expected.to respond_to :get }
-  let(:template) { described_class }
 
-  describe "#repo_is_root?" do
-    subject { template.repo_is_root? }
-    it { is_expected.to eq true }
+  let :template do
+    described_class
+  end
+
+  #
+
+  include_context :repos do
     before do
-      # "/non-existant" mocks "../../repos" not existing.
-      allow(template.root).to receive(:join).with(template.config["repos_dir"]).and_return Pathname.new("/non-existant")
-      allow(template.root).to receive(:join).with("copy").and_return Pathname.new("/")
+      mocked_repos.as :simple_normal
+    end
+
+    #
+
+    describe "#repo_is_root?" do
+      context "when there is no repo dir" do
+        it "should return true" do
+          expect(template.repo_is_root?).to eq true
+        end
+      end
+    end
+
+    #
+
+    describe "#repo_root_for" do
+      context "when there is no repo dir" do
+        it "should return the templates root as repo root" do
+          expect(template.repo_root_for("simple")).to eq template.root
+        end
+      end
     end
   end
 
-  describe "#repo_root_for" do
-    subject { template.repo_root_for("simple") }
-    it { is_expected.to eq template.root }
-    before do
-      # "/non-existant" mocks "../../repos" not existing.
-      allow(template.root).to receive(:join).with(template.config["repos_dir"]).and_return Pathname.new("/non-existant")
-      allow(template.root).to receive(:join).with("copy").and_return Pathname.new("/")
+  #
+
+  [:gem_root, :template_root, :repos_root, :root].each do |val|
+    describe "##{val}" do
+      it "should be a Pathame" do
+        expect(template.send(val)).to be_a Pathname
+      end
     end
   end
 
-  describe "#gem_root" do
-    subject { template.gem_root }
-    it { is_expected.to be_a Pathname }
-  end
-
-  describe "#template_root" do
-    subject { template.repos_root }
-    it { is_expected.to be_a Pathname }
-  end
+  #
 
   describe "#config" do
-    subject { template.config }
-    it { is_expected.to be_a Docker::Template::Config }
+    it "should be a always be a Config" do
+      expect(template.config).to be_a Docker::Template::Config
+    end
   end
 
-  describe "#repos_root" do
-    subject { template.repos_root }
-    it { is_expected.to be_a Pathname }
-  end
-
-  describe "#root" do
-    subject { template.root }
-    it { is_expected.to be_a Pathname }
-  end
+  #
 
   describe "#get" do
     context "when no data is given" do
-      subject { template.get(:rootfs) }
-      it { is_expected.to be_a String }
+      it "should still return a string" do
+        expect(template.get(:rootfs)).to be_a String
+      end
     end
 
+    #
+
     context "when data is given" do
-      subject { template.get(:rootfs, :rootfs_base_img => "hello world") }
-      it { is_expected.to start_with "FROM hello world\n" }
+      it "should parse that data with ERB" do
+        expect(template.get(:rootfs, :rootfs_base_img => "hello world")).to start_with "FROM hello world\n"
+      end
     end
   end
 end

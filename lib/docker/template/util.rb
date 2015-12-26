@@ -26,7 +26,7 @@ module Docker
       #
 
       def create_dockerhub_context(builder, context)
-        dir = builder.repo. metadata["dockerhub_cache_dir"]
+        dir = builder.repo.metadata["dockerhub_cache_dir"]
         dir = builder.repo.root.join(dir, builder.repo.tag)
         dir.rmtree if dir.exist?
 
