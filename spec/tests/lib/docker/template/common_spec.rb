@@ -30,6 +30,27 @@ describe Docker::Template::Common do
 
   #
 
+  describe "#parent_repo" do
+    before do
+      mocked_repos.with_init("tag" => "world")
+      mocked_repos.with_opts({
+        "tags" => {
+          "hello" => "world"
+        },
+
+        "aliases" => {
+          "world" => "hello"
+        }
+      })
+    end
+
+    it "should pull out the aliased repo" do
+      expect(mocked_repos.to_normal.parent_repo.tag).to eq "hello"
+    end
+  end
+
+  #
+
   describe "#alias?" do
     it "should return false" do
       expect(mocked_repos.to_normal.alias?).to eq false

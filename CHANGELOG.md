@@ -18,6 +18,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Move the secondary logger out of Scratch#build_context and into it's own method.
 - Split `Ansi.jump` into `Ansi.jump`, `Ansi.down`, and `Ansi.up` for simpler interaction with the API.
 - Change "Simple" type to "Normal" type so it's not confused with "simple copy".
+- Correct an issue where pulling the parent_repo of an alias doesn't work.
 - Remove `Util#get_context`; we always copy the context anyways.
 - Rewrite specs to be more verbose and easily organized.
 - Switch to completely dynamic test fixtures.

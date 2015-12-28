@@ -50,16 +50,16 @@ module Docker
       #
 
       def parent_repo
-        return false unless alias?
+        return repo unless alias?
         @parent_repo ||= begin
-          Repo.new(@repo.to_h.merge("tag" => @repo.aliased))
+          Repo.new(@repo.to_h.merge("tag" => @repo.metadata.aliased))
         end
       end
 
       #
 
       def parent_img
-        return false unless alias?
+        return unless alias?
         @parent_img ||= Docker::Image.get(parent_repo.to_s)
       rescue Docker::Error::NotFoundError
         if alias?
