@@ -4,17 +4,10 @@
 
 require "rspec/helper"
 describe Docker::Template::Metadata do
-  before do
-    allow(described_class).to receive(:new).and_wrap_original do |method, *args, **kwd|
-      kwd[:root] = true unless kwd.key?(:root) || kwd.key?(:root_metadata)
-      method.call(*args, **kwd)
-    end
-  end
-
   subject do
     described_class.new({
       "hello" => "world"
-    })
+    }, root: true)
   end
 
   #
@@ -32,7 +25,7 @@ describe Docker::Template::Metadata do
         "versions" => {
           "all" => "3.2"
         }
-      })
+      }, root: true)
     end
 
     #
@@ -68,7 +61,7 @@ describe Docker::Template::Metadata do
         "hello" => {
           "world" => "how are you?"
         }
-      })
+      }, root: true)
     end
 
     #
@@ -84,11 +77,13 @@ describe Docker::Template::Metadata do
 
   describe "#by_tag" do
     subject do
-      described_class.new("hello" => {
-        "tag" => {
-          "latest" => "world"
+      described_class.new({
+        "hello" => {
+          "tag" => {
+            "latest" => "world"
+          }
         }
-      })
+      }, root: true)
     end
 
     #
@@ -111,7 +106,7 @@ describe Docker::Template::Metadata do
             "normal" => "world"
           }
         }
-      })
+      }, root: true)
     end
 
     #
@@ -125,9 +120,11 @@ describe Docker::Template::Metadata do
 
   describe "#for_all" do
     subject do
-      described_class.new("hello" => {
-        "all" => "world"
-      })
+      described_class.new({
+        "hello" => {
+          "all" => "world"
+        }
+      }, root: true)
     end
 
     #
@@ -141,11 +138,13 @@ describe Docker::Template::Metadata do
 
   describe "#as_set" do
     subject do
-      described_class.new("tags" => { "latest" => "normal" }, "hello" => {
-        "type" => { "normal" =>  "world" },
-         "tag" => { "latest" => "person" },
-         "all" => "everyone"
-      })
+      described_class.new({
+        "tags" => { "latest" => "normal" }, "hello" => {
+          "type" => { "normal" =>  "world" },
+          "tag"  => { "latest" => "person" },
+          "all"  => "everyone"
+        }
+      }, root: true)
     end
 
     #
@@ -159,11 +158,13 @@ describe Docker::Template::Metadata do
 
   describe "#as_string_set" do
     subject do
-      described_class.new("tags" => { "latest" => "normal" }, "hello" => {
-        "type" => { "normal" =>  "world" },
-         "tag" => { "latest" => "person" },
-         "all" => "everyone"
-      })
+      described_class.new({
+        "tags" => { "latest" => "normal" }, "hello" => {
+          "type" => { "normal" =>  "world" },
+          "tag"  => { "latest" => "person" },
+          "all"  => "everyone"
+        }
+      }, root: true)
     end
 
     #
@@ -188,7 +189,7 @@ describe Docker::Template::Metadata do
            "tag" => {   "latest" => { "person" => "hello" }},
            "all" => { "everyone" => "hello" }
         }
-      })
+      }, root: true)
     end
 
     #
@@ -211,7 +212,7 @@ describe Docker::Template::Metadata do
           "hello" => {
             "type" => {   "normal" => "world1" },
           }
-        })
+        }, root: true)
       end
 
       #
@@ -233,7 +234,7 @@ describe Docker::Template::Metadata do
           "hello" => {
              "all" => "world3"
           }
-        })
+        }, root: true)
       end
 
       #
@@ -255,7 +256,7 @@ describe Docker::Template::Metadata do
           "hello" => {
              "tag" => {   "latest" => "world2" },
           }
-        })
+        }, root: true)
       end
 
       #
@@ -278,7 +279,7 @@ describe Docker::Template::Metadata do
         "aliases" => {
           "world" => "hello"
         }
-      })
+      }, root: true)
     end
 
     #
@@ -367,9 +368,11 @@ describe Docker::Template::Metadata do
 
   describe "#tags" do
     subject do
-      described_class.new("tags" => {
-        "hello" => "world"
-      })
+      described_class.new({
+        "tags" => {
+          "hello" => "world"
+        },
+      }, root: true)
     end
 
     #
@@ -383,7 +386,7 @@ describe Docker::Template::Metadata do
 
   describe "#merge_or_override" do
     subject do
-      described_class.new({}, {})
+      described_class.new({}, root: true)
     end
 
     #
