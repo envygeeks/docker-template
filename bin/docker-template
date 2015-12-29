@@ -18,5 +18,5 @@ rescue LoadError
   require "docker/template"
 end
 
-Docker::Template::Interface \
-  .start($PROGRAM_NAME)
+# And it's time for the Indy 500 probably ;)
+Docker::Template::Interface.start($PROGRAM_NAME)

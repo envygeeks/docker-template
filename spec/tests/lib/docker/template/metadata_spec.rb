@@ -4,6 +4,13 @@
 
 require "rspec/helper"
 describe Docker::Template::Metadata do
+  before do
+    allow(described_class).to receive(:new).and_wrap_original do |method, *args, **kwd|
+      kwd[:root] = true unless kwd.key?(:root) || kwd.key?(:root_metadata)
+      method.call(*args, **kwd)
+    end
+  end
+
   subject do
     described_class.new({
       "hello" => "world"
@@ -21,7 +28,7 @@ describe Docker::Template::Metadata do
   describe "#as_gem_version" do
     subject do
       described_class.new({
-        "repo" => "hello",
+        "name" => "hello",
         "versions" => {
           "all" => "3.2"
         }
@@ -40,8 +47,8 @@ describe Docker::Template::Metadata do
   describe "#to_h" do
     context "when given a parent hash" do
       subject do
-        described_class.new({}, {
-          :hello => :world
+        described_class.new({}, root_metadata: {
+          "hello" => "world"
         })
       end
 
@@ -194,26 +201,17 @@ describe Docker::Template::Metadata do
   #
 
   describe "#fallback" do
-    subject do
-      described_class.new({
-        "tags" => {
-          "latest" => "normal"
-        },
-
-        "hello" => {
-          "type" => {   "normal" => "world1" },
-           "tag" => {   "latest" => "world2" },
-           "all" => "world3"
-        }
-      })
-    end
-
-    #
-
     context do
-      before do
-        subject["hello"].delete("tag")
-        subject["hello"].delete("all")
+      subject do
+        described_class.new({
+          "tags" => {
+            "latest" => "normal"
+          },
+
+          "hello" => {
+            "type" => {   "normal" => "world1" },
+          }
+        })
       end
 
       #
@@ -226,9 +224,16 @@ describe Docker::Template::Metadata do
     #
 
     context do
-      before do
-        subject["hello"].delete("type")
-        subject["hello"].delete( "tag")
+      subject do
+        described_class.new({
+          "tags" => {
+            "latest" => "normal"
+          },
+
+          "hello" => {
+             "all" => "world3"
+          }
+        })
       end
 
       #
@@ -241,9 +246,16 @@ describe Docker::Template::Metadata do
     #
 
     context do
-      before do
-        subject["hello"].delete("type")
-        subject["hello"].delete( "all")
+      subject do
+        described_class.new({
+          "tags" => {
+            "latest" => "normal"
+          },
+
+          "hello" => {
+             "tag" => {   "latest" => "world2" },
+          }
+        })
       end
 
       #

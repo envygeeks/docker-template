@@ -97,14 +97,15 @@ RSpec.describe Docker::Template::Rootfs do
 
       context "when metadata['keep_rootfs'] = true" do
         before do
-          user_metadata["keep_rootfs"] = true
+          user_metadata.merge({
+            "keep_rootfs" => true
+          })
         end
 
         #
 
         let :user_metadata do
-          subject.instance_variable_get(:@repo).metadata. \
-            instance_variable_get(:@metadata)
+          subject.instance_variable_get(:@repo).metadata
         end
 
         #
@@ -119,8 +120,9 @@ RSpec.describe Docker::Template::Rootfs do
 
         after do
           subject.unlink
-          user_metadata["keep_rootfs"] = \
-            false
+          user_metadata.merge({
+            "keep_rootfs" => false
+          })
         end
       end
     end

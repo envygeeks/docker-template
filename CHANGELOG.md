@@ -14,14 +14,19 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added a default timeout of 480 to Excon.
 
 #### Changed
+- Switch to completely dynamic test fixtures.
+- Rewrite specs to be more verbose and easily organized.
+- Implement hooks so users can extend the CLI interface quickly.
 - Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny`
 - Move the secondary logger out of Scratch#build_context and into it's own method.
 - Split `Ansi.jump` into `Ansi.jump`, `Ansi.down`, and `Ansi.up` for simpler interaction with the API.
 - Change "Simple" type to "Normal" type so it's not confused with "simple copy".
 - Correct an issue where pulling the parent_repo of an alias doesn't work.
+- Start moving stuff to verifying with hooks, have the CLI use hooks for base.
+- Detect if a repo has multiple tags and only segement cache if they do.
 - Remove `Util#get_context`; we always copy the context anyways.
-- Rewrite specs to be more verbose and easily organized.
-- Switch to completely dynamic test fixtures.
+- Move old coupled CLI stuff into config and off Interface.
+- Cleanup Metadata and it's API, making it less fragile.
 - Fix a few minor bugs.
 
 #### Fixed

@@ -4,6 +4,8 @@
 
 module Docker
   module Template
+    Hooks.register_name :metadata, :init
+
     class Metadata
       extend Forwardable, Routable
 
@@ -20,32 +22,32 @@ module Docker
 
       def_delegator :@metadata, :keys
       def_delegator :@metadata, :size
+      def_delegator :@metadata, :inspect
       def_delegator :@metadata, :to_enum
       def_delegator :@metadata, :has_key?
-      def_delegator :@metadata, :inspect
-      def_delegator :@metadata, :delete
       def_delegator :@metadata, :each
       def_delegator :@metadata, :to_h
       def_delegator :@metadata, :key?
-      route_to_ivar :is_root, :@is_root, bool: true
+      route_to_ivar :root, :@root, bool: true
       route_to_hash :for_all, :self, :all
+      attr_reader :metadata, :root_metadata
 
-      def initialize(metadata, root_metadata = metadata)
-        @is_root = metadata == root_metadata
-        @root_metadata = root_metadata || {}
-        @metadata = metadata || {}
+      def initialize(metadata, root: false, root_metadata: nil)
+        @base = Template.config if root
+        @root_metadata = root_metadata.freeze unless root
+        @root_metadata = metadata.freeze if root
+        @metadata = metadata.freeze
+        @root = root
 
-        return unless is_root?
-        @root_metadata = @metadata
-        @base = Template.config
+        Hooks.load_internal(:metadata, :init) \
+          .run(:metadata, :init, self)
       end
 
       #
 
       def complex_alias?
         return false unless alias?
-        data = @root_metadata.select { |key, val| val.is_a?(Hash) && val.key?("tag") }
-        data.any? do |key, val|
+        @root_metadata.select { |key, val| val.is_a?(Hash) && val.key?("tag") }.any? do |key, val|
           val["tag"].key?(from_root("tag"))
         end
       end
@@ -59,7 +61,7 @@ module Docker
       #
 
       def as_gem_version
-        "#{self["repo"]}@#{self["version"].fallback}"
+        "#{from_root("name")}@#{self["version"].fallback}"
       end
 
       #
@@ -78,31 +80,23 @@ module Docker
         key = determine_key(key)
         val = @metadata[key]
 
-        return try_default(key) if !val && is_root?
-        return self.class.new(val, @root_metadata) if val.is_a?(Hash)
+        return try_default(key) if !val && root?
+        return self.class.new(val, root_metadata: @root_metadata) if val.is_a?(Hash)
         val
       end
 
       #
 
       def tags
-        self["tags"].keys + self["aliases"].keys
+        from_root("tags").keys | \
+        from_root("aliases").keys
       end
 
       #
 
       def merge(new_)
-        @metadata.merge!(new_)
-        self
-      end
-
-      #
-
-      def merge_base_metadata(hash)
-        return unless is_root?
-        @metadata["name"] = hash["repo"] unless  key?("name")
-        @metadata[ "tag"] = hash[ "tag"] if hash.key?( "tag")
-        @metadata["repo"] = hash["repo"]
+        @metadata = @metadata.merge(new_).stringify_keys
+        @root_metadata = @metadata if root?
         self
       end
 
@@ -133,7 +127,8 @@ module Docker
       #
 
       def from_root(key)
-        root = self.class.new(@root_metadata)
+        return self[key] if root?
+        root = self.class.new(@root_metadata, root: true)
         root[key]
       end
 
@@ -147,12 +142,13 @@ module Docker
       # "tag" key with the given tags. ("tags" is a `Hash`)
 
       def by_tag
-        a_tag = aliased
+        _alias = aliased
         tag = from_root("tag")
         return unless key?("tag")
         hash = self["tag"]
-        a_tag == tag ? hash[tag] : merge_or_override(hash[tag] \
-          , hash[a_tag])
+
+        return hash[tag] if _alias == tag
+        merge_or_override(hash[tag], hash[_alias])
       end
 
       # Pull data based on the type given in { "tags" => { tag => type }}
@@ -173,7 +169,7 @@ module Docker
 
       private
       def determine_key(key)
-        if is_root? && !key?(key) && ALIASES.key?(key)
+        if root? && !key?(key) && ALIASES.key?(key)
           key = ALIASES[key]
         end
         key
@@ -184,18 +180,18 @@ module Docker
       private
       def try_default(key)
         val = @base[key]
-        return self.class.new(val, @root_metadata) if val.is_a?(Hash)
+        return self.class.new(val, root_metadata: @root_metadata) if val.is_a?(Hash)
         val
       end
 
       #
 
       private
-      def merge_or_override(val, a_val)
-        return a_val unless val
-        return val if (val && val.is_a?(String)) || !a_val || (val && !a_val.is_a?(val.class))
-        return a_val.merge(val) if val.respond_to?(:merge)
-        return a_val + val if val.respond_to?(:+)
+      def merge_or_override(val, new_val)
+        return new_val unless val
+        return val if (val && val.is_a?(String)) || !new_val || (val && !new_val.is_a?(val.class))
+        return new_val.merge(val) if val.respond_to?(:merge)
+        return new_val + val if val.respond_to?(:+)
       end
     end
   end

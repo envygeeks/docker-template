@@ -54,8 +54,7 @@ module Docker
         end
 
         @lines[id] = @lines.size
-        before = "\n" unless @lines.size == 1
-        # rubocop:disable RedundantReturn
+        before = "\n" unless @lines.one?
         return before, 0
       end
     end

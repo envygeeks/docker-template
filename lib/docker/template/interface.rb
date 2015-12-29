@@ -2,65 +2,45 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
+require "optionparser"
+
 module Docker
   module Template
+    Hooks.register_name :cli, :opts
+
     class Interface
-      def initialize(argv = [])
-        @argv = argv
-      end
-
-      #
-
-      def self.push?
-        ARGV.include?("--push")
+      def initialize(zero, argv = [])
+        @zero = zero
+        @raw_argv = argv
+        parse!
       end
 
       #
 
       def run
-        unless only_sync?
-          Parser.new(argv_without_flags).parse.map do |repo|
-            repo.disable_sync! if wants_sync?
-            repo.build
+        Parser.new(@raw_repos, @argv).parse.map do |repo|
+          repo.build
+        end
+      end
+
+      #
+
+      def parse!
+        @argv = {}
+        parse = OptionParser.new do |parser|
+          parser.banner = "Usage: #{self.class.bin?(@zero) ? "docker template" : "docker-template"} [repos] [flags]"
+          Hooks.load_internal(:cli, :opts).run(:cli, :opts, parser, @argv)
+
+          parser.on("-h", "--help", "Show this message") do
+            $stdout.puts parser
+            exit 0
           end
         end
 
-        sync
-      end
-
-      #
-
-      private
-      def sync
-        return unless wants_sync?
-        Parser.new.parse.each do |repo|
-          !repo.syncable?? next : repo.builder.tap(&:sync).unlink(sync: false)
-        end
-      end
-
-      #
-
-      private
-      def argv_without_flags
-        @argv.select do |val|
-          !["--sync", "--push"].include?(val)
-        end
-      end
-
-      #
-
-      private
-      def only_sync?
-        @argv == [
-          "--sync"
-        ]
-      end
-
-      #
-
-      private
-      def wants_sync?
-        @argv.include?("--sync")
+        @raw_repos = Set.new
+        @raw_repos.merge(parse.parse!(@raw_argv.dup))
+        @raw_repos.freeze
+        @argv.freeze
       end
 
       # Determine whether we are the Docker bin so that we can transform
@@ -91,8 +71,8 @@ module Docker
 
       private
       def self.start(zero)
-        return new(ARGV[1..-1]).run if ARGV[0] == "template" && bin?(zero)
-        return new(ARGV).run unless bin?(zero)
+        return new(zero, ARGV[1..-1]).run if ARGV[0] == "template" && bin?(zero)
+        return new(zero, ARGV).run unless bin?(zero)
 
         exe = discover
         exec exe.to_s, *ARGV if exe

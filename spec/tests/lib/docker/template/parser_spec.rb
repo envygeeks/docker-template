@@ -16,13 +16,6 @@ describe Docker::Template::Parser do
 
   before do
     mocked_repos.as :normal
-    allow_any_instance_of(Docker::Template::Parser).to receive(:parse). \
-        and_wrap_original do |method, *args|
-
-      args.unshift({}) unless args[0]
-      args[0][:as] = :hash unless args[0].key?(:as)
-      method.call(*args)
-    end
   end
 
   #
@@ -47,32 +40,23 @@ describe Docker::Template::Parser do
           raise_error Docker::Template::Error::BadRepoName
       end
     end
+  end
 
-    #
+  #
 
+  describe "#build_repo_hash" do
     context "when given a valid identifier" do
-      let :array do
-        %w(
-          repo:tag
-          user/repo:tag
-          user/repo
-          repo
-        )
-      end
-
-      #
-
       specify do
-        expect(subject.new(array).parse.to_a[0]).to \
+        expect(subject.new.send(:build_repo_hash, "repo:tag")).to \
         include({
-          "repo" => "repo"
+          "name" => "repo"
         })
       end
 
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[0]).to \
+        expect(subject.new.send(:build_repo_hash, "repo:tag")).to \
         include({
           "tag" => "tag"
         })
@@ -81,7 +65,8 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[1]).to \
+        # user/repo:tag
+        expect(subject.new.send(:build_repo_hash, "user/repo:tag")).to \
         include({
           "user" => "user"
         })
@@ -90,16 +75,16 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[1]).to \
+        expect(subject.new.send(:build_repo_hash, "user/repo:tag")).to \
         include({
-          "repo" => "repo"
+          "name" => "repo"
         })
       end
 
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[1]).to \
+        expect(subject.new.send(:build_repo_hash, "user/repo:tag")).to \
         include({
           "tag" => "tag"
         })
@@ -108,7 +93,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[2]).to \
+        expect(subject.new.send(:build_repo_hash, "user/repo")).to \
         include({
           "user" => "user"
         })
@@ -117,26 +102,25 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[2]).to \
+        expect(subject.new.send(:build_repo_hash, "user/repo")).to \
         include({
-          "repo" => "repo"
+          "name" => "repo"
         })
       end
 
       #
 
       specify do
-        expect(subject.new(array).parse.to_a[3]).to \
+        expect(subject.new.send(:build_repo_hash, "repo")).to \
         include({
-          "repo" => "repo"
+          "name" => "repo"
         })
       end
 
       #
 
       it "should output Templates" do
-        # Technically `as: :repos` is the default, @see `before`
-        expect(subject.new(%w(default)).parse(as: :repos).first).to \
+        expect(subject.new(%w(default)).parse.first).to \
           be_a Docker::Template::Repo
       end
     end

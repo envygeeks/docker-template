@@ -25,6 +25,8 @@ module Docker
       def_delegator :@config, :[]
 
       DEFAULTS = {
+        "push" => false,
+        "sync" => "false",
         "type" => "normal",
         "user" => "envygeeks",
         "local_prefix" => "local",
@@ -36,6 +38,7 @@ module Docker
         "repos_dir" => "repos",
         "copy_dir" => "copy",
         "tag" => "latest",
+        "clean" => true,
 
         "env"      => { "tag" => {}, "type" => {}, "all" => nil },
         "pkgs"     => { "tag" => {}, "type" => {}, "all" => nil },

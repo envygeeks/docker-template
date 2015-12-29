@@ -101,17 +101,18 @@ describe Docker::Template::Common do
 
   describe "#push" do
     before do
-      allow(Docker::Template::Interface).to receive :push? do
-        true
-      end
+      subject.repo.metadata.merge({
+        "push" => true
+      })
     end
 
     #
 
     after do
-      silence_io do
-        subject.build
-      end
+      silence_io { subject.build }
+      subject.repo.metadata.merge({
+        "push" => false
+      })
     end
 
     #
@@ -135,6 +136,20 @@ describe Docker::Template::Common do
 
       it "should try to push" do
         expect(image_mock).to receive(:push) do
+          nil
+        end
+      end
+    end
+
+    context "when push == false" do
+      before do
+        subject.repo.metadata.merge({
+          "push" => false
+        })
+      end
+
+      it "should not try to push the repo" do
+        expect(image_mock).not_to receive(:push) do
           nil
         end
       end

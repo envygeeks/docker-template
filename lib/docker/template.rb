@@ -19,6 +19,7 @@ module Docker
   module Template
     module_function
 
+    autoload :Hooks, "docker/template/hooks"
     autoload :Util, "docker/template/util"
     autoload :Config, "docker/template/config"
     autoload :Ansi, "docker/template/ansi"

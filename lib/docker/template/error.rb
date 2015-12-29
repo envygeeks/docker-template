@@ -12,6 +12,7 @@ module Docker
       autoload :InvalidYAMLFile, "docker/template/error/invalid_yaml_file"
       autoload :NoSetupContextFound, "docker/template/error/no_setup_context_found"
       autoload :InvalidRepoType, "docker/template/error/invalid_repo_type"
+      autoload :NoRootMetadata, "docker/template/error/no_root_metadata"
       autoload :NoRootfsMkimg, "docker/template/error/no_rootfs_mkimg"
       autoload :NotImplemented, "docker/template/error/not_implemented"
       autoload :RepoNotFound, "docker/template/error/repo_not_found"

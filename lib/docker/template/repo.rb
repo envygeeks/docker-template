@@ -4,6 +4,7 @@
 
 module Docker
   module Template
+    Hooks.register_name(:repo, :init)
 
     # * A repo is not an image but a parent name w/ a tag.
     # * An image is the final result of a build on a repo, and is associated.
@@ -19,14 +20,16 @@ module Docker
       def_delegator :metadata, :alias?
       def_delegator :metadata, :tags
 
-      def initialize(base_metadata = {})
+      def initialize(base_metadata = {}, cli_opts = {})
         raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
+        raise ArgumentError, "CLI Opts not a hash" unless cli_opts.is_a?(Hash)
 
+        @cli_opts = cli_opts.freeze
         @base_metadata = base_metadata.freeze
-        @sync_allowed  = type == "normal" ? true : false
-        raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
-        raise Error::RepoNotFound, name unless root.exist?
+        Hooks.load_internal(:repo, :init).run(:repo, :init, self)
       end
+
+      #
 
       def builder
         const = Template.const_get(type.capitalize)
@@ -35,27 +38,16 @@ module Docker
 
       #
 
-      def disable_sync!
-        @sync_allowed = false
-      end
-
-      #
-
       def syncable?
-        metadata["dockerhub_cache"] && @sync_allowed
+        metadata["dockerhub_cache"] != false
       end
 
       #
 
-      def to_s(type = nil)
-        type ||= :image
-
-        if type == :image
-          "#{user}/#{name}:#{tag}"
-        else
-          prefix = metadata["local_prefix"]
-          "#{prefix}/rootfs:#{name}"
-        end
+      def to_s(type = :image)
+        prefix = metadata["local_prefix"]
+        return "#{user}/#{name}:#{tag}" if type == :image
+        "#{prefix}/rootfs:#{name}"
       end
 
       #
@@ -63,12 +55,6 @@ module Docker
       def copy_dir(*path)
         dir = metadata["copy_dir"]
         root.join(dir, *path)
-      end
-
-      #
-
-      def building_all?
-        !@base_metadata.key?("tag")
       end
 
       #
@@ -92,11 +78,9 @@ module Docker
       #
 
       def to_rootfs_h
-        prefix = metadata["local_prefix"]
-
         {
           "tag"   => name,
-          "repo"  => "#{prefix}/rootfs",
+          "repo"  => "#{metadata["local_prefix"]}/rootfs",
           "force" => true
         }
       end
@@ -125,30 +109,27 @@ module Docker
       # returning multiple AKA all repos to be built.
 
       def to_repos
-        if building_all?
-          set  = Set.new
-          base = to_h
-
-          tags.each do |tag|
-            base = base.merge("tag" => tag)
-            set << self.class.new(base)
-          end
-
-          set
+        set = Set.new
+        if @base_metadata.key?("tag")
+          set << self
         else
-          Set.new([
-            self
-          ])
+          tags.each do |tag|
+            hash = to_h.merge("tag" => tag)
+            set << self.class.new(hash, @cli_opts)
+          end
         end
+        set
       end
 
       #
 
       def metadata
         @metadata ||= begin
-          metadata = Template.repo_root_for(@base_metadata["repo"])
-          metadata = Template.config.read_config_from(metadata)
-          Metadata.new(metadata).merge_base_metadata(@base_metadata)
+          root = Template.repo_root_for(@base_metadata["name"])
+
+          metadata = Template.config.read_config_from(root)
+          metadata = Metadata.new(metadata, root: true).merge(@base_metadata)
+          metadata.merge(@cli_opts)
         end
       end
 

@@ -81,6 +81,14 @@ module Mocks
 
     #
 
+    def with_cli_opts(args)
+      @cli_opts ||= {}
+      @cli_opts.merge!(args.stringify)
+      self
+    end
+
+    #
+
     def with_init(args)
       @init ||= {}
       @init.merge!(args.stringify)
@@ -99,8 +107,8 @@ module Mocks
 
     #
 
-    def to_repo(init = nil)
-      repo.as_repo(init || @init)
+    def to_repo
+      repo.as_repo(@init || {}, @cli_opts || {})
     end
 
     #
@@ -241,12 +249,9 @@ module Mocks
     private
     def patch(val)
       val.instance_eval do
-        def as_repo(init = {})
-          init ||= {}
-
-          Docker::Template::Repo.new(init.merge({
-            "repo" => basename.to_s
-          }))
+        def as_repo(init = {}, cli_opts = {})
+          init = init.merge("name" => basename.to_s)
+          Docker::Template::Repo.new(init, cli_opts)
         end
       end
 

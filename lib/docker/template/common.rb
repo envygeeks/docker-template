@@ -21,7 +21,7 @@ module Docker
       #
 
       def push
-        return if rootfs? || !Interface.push?
+        return if rootfs? || !@repo.metadata["push"]
 
         Auth.auth!
         img = @img || Docker::Image.get(@repo.to_s)

@@ -20,9 +20,9 @@ module Docker
       #
 
       def unlink(img: false, sync: true)
-        @img.delete "force" => true if @img && img
-        @context.rmtree if @context && @context.directory?
         self.sync if sync && @repo.syncable?
+        @context.rmtree if @context && @context.directory?
+        @img.delete "force" => true if @img && img
       end
 
       #

@@ -126,60 +126,6 @@ describe Docker::Template::Repo do
 
   #
 
-  describe "#building_all?" do
-    shared_examples_for :building_all do
-      context "when no tag is provided" do
-        before do
-          mocked_repos.with_init({
-            "type" => type
-          })
-        end
-
-        #
-
-        it "should be true" do
-          expect(mocked_repos.to_repo.building_all?).to eq true
-        end
-      end
-
-      #
-
-      context "when a tag is provided" do
-        before do
-          mocked_repos.with_opts("type" => type).with_init({
-            "tag" => "default"
-          })
-        end
-
-        #
-
-        it "should be false" do
-          expect(mocked_repos.to_repo.building_all?).to eq false
-        end
-      end
-    end
-
-    #
-
-    context "when normal" do
-      it_should_behave_like :building_all
-      let :type do
-        "normal"
-      end
-    end
-
-    #
-
-    context "when scratch" do
-      it_should_behave_like :building_all
-      let :type do
-        "scratch"
-      end
-    end
-  end
-
-  #
-
   describe "#root" do
     it "should put me into pry" do
       expect(mocked_repos.to_repo.root.relative_path_from(Docker::Template.root). \

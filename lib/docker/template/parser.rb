@@ -9,31 +9,34 @@ module Docker
       SPLIT_REGEXP = /:|\//.freeze
       COLON_REGEXP = /:/.freeze
 
-      def initialize(argv = [].freeze)
-        @argv = argv.freeze
+      def initialize(raw_repos = [], argv = {})
+        @argv = argv
+        @raw_repos = \
+          raw_repos
       end
 
-      # Return ARGV if you send us a list of repos you wish to build,
+      # Return raw_repos if you send us a list of repos you wish to build,
       # otherwise we get the children of the repo folder and ship that off
       # so you can build *every* repo, I don't know if you want that.
 
       def all
-        return @argv unless @argv.empty?
-        return Repo.new.name.to_a if Template.repo_is_root?
+        return @raw_repos unless @raw_repos.empty?
+        return Repo.new.name.to_a  if Template.repo_is_root?
         Template.repos_root.children.map do |path|
           path.basename.to_s
         end
       rescue Errno::ENOENT
-        raise Error::RepoNotFound
+        then raise Error::RepoNotFound
       end
 
       #
 
-      def parse(as: :repos, out: Set.new)
+      def parse
+        out = Set.new
         all.each do |val|
           hash = build_repo_hash(val)
           raise Docker::Template::Error::BadRepoName, val if hash.empty?
-          out += as == :repos ? Repo.new(hash).to_repos : [hash]
+          out |= Repo.new(hash, @argv).to_repos
         end
         out
       end
@@ -45,20 +48,24 @@ module Docker
         data = val.split(SPLIT_REGEXP)
         hsh  = {}
 
-        if data.size == 1
-          hsh["repo"] = data[0]
+        # repo
+        if data.one?
+          hsh["name"] = data[0]
 
+        # repo:tag
         elsif val =~ COLON_REGEXP && data.size == 2
-          hsh["repo"] = data[0]
+          hsh["name"] = data[0]
           hsh[ "tag"] = data[1]
 
+        # user/repo
         elsif val =~ SLASH_REGEXP && data.size == 2
           hsh["user"] = data[0]
-          hsh["repo"] = data[1]
+          hsh["name"] = data[1]
 
+        # user/repo:tag
         elsif data.size == 3
           hsh["user"] = data[0]
-          hsh["repo"] = data[1]
+          hsh["name"] = data[1]
           hsh[ "tag"] = data[2]
         end
         hsh
