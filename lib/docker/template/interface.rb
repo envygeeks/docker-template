@@ -2,7 +2,7 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-require "optionparser"
+require "optparse"
 
 module Docker
   module Template
@@ -27,7 +27,7 @@ module Docker
 
       def parse!
         @argv = {}
-        parse = OptionParser.new do |parser|
+        parse = OptParse.new do |parser|
           parser.banner = "Usage: #{self.class.bin?(@zero) ? "docker template" : "docker-template"} [repos] [flags]"
           Hooks.load_internal(:cli, :opts).run(:cli, :opts, parser, @argv)
 
