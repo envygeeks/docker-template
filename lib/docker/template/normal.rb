@@ -4,6 +4,8 @@
 
 module Docker
   module Template
+    Hooks.register_name :normal, :sync
+
     class Normal < Common
       attr_reader :repo
       def initialize(repo)
@@ -14,6 +16,7 @@ module Docker
 
       def sync
         copy_build_and_verify unless @context
+        Hooks.load_internal(:normal, :sync).run(:normal, :sync, self)
         Util.create_dockerhub_context(self, @context)
       end
 

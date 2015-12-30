@@ -53,14 +53,6 @@ class Hash
 
   #
 
-  def stringify
-    each_with_object({}) do |(key, val), hsh|
-      hsh[key.to_s] = val.is_a?(Array) || val.is_a?(Hash) ? val.stringify : val.to_s
-    end
-  end
-
-  #
-
   def stringify_keys
     each_with_object({}) do |(key, val), hsh|
       hsh[key.to_s] = val

@@ -19,46 +19,6 @@ describe Hash do
 
   #
 
-  describe "#stringify" do
-    let :hash do
-      {
-        :hello => :world,
-        :world => [
-          :animal,
-          :kingdom,
-          {
-            :and => :other_stuff
-          }
-        ],
-
-        :other => {
-          :planets => :have_life
-        }
-      }
-    end
-
-    #
-
-    it "should stringify the hash" do
-      expect(subject.stringify).to eq({
-        "hello" => "world",
-        "world" => [
-          "animal",
-          "kingdom",
-          {
-            "and" => "other_stuff"
-          }
-        ],
-
-        "other" => {
-          "planets" => "have_life"
-        }
-      })
-    end
-  end
-
-  #
-
   describe "#stringify_keys" do
     it "converts keys that support it to strings" do
       expect(subject.stringify_keys).to eq({

@@ -26,7 +26,7 @@ module Docker
 
       DEFAULTS = {
         "push" => false,
-        "sync" => "false",
+        "sync" => false,
         "type" => "normal",
         "user" => "envygeeks",
         "local_prefix" => "local",
@@ -48,6 +48,8 @@ module Docker
         "aliases"  => {},
         "tags"     => {}
       }.freeze
+
+      #
 
       EMPTY_DEFAULTS = {
         "tags" => { "latest" => "normal" }
@@ -72,12 +74,12 @@ module Docker
       def read_config_from(dir = Docker::Template.root)
         file = Dir[dir.join("opts.{json,yml}")].first
         return {} unless file && (file = Pathname.new(file)).file?
-        return JSON.parse(file.read).stringify if file.extname == ".json"
+        return JSON.parse(file.read).stringify_keys if file.extname == ".json"
         out = YAML.load_file(file)
 
         return {} if !out || out.empty?
         raise Error::InvalidYAMLFile, file unless out.is_a?(Hash)
-        out.stringify
+        out.stringify_keys
       end
 
       #
@@ -95,8 +97,7 @@ module Docker
           oval.nil? || oval.empty?? nval : oval
         end
 
-        @config \
-          .freeze
+        @config.freeze
       end
     end
   end

@@ -4,7 +4,7 @@
 
 module Docker
   module Template
-    Hooks.register_name(:repo, :init)
+    Hooks.register_name :repo, :init
 
     # * A repo is not an image but a parent name w/ a tag.
     # * An image is the final result of a build on a repo, and is associated.
@@ -26,7 +26,8 @@ module Docker
 
         @cli_opts = cli_opts.freeze
         @base_metadata = base_metadata.freeze
-        Hooks.load_internal(:repo, :init).run(:repo, :init, self)
+        Hooks.load_internal(:repo, :init) \
+          .run(:repo, :init, self)
       end
 
       #

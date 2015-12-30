@@ -83,7 +83,7 @@ module Mocks
 
     def with_cli_opts(args)
       @cli_opts ||= {}
-      @cli_opts.merge!(args.stringify)
+      @cli_opts.merge!(args.stringify_keys)
       self
     end
 
@@ -91,7 +91,7 @@ module Mocks
 
     def with_init(args)
       @init ||= {}
-      @init.merge!(args.stringify)
+      @init.merge!(args.stringify_keys)
       self
     end
 
@@ -100,7 +100,7 @@ module Mocks
     def with_opts(opts)
       @opts ||= {}
       pre_data = Docker::Template.config.read_config_from(strip_and_split)
-      @opts = pre_data.merge(@opts).merge(opts.stringify)
+      @opts = pre_data.merge(@opts).merge(opts.stringify_keys)
       write "opts.yml", @opts.to_yaml
       self
     end

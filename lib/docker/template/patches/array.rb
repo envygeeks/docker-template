@@ -3,9 +3,11 @@
 # Encoding: utf-8
 
 class Array
-  def stringify
+  def stringify_keys
     map do |val|
-      val.is_a?(Hash) || val.is_a?(Array) ? val.stringify : val.to_s
+      val.is_a?(Hash) || val.is_a?(Array) ? val.stringify_keys : if val.is_a?(Symbol)
+        then val.to_s else val
+      end
     end
   end
 end
