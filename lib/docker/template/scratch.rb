@@ -5,10 +5,7 @@
 module Docker
   module Template
     class Scratch < Common
-      attr_reader :rootfs, :img, :repo
-      def initialize(repo)
-        @repo = repo
-      end
+      attr_reader :rootfs
 
       # Caches and builds the master rootfs for repos, this is cached
       # on the class because it could be used many times in a single build

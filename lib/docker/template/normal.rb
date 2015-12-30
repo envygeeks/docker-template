@@ -7,10 +7,6 @@ module Docker
     Hooks.register_name :normal, :sync
 
     class Normal < Common
-      attr_reader :repo
-      def initialize(repo)
-        @repo = repo
-      end
 
       #
 

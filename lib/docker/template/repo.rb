@@ -39,6 +39,12 @@ module Docker
 
       #
 
+      def pushable?
+        !!metadata["push"]
+      end
+
+      #
+
       def syncable?
         metadata["dockerhub_cache"] != false
       end

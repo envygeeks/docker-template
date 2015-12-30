@@ -5,9 +5,15 @@
 module Docker
   module Template
     class Common
-      attr_reader :context
       COPY = %W(setup_context copy_global copy_simple copy_all copy_type \
         copy_tag copy_cleanup build_context verify_context).freeze
+      attr_reader :context, :repo, :img
+
+      #
+
+      def initialize(repo)
+        @repo = repo
+      end
 
       #
 
@@ -16,17 +22,6 @@ module Docker
           !@repo.copy_dir.join("tag").exist? && \
           !@repo.copy_dir.join("type").exist? && \
           !@repo.copy_dir.join("all").exist?
-      end
-
-      #
-
-      def push
-        return if rootfs? || !@repo.metadata["push"]
-
-        Auth.auth!
-        img = @img || Docker::Image.get(@repo.to_s)
-        logger = Stream.new.method(:log)
-        img.push(&logger)
       end
 
       #
@@ -44,16 +39,18 @@ module Docker
       #
 
       [:normal, :scratch].each do |sym|
-        define_method("#{sym}?") { @repo.type == sym.to_s }
+        define_method("#{sym}?") do
+          @repo.type == sym.to_s
+        end
       end
 
       #
 
       def parent_repo
-        return repo unless alias?
-        @parent_repo ||= begin
-          Repo.new(@repo.to_h.merge("tag" => @repo.metadata.aliased))
-        end
+        return @parent_repo if @parent_repo
+        Repo.new(@repo.to_h.merge({
+          "tag" => @repo.metadata.aliased
+        }))
       end
 
       #
@@ -65,6 +62,17 @@ module Docker
         if alias?
           nil
         end
+      end
+
+      #
+
+      def push
+        return if rootfs? || !@repo.pushable?
+
+        Auth.auth!
+        img = @img || Docker::Image.get(@repo.to_s)
+        logger = Stream.new.method(:log)
+        img.push(&logger)
       end
 
       #
@@ -86,8 +94,10 @@ module Docker
         end
       end
 
+      private
       #
 
+      private
       def chdir_build
         Dir.chdir(@context) do
           @img = Docker::Image.build_from_dir(".", &Stream.new.method(:log))
@@ -109,7 +119,10 @@ module Docker
         end
       end
 
-      #
+      # The root can have it's own global copy directory shared
+      # across all repositories in your repo container directory so
+      # this encapsulates those.
+      # <root>/copy
 
       private
       def copy_global
@@ -118,16 +131,22 @@ module Docker
         Util::Copy.directory(dir, @copy)
       end
 
-      #
+      # When you have no tag, type, all, this is called a simple
+      # copy, and we will skip caring about the other types of copies and
+      # just do a direct copy of the copy root.
+      # <root>/<repo>/copy
 
       private
-      def copy_simple
-        return unless simple_copy?
-        Util::Copy.directory(@repo.copy_dir, \
-          @copy)
+      def simple_copy
+        unless !simple_copy?
+          Util::Copy.directory(@repo.copy_dir, @copy)
+        end
       end
 
-      #
+      # <root>/<repo>/copy/tag/<tag> where tag is the container for
+      # holding data for specific tags, so that if a specific tag needs
+      # specific data it doesn't need to share it globally.
+      # *Not used with simple copy*
 
       private
       def copy_tag
@@ -136,7 +155,10 @@ module Docker
         Util::Copy.directory(dir, @copy)
       end
 
-      #
+      # <root>/<repo>/copy/type/<type> where type is defined as
+      # the value in the tags key of your opts.yml, types are like a
+      # set of tags that share common data.
+      # *Not used with simple copy*
 
       private
       def copy_type
@@ -146,7 +168,9 @@ module Docker
         Util::Copy.directory(dir, @copy)
       end
 
-      #
+      # <root>/<repo>/copy/all where it is shared local-globally in the
+      # current repo, but not across all the other repos.
+      # *Not used with simple copy*
 
       private
       def copy_all

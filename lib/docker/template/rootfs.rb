@@ -5,13 +5,6 @@
 module Docker
   module Template
     class Rootfs < Common
-      attr_reader :img
-      def initialize(repo)
-        @repo = repo
-      end
-
-      #
-
       def data
         Template.get(:rootfs, {
           :rootfs_base_img => @repo.metadata["rootfs_base_img"]
@@ -37,7 +30,9 @@ module Docker
       def unlink(img: true)
         @context.rmtree if @context.directory?
         if img && @img && !keep?
-          @img.delete "force" => true
+          @img.delete({
+            "force" => true
+          })
         end
       rescue Docker::Error::NotFoundError
         nil
