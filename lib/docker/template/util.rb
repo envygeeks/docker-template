@@ -20,7 +20,7 @@ module Docker
 
       def notify_build(repo, rootfs: false)
         img = rootfs ? repo.to_s(:rootfs) : repo.to_s
-        $stdout.puts   Ansi.green("Building: #{img}")
+        $stdout.puts Ansi.green("Building: #{img}")
       end
 
       #

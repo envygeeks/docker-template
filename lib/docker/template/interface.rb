@@ -28,9 +28,9 @@ module Docker
       def parse!
         @argv = {}
         parse = OptParse.new do |parser|
-          parser.banner = "Usage: #{self.class.bin?(@zero) ? "docker template" : "docker-template"} [repos] [flags]"
           Hooks.load_internal(:cli, :opts).run(:cli, :opts, parser, @argv)
-
+          banner_bin = self.class.bin?(@zero) ? "docker template" : "docker-template"
+          parser.banner = "Usage: #{banner_bin} [repos] [flags]"
           parser.on("-h", "--help", "Show this message") do
             $stdout.puts parser
             exit 0

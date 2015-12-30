@@ -19,6 +19,14 @@ engines:
       Rubocop/Style/RescueModifier:                 { enabled: false }
       Rubocop/Style/RegexpLiteral:                  { enabled: false }
       Rubocop/Style/FileName:                       { enabled: false }
+    exclude_fingerprints:
+    - 1fa49c478840c58733ac3be538355984
+    - fb031899b0d76c6e620613c37c2114a1
+    - 7af6f27ac6829dec72127082772fc532
+    - 90ef76e6fefc2880d2c69718e3cab94c
+    - c364c91ffa134c162428383b6f5f62b7
+    - 8d8ddd022560e18166104d0dcfde3b03
+    - ea28ffd910e9cd432385c0ad741f9e3b
   fixme:
     enabled: false
 exclude_paths:

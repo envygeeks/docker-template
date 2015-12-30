@@ -28,10 +28,8 @@ class Hash
   #
 
   def keys?(*keys)
-    return false unless rtn = true && any?
-    while rtn && key = keys.shift
-      rtn = key?(key) || false
-    end
+    rtn = true
+    rtn = key?(keys.shift) || false while rtn && keys.any?
     rtn
   end
 

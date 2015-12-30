@@ -47,7 +47,7 @@ module Docker
 
       def complex_alias?
         return false unless alias?
-        @root_metadata.select { |key, val| val.is_a?(Hash) && val.key?("tag") }.any? do |key, val|
+        @root_metadata.select { |_, val| val.is_a?(Hash) && val.key?("tag") }.any? do |key, val|
           val["tag"].key?(from_root("tag"))
         end
       end
@@ -88,8 +88,7 @@ module Docker
       #
 
       def tags
-        from_root("tags").keys | \
-        from_root("aliases").keys
+        from_root("tags").keys | from_root("aliases").keys
       end
 
       #
@@ -142,13 +141,13 @@ module Docker
       # "tag" key with the given tags. ("tags" is a `Hash`)
 
       def by_tag
-        _alias = aliased
+        alias_ = aliased
         tag = from_root("tag")
         return unless key?("tag")
         hash = self["tag"]
 
-        return hash[tag] if _alias == tag
-        merge_or_override(hash[tag], hash[_alias])
+        return hash[tag] if alias_ == tag
+        merge_or_override(hash[tag], hash[alias_])
       end
 
       # Pull data based on the type given in { "tags" => { tag => type }}

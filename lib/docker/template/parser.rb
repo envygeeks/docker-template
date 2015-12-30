@@ -21,7 +21,7 @@ module Docker
 
       def all
         return @raw_repos unless @raw_repos.empty?
-        return Repo.new.name.to_a  if Template.repo_is_root?
+        return Repo.new.name.to_a if Template.repo_is_root?
         Template.repos_root.children.map do |path|
           path.basename.to_s
         end
