@@ -5,9 +5,10 @@
 module Docker
   module Template
     class Common
-      COPY = %W(setup_context copy_global copy_simple copy_all copy_type \
-        copy_tag copy_cleanup build_context verify_context).freeze
       attr_reader :context, :repo, :img
+      COPY = %W(setup_context copy_global simple_copy copy_all copy_type
+        copy_tag copy_cleanup build_context verify_context
+          cache_context).freeze
 
       #
 
@@ -82,7 +83,7 @@ module Docker
 
         Ansi.clear
         Util.notify_build(@repo, rootfs: rootfs?)
-        copy_build_and_verify
+        copy_prebuild_and_verify
         chdir_build
 
       rescue SystemExit => exit_
@@ -94,7 +95,18 @@ module Docker
         end
       end
 
+      # The prebuild happens when a user has "build_context", which
+      # typically only happens with scratch, which will prebuild it's rootfs
+      # image so it can get to building it's actual image.
+
       private
+      def copy_prebuild_and_verify
+        raise Error::NoSetupContextFound unless respond_to?(:setup_context, true)
+        COPY.map do |val|
+          send(val) if respond_to?(val, true)
+        end
+      end
+
       #
 
       private
@@ -109,13 +121,9 @@ module Docker
       #
 
       private
-      def copy_build_and_verify
-        if !respond_to?(:setup_context, true)
-          raise Error::NoSetupContextFound
-        else
-          COPY.map do |val|
-            send(val) if respond_to?(val, true)
-          end
+      def cache_context
+        if repo.syncable?
+          $stdout.puts Ansi.red("Context caching not supported")
         end
       end
 

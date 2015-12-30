@@ -4,24 +4,14 @@
 
 module Docker
   module Template
-    Hooks.register_name :normal, :sync
+    Hooks.register_name :normal, :context_cache
 
     class Normal < Common
-
-      #
-
-      def sync
-        copy_build_and_verify unless @context
-        Hooks.load_internal(:normal, :sync).run(:normal, :sync, self)
-        Util.create_dockerhub_context(self, @context)
-      end
-
-      #
-
-      def unlink(img: false, sync: true)
-        self.sync if sync && @repo.syncable?
-        @context.rmtree if @context && @context.directory?
+      def unlink(img: false)
         @img.delete "force" => true if @img && img
+        if @context && @context.directory?
+          then @context.rmtree
+        end
       end
 
       #
@@ -42,6 +32,15 @@ module Docker
         data = ERB.new(dockerfile).result(data._binding)
         context = @context.join("Dockerfile")
         context.write(data)
+      end
+
+      private
+      def cache_context
+        if @repo.syncable?
+          Util.create_dockerhub_context self, @context
+          Hooks.load_internal(:normal, :context_cache) \
+            .run(:normal, :context_cache, self)
+        end
       end
     end
   end

@@ -46,7 +46,7 @@ describe Docker::Template::Util do
 
   describe "#create_dockerhub_context" do
     before do
-      template.send :copy_build_and_verify
+      template.send :copy_prebuild_and_verify
 
       silence_io do
         Docker::Template::Util.create_dockerhub_context \

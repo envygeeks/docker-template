@@ -5,9 +5,9 @@
 class Array
   def stringify_keys
     map do |val|
-      val.is_a?(Hash) || val.is_a?(Array) ? val.stringify_keys : if val.is_a?(Symbol)
-        then val.to_s else val
-      end
+      val = val.to_s if val.is_a?(Symbol)
+      val = val.stringify_keys if val.is_a?(Hash) || val.is_a?(Array)
+      val
     end
   end
 end

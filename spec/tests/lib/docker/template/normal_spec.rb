@@ -21,6 +21,97 @@ describe Docker::Template::Normal do
 
   #
 
+  describe "#cache_context" do
+    context "when dockerhub_cache = false" do
+      before do
+        subject.repo.metadata.merge({
+          "dockerhub_cache" => false
+        })
+      end
+
+      #
+
+      context do
+        before do
+          silence_io do
+            subject.send :cache_context
+          end
+        end
+
+        #
+
+        it "should not copy all the files" do
+          expect(subject.repo.root.join("cache")).not_to exist
+        end
+      end
+
+      #
+
+      context do
+        it "should not call util to copy it" do
+          expect(Docker::Template::Util).not_to receive \
+            :create_dockerhub_context
+        end
+
+        #
+
+        after do
+          subject.send :cache_context
+        end
+      end
+    end
+
+    #
+
+    context "when dockerhub_cache = true" do
+      before do
+        subject.repo.metadata.merge({
+          "dockerhub_cache" => true
+        })
+      end
+
+      #
+
+      context do
+        before do
+          silence_io do
+            subject.send :cache_context
+          end
+        end
+
+        #
+
+        it "should copy all the files" do
+          expect(subject.repo.root.join("cache")).to exist
+        end
+      end
+
+      #
+
+      context do
+        it "call the util to copy it" do
+          expect(Docker::Template::Util).to receive \
+            :create_dockerhub_context
+        end
+
+        after do
+          subject.send :cache_context
+        end
+      end
+
+      #
+
+      after do
+        subject.unlink
+        subject.repo.metadata.merge({
+          "dockerhub_cache" => false
+        })
+      end
+    end
+  end
+
+  #
+
   describe "#unlink" do
     before do
       subject.send :setup_context
@@ -32,34 +123,6 @@ describe Docker::Template::Normal do
     it "should delete the context folder" do
       expect(subject.instance_variable_get(:@context)) \
         .not_to exist
-    end
-
-    #
-
-    context "when dockerhub_cache = true" do
-      let :user_metadata do
-        subject.repo.metadata.instance_variable_get(:@metadata)
-      end
-
-      #
-
-      before do
-        user_metadata["dockerhub_cache"] = true
-      end
-
-      #
-
-      it "should copy the context for Dockerhub" do
-        expect(Docker::Template::Util).to receive \
-          :create_dockerhub_context
-      end
-
-      #
-
-      after do
-        subject.unlink # Needs to be before!!!
-        user_metadata["dockerhub_cache"] = false
-      end
     end
 
     #

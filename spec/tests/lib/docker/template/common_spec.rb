@@ -158,9 +158,9 @@ describe Docker::Template::Common do
 
   #
 
-  describe "#copy_build_and_verify" do
+  describe "#copy_prebuild_and_verify" do
     after do
-      subject.send :copy_build_and_verify
+      subject.send :copy_prebuild_and_verify
     end
 
     #
@@ -208,9 +208,9 @@ describe Docker::Template::Common do
 
     #
 
-    describe "#copy_simple", :simple do
+    describe "#simple_copy", :simple do
       after do
-        subject.send :copy_simple
+        subject.send :simple_copy
       end
 
       #
