@@ -31,10 +31,6 @@ module Docker
           Hooks.load_internal(:cli, :opts).run(:cli, :opts, parser, @argv)
           banner_bin = self.class.bin?(@zero) ? "docker template" : "docker-template"
           parser.banner = "Usage: #{banner_bin} [repos] [flags]"
-          parser.on("-h", "--help", "Show this message") do
-            $stdout.puts parser
-            exit 0
-          end
         end
 
         @raw_repos = Set.new

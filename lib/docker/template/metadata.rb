@@ -47,7 +47,7 @@ module Docker
 
       def complex_alias?
         return false unless alias?
-        @root_metadata.select { |_, val| val.is_a?(Hash) && val.key?("tag") }.any? do |key, val|
+        @root_metadata.select { |_, val| val.is_a?(Hash) && val.key?("tag") }.any? do |_, val|
           val["tag"].key?(from_root("tag"))
         end
       end
