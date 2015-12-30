@@ -2,8 +2,9 @@ engines:
   rubocop:
     enabled: true
     checks:
+      Rubocop/Style/NegatedIf:                      { enabled: false }
+      Rubocop/Style/GuardClause:                    { enabled: false }
       Rubocop/Lint/UselessAccessModifier:           { enabled: false }
-
       Rubocop/Style/SpaceInsideParens:              { enabled: false }
       Rubocop/Style/SpaceInsideBrackets:            { enabled: false }
       Rubocop/Style/BracesAroundHashParameters:     { enabled: false }
