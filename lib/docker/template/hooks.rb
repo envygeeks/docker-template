@@ -50,7 +50,7 @@ module Docker
       def load_internal(base, name)
         raise Error::UnknownHookBaseOrName unless valid?(base, name)
         hook_root = Template.gem_root.join("lib", "docker", "template", "hooks", base.to_s, name.to_s)
-        return false unless hook_root.exist?
+        return self unless hook_root.exist?
         hook_root.children.map do |hook|
           require hook
         end
