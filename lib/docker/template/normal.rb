@@ -5,7 +5,7 @@
 module Docker
   module Template
     class Normal < Common
-      register_hook_name :cache_context
+      register_hook_point :cache_context
 
       def unlink(img: false)
         @img.delete "force" => true if @img && img

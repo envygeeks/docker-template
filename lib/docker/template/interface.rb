@@ -8,9 +8,8 @@ module Docker
   module Template
     class Interface
       include Hooks::Methods
-      register_hook_name \
-        :parse
 
+      register_hook_point :parse
       def initialize(zero, argv = [])
         @zero = zero
         @raw_argv = argv

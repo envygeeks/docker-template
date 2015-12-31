@@ -11,37 +11,24 @@ module Docker
           klass.def_delegator :"self.class", :hook_base
           klass.def_delegator :"self.class", :hooks
           klass.send :extend, Klass
+
+          klass.send(:include, klass.const_set( \
+            :HookMethods, Module.new))
         end
 
         #
 
         def run_hooks(point, *args)
-          Hooks.load_internal(hook_base, point).
-          run_with_context(hook_base, point, \
-            self, *args)
+          Hooks.run(self, point, *args)
         end
 
         #
 
         module Klass
-          def register_hook_name(*points)
+          def register_hook_point(*points)
             points.each do |point|
-              Hooks.register_name hook_base, point
+              Hooks.register_point point, self
             end
-          end
-
-          #
-
-          def hook_base
-            name.split(/::/).last.downcase.to_sym
-          end
-
-          #
-
-          def hooks
-            Hooks[
-              hook_base.to_s
-            ]
           end
         end
       end

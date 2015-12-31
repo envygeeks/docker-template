@@ -16,7 +16,7 @@ module Docker
 
       #
 
-      register_hook_name :init
+      register_hook_point :init
 
       #
 

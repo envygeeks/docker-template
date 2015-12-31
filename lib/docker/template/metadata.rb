@@ -11,7 +11,7 @@ module Docker
 
       #
 
-      register_hook_name :init
+      register_hook_point :init
 
       # Provides aliases for the root element so you can do something like:
       #   * data["release"].fallback

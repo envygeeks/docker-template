@@ -6,17 +6,23 @@ module Docker
   module Template
     class Common
       attr_reader :context, :repo, :img
+      include Hooks::Methods
+
       def self.inherited(klass)
-        klass.send :include, Hooks::Methods
-        klass.register_hook_name(*COPY, \
-          :build, :push)
+        klass.register_hook_point(*COPY, :build, :push)
       end
 
       #
 
-      COPY = %W(setup_context copy_global simple_copy copy_all copy_type
-        copy_tag copy_cleanup build_context verify_context
-          cache_context).freeze
+      COPY = %W(setup_context copy_global simple_copy copy_all copy_type copy_tag
+        copy_cleanup build_context verify_context cache_context).freeze
+      register_hook_point(*COPY, :build, :push)
+
+      #
+
+      def hook_parent_base
+        :common
+      end
 
       #
 

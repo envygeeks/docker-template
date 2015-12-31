@@ -7,12 +7,11 @@ module Docker
     module Hooks
       attr_reader :hooks
       extend Forwardable
+      @hooks = Set.new
       extend self
-      @hooks = {}
 
       #
 
-      autoload :Wrapper, "docker/template/hooks/wrapper"
       autoload :Methods, "docker/template/hooks/methods"
 
       #
@@ -29,67 +28,59 @@ module Docker
       # your base and name and you can call it later, this is agnostic as
       # to who is doing this, so any addition can add them.
 
-      def register_name(base, point)
+      def register_point(point, klass)
+        other = klass.name.to_s.split(/::/).last.downcase
         point = point.to_s
-        base  =  base.to_s
 
-        @hooks[base] ||= {}
-        return false if @hooks[base].key?(point)
-        @hooks[base][point] ||= Set.new
+        unless get_point(klass, point)
+          @hooks << {
+            :point => point,
+            :alternate_klass => other,
+            :hooks => Set.new,
+            :klass => klass
+          }
+        end
       end
 
       #
 
-      def verify!(base, point)
-        unless valid?(base, point)
+      def register(klass, point, order: 99, &block)
+        ensure_exist! klass, point
+
+        struct = hook_struct.new
+        point = get_point(klass, point)
+        struct.name = generate_hook_name
+        point[:klass]::HookMethods.send(:define_method, struct.name, &block)
+        point[:hooks] << struct
+        struct.order = order
+      end
+
+      #
+
+      def run(context, point, *args)
+        ensure_exist! context, point
+        load_internal context, point
+
+        # Make sure we order it by the order that the user wants it to come in as.
+        get_point(context, point).fetch(:hooks).sort_by { |struct| struct.order }.each do |struct|
+          context.send(struct.name, *args)
+        end
+      end
+
+      #
+
+      def get_point(base, point)
+        @hooks.find do |hash|
+          base.is_a?(hash[:klass]) || base.to_s == hash[:alternate_klass] \
+            && point.to_s == hash[:point]
+        end
+      end
+
+      #
+
+      def ensure_exist!(base, point)
+        unless get_point(base, point)
           raise Error::NoHookExists.new(base, point)
-        end
-      end
-
-      #
-
-      def valid?(base, point)
-        point = point.to_s
-        base  =  base.to_s
-
-        return false unless key?(base)
-        return false unless @hooks[base].key?(point)
-        true
-      end
-
-      #
-
-      def register(base, point, name = :unknown, order = 99, &block)
-        base  =  base.to_s
-        point = point.to_s
-        name  =  name.to_s
-
-        verify!(base, point)
-        return false unless block_given?
-        @hooks[base][point] << Wrapper.new(name, block, order)
-      end
-
-      #
-
-      def run(base, point, *datas)
-        point = point.to_s
-        base  =  base.to_s
-
-        verify!(base, point)
-        @hooks[base][point].each do |hook|
-          hook.call(*datas)
-        end
-      end
-
-      #
-
-      def run_with_context(base, point, context, *datas)
-        point = point.to_s
-        base  =  base.to_s
-
-        verify!(base, point)
-        @hooks[base][point].each do |hook|
-          context.instance_exec(*datas, &hook.source)
         end
       end
 
@@ -97,18 +88,36 @@ module Docker
       # specific hooks, that way if you take a path that doesn't need those
       # hooks, you can skip creating too much IO... like autoload.
 
+      private
       def load_internal(base, point)
-        point = point.to_s
-        base  =  base.to_s
+        root = internal_root.join(*get_point(base, point).values_at(:alternate_klass, :point))
+        return unless root.exist?
 
-        verify!(base, point)
-        hook_root = Template.gem_root.join("lib", "docker", "template", "hooks", "internal", base, point)
-        return self unless hook_root.exist?
-        hook_root.children.map do |hook|
-          require hook
+        root.children.map do |file|
+          require file
         end
+      end
 
-        self
+      #
+
+      private
+      def hook_struct
+        @struct ||= Struct.new(:order, :name)
+      end
+
+      #
+
+      private
+      def internal_root
+        @root ||= Template.gem_root.join("lib", "docker", "template", \
+          "hooks", "internal")
+      end
+
+      #
+
+      private
+      def generate_hook_name
+        return SecureRandom.hex(12)
       end
     end
   end
