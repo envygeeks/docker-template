@@ -44,6 +44,9 @@ module Docker
         @root = root
 
         run_hooks :init
+        if !root? && !root_metadata
+          raise Docker::Template::Error::NoRootMetadata
+        end
       end
 
       #

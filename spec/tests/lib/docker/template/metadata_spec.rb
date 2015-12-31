@@ -12,6 +12,13 @@ describe Docker::Template::Metadata do
 
   #
 
+  it "should raise if root: false and !root_metadata" do
+    expect { described_class.new({}) }.to raise_error \
+      Docker::Template::Error::NoRootMetadata
+  end
+
+  #
+
   it "should be able to pull values similar to a hash" do
     expect(subject["hello"]).to eq "world"
   end
