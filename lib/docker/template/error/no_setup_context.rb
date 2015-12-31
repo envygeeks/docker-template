@@ -5,9 +5,9 @@
 module Docker
   module Template
     module Error
-      class NoSetupContextFound < StandardError
+      class NoSetupContext < StandardError
         def initialize
-          super "No #setup_context found."
+          super "No #setup_context method exists."
         end
       end
     end

@@ -10,7 +10,7 @@ module Docker
       autoload :BadExitStatus, "docker/template/error/bad_exit_status"
       autoload :InvalidTargzFile, "docker/template/error/invalid_targz_file"
       autoload :InvalidYAMLFile, "docker/template/error/invalid_yaml_file"
-      autoload :NoSetupContextFound, "docker/template/error/no_setup_context_found"
+      autoload :NoSetupContext, "docker/template/error/no_setup_context_found"
       autoload :InvalidRepoType, "docker/template/error/invalid_repo_type"
       autoload :NoRootMetadata, "docker/template/error/no_root_metadata"
       autoload :NoRootfsMkimg, "docker/template/error/no_rootfs_mkimg"
