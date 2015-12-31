@@ -4,14 +4,21 @@
 
 module Docker
   module Template
-    Hooks.register_name :repo, :init
 
     # * A repo is not an image but a parent name w/ a tag.
     # * An image is the final result of a build on a repo, and is associated.
     # * Think of an image as the binary of the source in the repo.
 
     class Repo
-      extend Forwardable, Routable
+      extend  Forwardable
+      include Hooks::Methods
+      extend  Routable
+
+      #
+
+      register_hook_name :init
+
+      #
 
       def_delegator :builder, :build
       def_delegator :metadata, :complex_alias?
@@ -26,8 +33,7 @@ module Docker
 
         @cli_opts = cli_opts.freeze
         @base_metadata = base_metadata.freeze
-        Hooks.load_internal(:repo, :init) \
-          .run(:repo, :init, self)
+        run_hooks :init
       end
 
       #
@@ -55,6 +61,14 @@ module Docker
         prefix = metadata["local_prefix"]
         return "#{user}/#{name}:#{tag}" if type == :image
         "#{prefix}/rootfs:#{name}"
+      end
+
+      #
+
+      def cache_dir
+        dir = metadata["dockerhub_cache_dir"]
+        return root.join(dir, tag) unless tags.one?
+        return root.join(dir) if tags.one?
       end
 
       #

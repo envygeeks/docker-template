@@ -7,6 +7,7 @@ module Docker
     module Error
       const_set :StandardError, Class.new(StandardError)
       autoload :BadRepoName, "docker/template/error/bad_repo_name"
+      autoload :NoHookExists, "docker/template/error/no_hook_exists"
       autoload :BadExitStatus, "docker/template/error/bad_exit_status"
       autoload :InvalidTargzFile, "docker/template/error/invalid_targz_file"
       autoload :InvalidYAMLFile, "docker/template/error/invalid_yaml_file"

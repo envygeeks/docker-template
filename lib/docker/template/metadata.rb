@@ -4,10 +4,14 @@
 
 module Docker
   module Template
-    Hooks.register_name :metadata, :init
-
     class Metadata
-      extend Forwardable, Routable
+      extend  Forwardable
+      include Hooks::Methods
+      extend  Routable
+
+      #
+
+      register_hook_name :init
 
       # Provides aliases for the root element so you can do something like:
       #   * data["release"].fallback
@@ -39,8 +43,7 @@ module Docker
         @metadata = metadata.freeze
         @root = root
 
-        Hooks.load_internal(:metadata, :init) \
-          .run(:metadata, :init, self)
+        run_hooks :init
       end
 
       #

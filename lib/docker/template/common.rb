@@ -6,6 +6,14 @@ module Docker
   module Template
     class Common
       attr_reader :context, :repo, :img
+      def self.inherited(klass)
+        klass.send :include, Hooks::Methods
+        klass.register_hook_name(*COPY, \
+          :build, :push)
+      end
+
+      #
+
       COPY = %W(setup_context copy_global simple_copy copy_all copy_type
         copy_tag copy_cleanup build_context verify_context
           cache_context).freeze
@@ -74,6 +82,7 @@ module Docker
         img = @img || Docker::Image.get(@repo.to_s)
         logger = Stream.new.method(:log)
         img.push(&logger)
+        run_hooks :push
       end
 
       #
@@ -86,6 +95,7 @@ module Docker
         copy_prebuild_and_verify
         chdir_build
 
+        run_hooks :build
       rescue SystemExit => exit_
         unlink img: true
         raise exit_
@@ -137,6 +147,7 @@ module Docker
         return if rootfs? || Template.repo_is_root?
         dir = Template.root.join(@repo.metadata["copy_dir"])
         Util::Copy.directory(dir, @copy)
+        run_hooks :copy_global, dir
       end
 
       # When you have no tag, type, all, this is called a simple
@@ -147,7 +158,9 @@ module Docker
       private
       def simple_copy
         unless !simple_copy?
-          Util::Copy.directory(@repo.copy_dir, @copy)
+          dir = @repo.copy_dir
+          Util::Copy.directory(dir, @copy)
+          run_hooks :simple_copy, dir
         end
       end
 
@@ -161,6 +174,7 @@ module Docker
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("tag", @repo.tag)
         Util::Copy.directory(dir, @copy)
+        run_hooks :copy_tag, dir
       end
 
       # <root>/<repo>/copy/type/<type> where type is defined as
@@ -174,6 +188,7 @@ module Docker
         return if rootfs? || simple_copy? || !build_type
         dir = @repo.copy_dir("type", build_type)
         Util::Copy.directory(dir, @copy)
+        run_hooks :copy_type, dir
       end
 
       # <root>/<repo>/copy/all where it is shared local-globally in the
@@ -185,6 +200,7 @@ module Docker
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("all")
         Util::Copy.directory(dir, @copy)
+        run_hooks :copy_all, dir
       end
     end
   end

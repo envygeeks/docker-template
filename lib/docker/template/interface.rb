@@ -6,9 +6,11 @@ require "optparse"
 
 module Docker
   module Template
-    Hooks.register_name :cli, :opts
-
     class Interface
+      include Hooks::Methods
+      register_hook_name \
+        :parse
+
       def initialize(zero, argv = [])
         @zero = zero
         @raw_argv = argv
@@ -28,7 +30,7 @@ module Docker
       def parse!
         @argv = {}
         parse = OptParse.new do |parser|
-          Hooks.load_internal(:cli, :opts).run(:cli, :opts, parser, @argv)
+          run_hooks :parse, parser
           banner_bin = self.class.bin?(@zero) ? "docker template" : "docker-template"
           parser.banner = "Usage: #{banner_bin} [repos] [flags]"
         end

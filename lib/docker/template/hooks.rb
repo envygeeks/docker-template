@@ -5,41 +5,91 @@
 module Docker
   module Template
     module Hooks
-      module_function
+      attr_reader :hooks
+      extend Forwardable
+      extend self
+      @hooks = {}
+
+      #
+
+      autoload :Wrapper, "docker/template/hooks/wrapper"
+      autoload :Methods, "docker/template/hooks/methods"
+
+      #
+
+      def_delegator :@hooks, :key?
+      def_delegator :@hooks, :each
+      def_delegator :@hooks, :inspect
+      def_delegator :@hooks, :find_by
+      def_delegator :@hooks, :to_enum
+      def_delegator :@hooks, :to_h
+      def_delegator :@hooks, :[]
 
       # Register a base and a name, so that people can add hooks onto
       # your base and name and you can call it later, this is agnostic as
       # to who is doing this, so any addition can add them.
 
-      def register_name(base, name)
-        @hooks ||= {}
-        hooks = @hooks[base.to_s.downcase] = {}
-        return false if hooks.key?(name.to_s)
-        hooks[name.to_s] ||= Set.new
+      def register_name(base, point)
+        point = point.to_s
+        base  =  base.to_s
+
+        @hooks[base] ||= {}
+        return false if @hooks[base].key?(point)
+        @hooks[base][point] ||= Set.new
       end
 
       #
 
-      def valid?(base, name)
-        return false unless @hooks[base.to_s]
-        return false unless @hooks[base.to_s][name.to_s]
+      def verify!(base, point)
+        unless valid?(base, point)
+          raise Error::NoHookExists.new(base, point)
+        end
+      end
+
+      #
+
+      def valid?(base, point)
+        point = point.to_s
+        base  =  base.to_s
+
+        return false unless key?(base)
+        return false unless @hooks[base].key?(point)
         true
       end
 
       #
 
-      def register(base, name, &block)
+      def register(base, point, name = :unknown, order = 99, &block)
+        base  =  base.to_s
+        point = point.to_s
+        name  =  name.to_s
+
+        verify!(base, point)
         return false unless block_given?
-        raise Error::UnknownHookBaseOrName unless valid?(base, name)
-        @hooks[base.to_s][name.to_s] << block
+        @hooks[base][point] << Wrapper.new(name, block, order)
       end
 
       #
 
-      def run(base, name, *datas)
-        raise Error::UnknownHookBaseOrName unless valid?(base, name)
-        @hooks[base.to_s][name.to_s].each do |hook|
+      def run(base, point, *datas)
+        point = point.to_s
+        base  =  base.to_s
+
+        verify!(base, point)
+        @hooks[base][point].each do |hook|
           hook.call(*datas)
+        end
+      end
+
+      #
+
+      def run_with_context(base, point, context, *datas)
+        point = point.to_s
+        base  =  base.to_s
+
+        verify!(base, point)
+        @hooks[base][point].each do |hook|
+          context.instance_exec(*datas, &hook.source)
         end
       end
 
@@ -47,9 +97,12 @@ module Docker
       # specific hooks, that way if you take a path that doesn't need those
       # hooks, you can skip creating too much IO... like autoload.
 
-      def load_internal(base, name)
-        raise Error::UnknownHookBaseOrName unless valid?(base, name)
-        hook_root = Template.gem_root.join("lib", "docker", "template", "hooks", base.to_s, name.to_s)
+      def load_internal(base, point)
+        point = point.to_s
+        base  =  base.to_s
+
+        verify!(base, point)
+        hook_root = Template.gem_root.join("lib", "docker", "template", "hooks", "internal", base, point)
         return self unless hook_root.exist?
         hook_root.children.map do |hook|
           require hook

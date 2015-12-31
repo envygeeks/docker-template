@@ -4,9 +4,9 @@
 
 module Docker
   module Template
-    Hooks.register_name :normal, :context_cache
-
     class Normal < Common
+      register_hook_name :cache_context
+
       def unlink(img: false)
         @img.delete "force" => true if @img && img
         if @context && @context.directory?
@@ -38,8 +38,7 @@ module Docker
       def cache_context
         if @repo.syncable?
           Util.create_dockerhub_context self, @context
-          Hooks.load_internal(:normal, :context_cache) \
-            .run(:normal, :context_cache, self)
+          run_hooks :cache_context
         end
       end
     end
