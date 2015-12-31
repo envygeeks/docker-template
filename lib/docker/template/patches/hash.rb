@@ -50,12 +50,4 @@ class Hash
       end
     end
   end
-
-  #
-
-  def stringify_keys
-    each_with_object({}) do |(key, val), hsh|
-      hsh[key.to_s] = val
-    end
-  end
 end

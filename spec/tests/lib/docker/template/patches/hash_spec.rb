@@ -19,16 +19,6 @@ describe Hash do
 
   #
 
-  describe "#stringify_keys" do
-    it "converts keys that support it to strings" do
-      expect(subject.stringify_keys).to eq({
-        "hello" => :world, "world" => :hello
-      })
-    end
-  end
-
-  #
-
   describe "#any_keys?" do
     it "should be true if all keys exist" do
       expect(subject.any_keys?(:hello, :world)).to eq true

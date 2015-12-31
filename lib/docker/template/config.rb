@@ -74,12 +74,12 @@ module Docker
       def read_config_from(dir = Docker::Template.root)
         file = Dir[dir.join("opts.{json,yml}")].first
         return {} unless file && (file = Pathname.new(file)).file?
-        return JSON.parse(file.read).stringify_keys if file.extname == ".json"
-        out = YAML.load_file(file)
+        data = JSON.parse(file.read) if file.extname == ".json"
+        data = YAML.load_file(file)
 
-        return {} if !out || out.empty?
-        raise Error::InvalidYAMLFile, file unless out.is_a?(Hash)
-        out.stringify_keys
+        return {} if !data || data.empty?
+        raise Error::InvalidYAMLFile, file unless data.is_a?(Hash)
+        Util::Stringify.hash(data)
       end
 
       #

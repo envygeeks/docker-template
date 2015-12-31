@@ -6,6 +6,16 @@ require "yaml"
 
 module Mocks
   class Repos
+    extend Forwardable
+
+    #
+
+    def_delegator :"Docker::Template::Util::Stringify", :hash,  :stringify_hash
+    def_delegator :"Docker::Template::Util::Stringify", :array, :stringify_array
+    def_delegator :"RUNNERS", :key?, :valid_runner?
+
+    #
+
     RUNNERS = {
       :normal => [
         [:mkdir, "copy"],
@@ -61,7 +71,7 @@ module Mocks
 
     def as(what)
       return clear.as(what) if @already_ran_as
-      raise ArgumentError, "Unknown runner #{what}" unless RUNNERS.key?(what)
+      raise ArgumentError, "Unknown runner #{what}" unless valid_runner?(what)
       @simple = true if what.to_s.start_with?("simple_")
       @already_ran_as = true
 
@@ -83,7 +93,7 @@ module Mocks
 
     def with_cli_opts(args)
       @cli_opts ||= {}
-      @cli_opts.merge!(args.stringify_keys)
+      @cli_opts.merge!(stringify_hash(args))
       self
     end
 
@@ -91,7 +101,7 @@ module Mocks
 
     def with_init(args)
       @init ||= {}
-      @init.merge!(args.stringify_keys)
+      @init.merge!(stringify_hash(args))
       self
     end
 
@@ -100,7 +110,7 @@ module Mocks
     def with_opts(opts)
       @opts ||= {}
       pre_data = Docker::Template.config.read_config_from(strip_and_split)
-      @opts = pre_data.merge(@opts).merge(opts.stringify_keys)
+      @opts = pre_data.merge(@opts).merge(stringify_hash(opts))
       write "opts.yml", @opts.to_yaml
       self
     end

@@ -8,6 +8,7 @@ module Docker
       module_function
 
       autoload :Copy, "docker/template/util/copy"
+      autoload :Stringify, "docker/template/util/stringify"
       autoload :Data, "docker/template/util/data"
 
       def notify_alias(aliased)
