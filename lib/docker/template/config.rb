@@ -75,7 +75,7 @@ module Docker
         file = Dir[dir.join("opts.{json,yml}")].first
         return {} unless file && (file = Pathname.new(file)).file?
         data = JSON.parse(file.read) if file.extname == ".json"
-        data = YAML.load_file(file)
+        data = YAML.load_file( file) if file.extname == ".yml"
 
         return {} if !data || data.empty?
         raise Error::InvalidYAMLFile, file unless data.is_a?(Hash)

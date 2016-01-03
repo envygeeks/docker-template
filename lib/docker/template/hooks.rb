@@ -47,12 +47,10 @@ module Docker
       def register(klass, point, order: 99, &block)
         ensure_exist! klass, point
 
-        struct = hook_struct.new
         point = get_point(klass, point)
-        struct.name = generate_hook_name
+        struct = hook_struct.new(order, rand_hook_name)
         point[:klass]::HookMethods.send(:define_method, struct.name, &block)
         point[:hooks] << struct
-        struct.order = order
       end
 
       #
@@ -62,7 +60,7 @@ module Docker
         load_internal context, point
 
         # Make sure we order it by the order that the user wants it to come in as.
-        get_point(context, point).fetch(:hooks).sort_by { |struct| struct.order }.each do |struct|
+        get_point(context, point).fetch(:hooks).sort_by(&:order).each do |struct|
           context.send(struct.name, *args)
         end
       end
@@ -116,8 +114,8 @@ module Docker
       #
 
       private
-      def generate_hook_name
-        return SecureRandom.hex(12)
+      def rand_hook_name
+        SecureRandom.hex(12)
       end
     end
   end

@@ -1,6 +1,8 @@
 Style/IndentHash: { EnforcedStyle: align_braces }
 Style/StringLiteralsInInterpolation: { EnforcedStyle: double_quotes }
 Style/StringLiterals: { EnforcedStyle: double_quotes }
+Style/IndentArray: { EnforcedStyle: consistent }
+Style/IndentHash:  { EnforcedStyle: consistent }
 Metrics/MethodLength: { Max:  24 }
 Metrics/ClassLength:  { Max: 240 }
 Metrics/ModuleLength: { Max: 240 }

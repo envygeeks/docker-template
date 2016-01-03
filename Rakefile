@@ -24,9 +24,10 @@ end
 
 task :analysis do
   ansi = Simple::Ansi
-  cmd = ["docker", "run", "--rm", "--env=CODE_PATH=#{Dir.pwd}", \
-    "--volume=#{Dir.pwd}:/code", "--volume=/var/run/docker.sock:/var/run/docker.sock", \
-    "--volume=/tmp/cc:/tmp/cc", "-i", "codeclimate/codeclimate", "analyze"]
+  cmd = [
+    "docker", "run", "--rm", "--env=CODE_PATH=#{Dir.pwd}",
+    "--volume=#{Dir.pwd}:/code", "--volume=/var/run/docker.sock:/var/run/docker.sock",
+    "--volume=/tmp/cc:/tmp/cc", "-i", "codeclimate/codeclimate", "analyze" ]
 
   file = File.open(".analysis", "w+")
   Open3.popen3(cmd.shelljoin) do |_, out, err, _|
