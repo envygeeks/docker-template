@@ -17,15 +17,15 @@ module Docker
         return $stdout.puts stream["status"] || stream["stream"] if stream.any_keys?("status", "stream")
         return progress_error(stream) if stream.any_keys?("errorDetail", "error")
 
-        warn Ansi.red("Unhandled stream message")
-        $stderr.puts Ansi.red("Please file a bug ticket.")
+        warn Simple::Ansi.red("Unhandled stream message")
+        $stderr.puts Simple::Ansi.red("Please file a bug ticket.")
         $stdout.puts part
       end
 
       #
 
       def progress_error(stream)
-        abort Ansi.red((stream["error"] || stream["errorDetail"]["message"]).capitalize)
+        abort Simple::Ansi.red((stream["error"] || stream["errorDetail"]["message"]).capitalize)
       end
 
       #
@@ -42,7 +42,7 @@ module Docker
         str = stream["progress"] || stream["status"]
         str = "#{id}: #{str}\r"
 
-        $stdout.print(Ansi.jump(str, diff))
+        $stdout.print(Simple::Ansi.jump(str, diff))
       end
 
       #

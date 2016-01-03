@@ -357,7 +357,7 @@ describe Docker::Template::Common do
       #
 
       it "should clear the screen" do
-        expect(Docker::Template::Ansi).to receive :clear do
+        expect(Simple::Ansi).to receive :clear do
           nil
         end
       end

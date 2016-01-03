@@ -75,8 +75,8 @@ module Docker
         exec exe.to_s, *ARGV if exe
         abort "No Docker."
       rescue Error::StandardError => error_
-        $stderr.puts Ansi.red(error_.message)
-        $stderr.puts Ansi.red("Aborting your build. Bye and good luck.")
+        $stderr.puts Simple::Ansi.red(error_.message)
+        $stderr.puts Simple::Ansi.red("Aborting your build. Bye and good luck.")
         exit error_.respond_to?(:status) ? error_.status.to_i : 1
       end
 

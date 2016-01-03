@@ -28,7 +28,7 @@ describe Docker::Template::Stream do
     #
 
     it "should prefix with the id and then message" do
-      expect(Docker::Template::Ansi.strip(subject).strip).to \
+      expect(Simple::Ansi.strip(subject).strip).to \
         eq "hello: world"
     end
 

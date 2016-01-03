@@ -96,7 +96,7 @@ module Docker
       def build
         return Alias.new(self).build if alias?
 
-        Ansi.clear
+        Simple::Ansi.clear
         Util.notify_build(@repo, rootfs: rootfs?)
         copy_prebuild_and_verify
         chdir_build
@@ -139,7 +139,7 @@ module Docker
       private
       def cache_context
         if repo.syncable?
-          $stdout.puts Ansi.red("Context caching not supported")
+          $stdout.puts Simple::Ansi.red("Context caching not supported")
         end
       end
 

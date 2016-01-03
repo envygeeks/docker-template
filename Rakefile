@@ -3,8 +3,8 @@
 # Encoding: utf-8
 
 $LOAD_PATH.unshift(File.expand_path("../lib", __FILE__))
-require "docker/template/ansi"
 require "rspec/core/rake_task"
+require "simple/ansi"
 require "open3"
 
 task :default => [:spec]
@@ -23,12 +23,10 @@ task :pry do
 end
 
 task :analysis do
-  ansi = Docker::Template::Ansi
-  cmd = [
-    "docker", "run", "--rm", "--env=CODE_PATH=#{Dir.pwd}", \
+  ansi = Simple::Ansi
+  cmd = ["docker", "run", "--rm", "--env=CODE_PATH=#{Dir.pwd}", \
     "--volume=#{Dir.pwd}:/code", "--volume=/var/run/docker.sock:/var/run/docker.sock", \
-    "--volume=/tmp/cc:/tmp/cc", "-i", "codeclimate/codeclimate", "analyze"
-  ]
+    "--volume=/tmp/cc:/tmp/cc", "-i", "codeclimate/codeclimate", "analyze"]
 
   file = File.open(".analysis", "w+")
   Open3.popen3(cmd.shelljoin) do |_, out, err, _|

@@ -14,14 +14,14 @@ module Docker
       def notify_alias(aliased)
         repo = aliased.repo
         parent_repo = aliased.parent_repo
-        $stdout.puts Ansi.green("Aliasing #{repo} -> #{parent_repo}")
+        $stdout.puts Simple::Ansi.green("Aliasing #{repo} -> #{parent_repo}")
       end
 
       #
 
       def notify_build(repo, rootfs: false)
         img = rootfs ? repo.to_s(:rootfs) : repo.to_s
-        $stdout.puts Ansi.green("Building: #{img}")
+        $stdout.puts Simple::Ansi.green("Building: #{img}")
       end
 
       #
@@ -31,7 +31,7 @@ module Docker
         dir.rmtree if dir.exist?
 
         FileUtils.mkdir_p dir
-        $stdout.puts Ansi.yellow("Copying context for #{builder.repo}")
+        $stdout.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
         Util::Copy.file(readme_file(builder), dir)
         Util::Copy.directory(context, dir)
       end

@@ -11,7 +11,7 @@ describe Docker::Template::Util do
   describe "#notify_alias" do
     it "should have some color" do
       capture = capture_io { subject.notify_alias(mocked_repos.to_scratch) }
-      expect(Docker::Template::Ansi.has?(capture[:stdout])).to eq true
+      expect(Simple::Ansi.has?(capture[:stdout])).to eq true
     end
   end
 

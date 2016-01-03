@@ -80,7 +80,7 @@ module Docker
         output_given = false
         img = Container.create(create_args)
         img.start(start_args).attach do |type, str|
-          type == :stdout ? $stdout.print(str) : $stderr.print(Ansi.red(str))
+          type == :stdout ? $stdout.print(str) : $stderr.print(Simple::Ansi.red(str))
           output_given = true
         end
 
@@ -102,7 +102,7 @@ module Docker
       private
       def output_oldlogs(img)
         img.streaming_logs "stdout" => true, "stderr" => true do |type, str|
-          type == :stdout ? $stdout.print(str) : $stderr.print(Ansi.red(str))
+          type == :stdout ? $stdout.print(str) : $stderr.print(Simple::Ansi.red(str))
         end
       end
 
