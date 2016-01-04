@@ -100,7 +100,7 @@ module Docker
       #
 
       def merge(new_)
-        @metadata = @metadata.merge(Util::Stringify.hash(new_))
+        @metadata = @metadata.merge(Utils::Stringify.hash(new_))
         @root_metadata = @metadata if root?
         self
       end

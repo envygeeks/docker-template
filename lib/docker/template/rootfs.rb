@@ -52,7 +52,7 @@ module Docker
       def copy_rootfs
         return simple_rootfs_copy if simple_copy?
         dir = @repo.copy_dir("rootfs")
-        Util::Copy.directory( \
+        Utils::Copy.directory( \
           dir, @copy)
       end
 
@@ -63,7 +63,7 @@ module Docker
         file = @repo.copy_dir.join("usr/local/bin/mkimg")
 
         if file.file?
-          Util::Copy.new(file, @copy).file
+          Utils::Copy.new(file, @copy).file
         end
       end
 

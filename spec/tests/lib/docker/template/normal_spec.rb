@@ -48,8 +48,8 @@ describe Docker::Template::Normal do
       #
 
       context do
-        it "should not call util to copy it" do
-          expect(Docker::Template::Util).not_to receive \
+        it "should not call utils to copy it" do
+          expect(Docker::Template::Utils).not_to receive \
             :create_dockerhub_context
         end
 
@@ -89,8 +89,8 @@ describe Docker::Template::Normal do
       #
 
       context do
-        it "call the util to copy it" do
-          expect(Docker::Template::Util).to receive \
+        it "call the utils to copy it" do
+          expect(Docker::Template::Utils).to receive \
             :create_dockerhub_context
         end
 

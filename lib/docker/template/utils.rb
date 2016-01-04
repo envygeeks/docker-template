@@ -2,14 +2,14 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-require "docker/template/util/copy"
-require "docker/template/util/stringify"
-require "docker/template/util/system"
-require "docker/template/util/data"
+require "docker/template/utils/copy"
+require "docker/template/utils/stringify"
+require "docker/template/utils/system"
+require "docker/template/utils/data"
 
 module Docker
   module Template
-    module Util
+    module Utils
       module_function
 
       def notify_alias(aliased)
@@ -33,8 +33,8 @@ module Docker
 
         FileUtils.mkdir_p dir
         $stdout.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
-        Util::Copy.file(readme_file(builder), dir)
-        Util::Copy.directory(context, dir)
+        Utils::Copy.file(readme_file(builder), dir)
+        Utils::Copy.directory(context, dir)
       end
 
       #

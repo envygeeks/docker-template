@@ -1,6 +1,6 @@
 module Docker
   module Template
-    module Util
+    module Utils
       module Stringify
         extend self
 

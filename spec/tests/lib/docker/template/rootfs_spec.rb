@@ -37,7 +37,7 @@ RSpec.describe Docker::Template::Rootfs do
     #
 
     it "should copy" do
-      expect(Docker::Template::Util::Copy).to receive :directory do
+      expect(Docker::Template::Utils::Copy).to receive :directory do
         nil
       end
     end

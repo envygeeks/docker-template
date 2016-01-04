@@ -79,7 +79,7 @@ module Docker
 
         return {} if !data || data.empty?
         raise Error::InvalidYAMLFile, file unless data.is_a?(Hash)
-        Util::Stringify.hash(data)
+        Utils::Stringify.hash(data)
       end
 
       #

@@ -10,8 +10,8 @@ module Mocks
 
     #
 
-    def_delegator :"Docker::Template::Util::Stringify", :hash,  :stringify_hash
-    def_delegator :"Docker::Template::Util::Stringify", :array, :stringify_array
+    def_delegator :"Docker::Template::Utils::Stringify", :hash,  :stringify_hash
+    def_delegator :"Docker::Template::Utils::Stringify", :array, :stringify_array
     def_delegator :"RUNNERS", :key?, :valid_runner?
 
     #

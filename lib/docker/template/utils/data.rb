@@ -4,7 +4,7 @@
 
 module Docker
   module Template
-    module Util
+    module Utils
       class Data
         def initialize(vars)
           vars.each do |key, val|

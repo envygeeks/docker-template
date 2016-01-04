@@ -198,7 +198,7 @@ describe Docker::Template::Common do
       [:scratch, :normal].each do |val|
         context "when it's #{val}", val do
           it "should copy" do
-            expect(Docker::Template::Util::Copy).to receive :directory do
+            expect(Docker::Template::Utils::Copy).to receive :directory do
               nil
             end
           end
@@ -216,7 +216,7 @@ describe Docker::Template::Common do
       #
 
       it "should copy", :simple_copy do
-        expect(Docker::Template::Util::Copy).to receive :directory do
+        expect(Docker::Template::Utils::Copy).to receive :directory do
           nil
         end
       end
@@ -225,7 +225,7 @@ describe Docker::Template::Common do
 
       context "when !simple_copy?" do
         it "should not copy" do
-          expect(Docker::Template::Util::Copy).not_to receive :directory do
+          expect(Docker::Template::Utils::Copy).not_to receive :directory do
             nil
           end
         end
@@ -237,7 +237,7 @@ describe Docker::Template::Common do
     shared_examples :copy do
       context "when it's scratch", :scratch do
         it "should copy" do
-          expect(Docker::Template::Util::Copy).to receive :directory do
+          expect(Docker::Template::Utils::Copy).to receive :directory do
             nil
           end
         end
@@ -246,7 +246,7 @@ describe Docker::Template::Common do
 
         context "when simple_copy?", :simple_copy do
           it "should not copy" do
-            expect(Docker::Template::Util::Copy).not_to receive :directory do
+            expect(Docker::Template::Utils::Copy).not_to receive :directory do
               nil
             end
           end
@@ -257,7 +257,7 @@ describe Docker::Template::Common do
 
       context "when it's simple", :simple do
         it "should copy" do
-          expect(Docker::Template::Util::Copy).to receive :directory do
+          expect(Docker::Template::Utils::Copy).to receive :directory do
             nil
           end
         end
@@ -266,7 +266,7 @@ describe Docker::Template::Common do
 
         context "when simple_copy?", :simple_copy do
           it "should not copy" do
-            expect(Docker::Template::Util::Copy).not_to receive :directory do
+            expect(Docker::Template::Utils::Copy).not_to receive :directory do
               nil
             end
           end
@@ -277,7 +277,7 @@ describe Docker::Template::Common do
 
       context "when it's a rootfs", :rootfs do
         it "should not copy" do
-          expect(Docker::Template::Util::Copy).not_to receive :directory do
+          expect(Docker::Template::Utils::Copy).not_to receive :directory do
             nil
           end
         end
@@ -286,7 +286,7 @@ describe Docker::Template::Common do
 
         context "when simple_copy?", :simple_copy do
           it "should not copy" do
-            expect(Docker::Template::Util::Copy).not_to receive :directory do
+            expect(Docker::Template::Utils::Copy).not_to receive :directory do
               nil
             end
           end
@@ -349,7 +349,7 @@ describe Docker::Template::Common do
       #
 
       it "should notify of the build", :noisey do
-        expect(Docker::Template::Util).to receive :notify_build do
+        expect(Docker::Template::Utils).to receive :notify_build do
           nil
         end
       end

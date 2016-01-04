@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Util::Copy do
+describe Docker::Template::Utils::Copy do
   include_context :repos
 
   #

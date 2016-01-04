@@ -8,7 +8,7 @@ module Docker
       #
 
       def build
-        Util.notify_alias(@aliased)
+        Utils.notify_alias(@aliased)
         prebuild unless @aliased.parent_img
         @aliased.parent_img.tag(@aliased.repo.to_tag_h)
         @aliased.push

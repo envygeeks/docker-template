@@ -94,7 +94,7 @@ module Docker
         return Alias.new(self).build if alias?
 
         Simple::Ansi.clear
-        Util.notify_build(@repo, rootfs: rootfs?)
+        Utils.notify_build(@repo, rootfs: rootfs?)
         copy_prebuild_and_verify
         chdir_build
 
@@ -149,7 +149,7 @@ module Docker
       def copy_global
         return if rootfs? || Template.repo_is_root?
         dir = Template.root.join(@repo.metadata["copy_dir"])
-        Util::Copy.directory(dir, @copy)
+        Utils::Copy.directory(dir, @copy)
         run_hooks :copy_global, dir
       end
 
@@ -162,7 +162,7 @@ module Docker
       def simple_copy
         unless !simple_copy?
           dir = @repo.copy_dir
-          Util::Copy.directory(dir, @copy)
+          Utils::Copy.directory(dir, @copy)
           run_hooks :simple_copy, dir
         end
       end
@@ -176,7 +176,7 @@ module Docker
       def copy_tag
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("tag", @repo.tag)
-        Util::Copy.directory(dir, @copy)
+        Utils::Copy.directory(dir, @copy)
         run_hooks :copy_tag, dir
       end
 
@@ -190,7 +190,7 @@ module Docker
         build_type = @repo.metadata["tags"][@repo.tag]
         return if rootfs? || simple_copy? || !build_type
         dir = @repo.copy_dir("type", build_type)
-        Util::Copy.directory(dir, @copy)
+        Utils::Copy.directory(dir, @copy)
         run_hooks :copy_type, dir
       end
 
@@ -202,7 +202,7 @@ module Docker
       def copy_all
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("all")
-        Util::Copy.directory(dir, @copy)
+        Utils::Copy.directory(dir, @copy)
         run_hooks :copy_all, dir
       end
     end

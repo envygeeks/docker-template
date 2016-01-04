@@ -28,7 +28,7 @@ module Docker
         @argv = {}
         parser = OptParse.new do |optp|
           run_hooks :parse, optp
-          banner = Util::System.docker_bin?(@zero) ? "docker template" : "docker-template"
+          banner = Utils::System.docker_bin?(@zero) ? "docker template" : "docker-template"
           parser.on("-p", "--[no-]push", "Push your repos after building.") { |bool| @argv["push"] = bool }
           parser.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv["dockerhub_cache"] = bool }
           parser.on("-c", "--[no-]clean", "Clean the cache folder.") { |bool| @argv["clean"] = bool }
@@ -45,11 +45,11 @@ module Docker
       #
 
       def self.start(zero)
-        if !Util::System.docker_bin?(zero)
+        if !Utils::System.docker_bin?(zero)
           argv = ARGV[0] == "template" ? ARGV[1..-1] : ARGV
           new(zero, argv).run
         else
-          exe = Util::System.docker_bin
+          exe = Utils::System.docker_bin
           return exec exe.to_s, *ARGV if exe
           abort "No Docker."
         end

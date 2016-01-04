@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Util::Stringify do
+describe Docker::Template::Utils::Stringify do
   describe "#hash" do
     it "should convert various keys" do
       expect(subject.hash(1 => "a", Docker => "b", 0.1 => "c")).to eq({

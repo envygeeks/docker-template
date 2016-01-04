@@ -4,7 +4,7 @@
 
 module Docker
   module Template
-    module Util
+    module Utils
       class Copy
         def initialize(from, to)
           @root = Template.root.realpath

@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Util::System do
+describe Docker::Template::Utils::System do
   describe ".docker_bin?" do
     it "should return true if 0 is Docker" do
       expect(described_class.docker_bin?("docker")).to eq true

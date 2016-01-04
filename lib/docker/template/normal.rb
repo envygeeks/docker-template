@@ -28,7 +28,7 @@ module Docker
       private
       def copy_dockerfile
         dockerfile = @repo.root.join("Dockerfile").read
-        data = Util::Data.new(:metadata => @repo.metadata)
+        data = Utils::Data.new(:metadata => @repo.metadata)
         data = ERB.new(dockerfile).result(data._binding)
         context = @context.join("Dockerfile")
         context.write(data)
@@ -37,7 +37,7 @@ module Docker
       private
       def cache_context
         if @repo.syncable?
-          Util.create_dockerhub_context self, @context
+          Utils.create_dockerhub_context self, @context
           run_hooks :cache_context
         end
       end

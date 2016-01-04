@@ -57,7 +57,7 @@ describe Docker::Template::Interface do
       #
 
       it "should msg discover" do
-        expect(Docker::Template::Util::System).to receive(:docker_bin)
+        expect(Docker::Template::Utils::System).to receive(:docker_bin)
       end
 
       #
@@ -70,7 +70,7 @@ describe Docker::Template::Interface do
 
       context "when it cannot find a bin" do
         before do
-          allow(Docker::Template::Util::System).to receive(:docker_bin) do
+          allow(Docker::Template::Utils::System).to receive(:docker_bin) do
             nil
           end
         end

@@ -4,7 +4,7 @@
 
 module Docker
   module Template
-    module Util
+    module Utils
       module System
         module_function
 

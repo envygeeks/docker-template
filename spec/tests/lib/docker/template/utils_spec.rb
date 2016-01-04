@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Util do
+describe Docker::Template::Utils do
   include_context :repos
 
   #
@@ -49,7 +49,7 @@ describe Docker::Template::Util do
       template.send :copy_prebuild_and_verify
 
       silence_io do
-        Docker::Template::Util.create_dockerhub_context \
+        Docker::Template::Utils.create_dockerhub_context \
           template, template.context
       end
     end
