@@ -118,6 +118,7 @@ module Docker
       private
       def copy_prebuild_and_verify
         raise Error::NoSetupContext unless respond_to?(:setup_context, true)
+
         COPY.map do |val|
           send(val) if respond_to?(val, true)
         end
@@ -139,7 +140,7 @@ module Docker
       private
       def cache_context
         if repo.syncable?
-          $stdout.puts Simple::Ansi.red("Context caching not supported")
+          $stderr.puts Simple::Ansi.red("Context caching not supported")
         end
       end
 

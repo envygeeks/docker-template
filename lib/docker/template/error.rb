@@ -5,18 +5,19 @@
 module Docker
   module Template
     module Error
-      const_set :StandardError, Class.new(StandardError)
-      autoload :BadRepoName, "docker/template/error/bad_repo_name"
-      autoload :NoHookExists, "docker/template/error/no_hook_exists"
-      autoload :BadExitStatus, "docker/template/error/bad_exit_status"
-      autoload :InvalidTargzFile, "docker/template/error/invalid_targz_file"
-      autoload :InvalidYAMLFile, "docker/template/error/invalid_yaml_file"
-      autoload :NoSetupContext, "docker/template/error/no_setup_context"
-      autoload :InvalidRepoType, "docker/template/error/invalid_repo_type"
-      autoload :NoRootMetadata, "docker/template/error/no_root_metadata"
-      autoload :NoRootfsMkimg, "docker/template/error/no_rootfs_mkimg"
-      autoload :NotImplemented, "docker/template/error/not_implemented"
-      autoload :RepoNotFound, "docker/template/error/repo_not_found"
+      StandardError = Class.new(StandardError)
     end
   end
 end
+
+require "docker/template/error/bad_repo_name"
+require "docker/template/error/no_hook_exists"
+require "docker/template/error/bad_exit_status"
+require "docker/template/error/invalid_targz_file"
+require "docker/template/error/invalid_yaml_file"
+require "docker/template/error/no_setup_context"
+require "docker/template/error/invalid_repo_type"
+require "docker/template/error/no_root_metadata"
+require "docker/template/error/no_rootfs_mkimg"
+require "docker/template/error/not_implemented"
+require "docker/template/error/repo_not_found"

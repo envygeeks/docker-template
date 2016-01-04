@@ -5,6 +5,9 @@
 module Docker
   module Template
     class Alias
+      extend Forwardable
+      def_delegator :@aliased, :normal?
+
       def initialize(aliased)
         @aliased = aliased
       end
@@ -22,10 +25,9 @@ module Docker
 
       private
       def prebuild
-        repo   = @aliased.parent_repo
-        normal = @aliased.repo.type == "normal"
-        @aliased.class.new(repo, @aliased.rootfs_img) unless normal
-        @aliased.class.new(repo).build if normal
+        repo = @aliased.parent_repo
+        @aliased.class.new(repo, @aliased.rootfs_img) unless normal?
+        @aliased.class.new(repo).build if normal?
       end
     end
   end

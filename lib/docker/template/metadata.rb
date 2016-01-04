@@ -61,7 +61,9 @@ module Docker
       #
 
       def alias?
-        aliased != from_root("tag")
+        return @alias ||= begin
+          aliased != from_root("tag")
+        end
       end
 
       #
@@ -165,9 +167,7 @@ module Docker
         type = from_root("tags")[tag]
         return unless key?("type")
         return unless type
-
-        hash = self["type"]
-        hash[type]
+        self["type"][type]
       end
 
       #
@@ -194,7 +194,7 @@ module Docker
       private
       def merge_or_override(val, new_val)
         return new_val unless val
-        return val if (val&.is_a?(String)) || !new_val || (val && !new_val.is_a?(val.class))
+        return val if val.is_a?(String) && !new_val || !new_val.is_a?(val.class)
         return new_val.merge(val) if val.respond_to?(:merge)
         return new_val | val if val.respond_to?(:|)
       end

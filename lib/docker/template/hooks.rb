@@ -48,7 +48,7 @@ module Docker
         ensure_exist! klass, point
 
         point = get_point(klass, point)
-        struct = hook_struct.new(order, rand_hook_name)
+        struct = Struct.new(:order, :name).new(order, rand_hook_name)
         point[:klass]::HookMethods.send(:define_method, struct.name, &block)
         point[:hooks] << struct
       end
@@ -77,13 +77,6 @@ module Docker
         unless get_point(base, point)
           raise Error::NoHookExists.new(base, point)
         end
-      end
-
-      #
-
-      private
-      def hook_struct
-        @struct ||= Struct.new(:order, :name)
       end
 
       #

@@ -32,6 +32,8 @@ module Docker
         context.write(data)
       end
 
+      #
+
       private
       def cache_context
         if @repo.syncable?
