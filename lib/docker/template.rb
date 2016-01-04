@@ -4,15 +4,41 @@
 
 require "docker"
 require "forwardable"
+require "docker/template/patches/array"
+require "docker/template/patches/pathname"
+require "docker/template/patches/object"
+require "docker/template/patches/string"
+require "docker/template/patches/hash"
+require "docker/template/version"
 require "simple/ansi"
 require "pathname"
-require "json"
-require "erb"
 require "set"
+require "erb"
 
 module Docker
   module Template
     module_function
+
+    #
+
+    autoload :Alias, "docker/template/alias"
+    autoload :Builder, "docker/template/builder"
+    autoload :Config, "docker/template/config"
+    autoload :Error, "docker/template/error"
+    autoload :Hooks, "docker/template/hooks"
+    autoload :Interface, "docker/template/interface"
+    autoload :Loggers, "docker/template/loggers"
+    autoload :Metadata, "docker/template/metadata"
+    autoload :Normal, "docker/template/normal"
+    autoload :Parser, "docker/template/parser"
+    autoload :Repo, "docker/template/repo"
+    autoload :Rootfs, "docker/template/rootfs"
+    autoload :Routable, "docker/template/routable"
+    autoload :Scratch, "docker/template/scratch"
+    autoload :Utils, "docker/template/utils"
+
+    #
+
     def repo_is_root?
       root.join("copy").exist? && \
         !root.join(config["repos_dir"]).exist?
@@ -74,19 +100,3 @@ module Docker
     end
   end
 end
-
-require "docker/template/patches"
-require "docker/template/version"
-require "docker/template/routable"
-require "docker/template/error"
-require "docker/template/hooks"
-require "docker/template/utils"
-require "docker/template/config"
-require "docker/template/interface"
-# FIXME: -> interface/parser
-require "docker/template/parser"
-require "docker/template/repo"
-require "docker/template/builder"
-require "docker/template/rootfs"
-require "docker/template/scratch"
-require "docker/template/normal"
