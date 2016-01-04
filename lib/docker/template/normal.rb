@@ -11,9 +11,7 @@ module Docker
 
       def unlink(img: false)
         @img.delete "force" => true if @img && img
-        if @context && @context.directory?
-          then @context.rmtree
-        end
+        @context.rmtree if @context&.directory?
       end
 
       #

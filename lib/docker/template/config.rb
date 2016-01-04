@@ -93,11 +93,8 @@ module Docker
       private
       def setup
         @config = DEFAULTS.deep_merge(read_config_from)
-        @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
-          oval.nil? || oval.empty?? nval : oval
-        end
-
-        @config.freeze
+        @config = @config.merge(EMPTY_DEFAULTS) { |_, oval, nval| oval.nil? || \
+          oval.empty?? nval : oval }.freeze
       end
     end
   end

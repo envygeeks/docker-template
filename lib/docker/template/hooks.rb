@@ -29,7 +29,7 @@ module Docker
       # to who is doing this, so any addition can add them.
 
       def register_point(point, klass)
-        other = klass.name.to_s.split(/::/).last.downcase
+        other = klass.name.to_s.split(/::/.freeze).last.downcase
         point = point.to_s
 
         unless get_point(klass, point)
@@ -38,7 +38,7 @@ module Docker
             :alternate_klass => other,
             :hooks => Set.new,
             :klass => klass
-          }
+          }.freeze
         end
       end
 
@@ -57,9 +57,6 @@ module Docker
 
       def run(context, point, *args)
         ensure_exist! context, point
-        load_internal context, point
-
-        # Make sure we order it by the order that the user wants it to come in as.
         get_point(context, point).fetch(:hooks).sort_by(&:order).each do |struct|
           context.send(struct.name, *args)
         end
@@ -82,33 +79,11 @@ module Docker
         end
       end
 
-      # Allows us to defer loading internal hooks until we run those
-      # specific hooks, that way if you take a path that doesn't need those
-      # hooks, you can skip creating too much IO... like autoload.
-
-      private
-      def load_internal(base, point)
-        root = internal_root.join(*get_point(base, point).values_at(:alternate_klass, :point))
-        return unless root.exist?
-
-        root.children.map do |file|
-          require file
-        end
-      end
-
       #
 
       private
       def hook_struct
         @struct ||= Struct.new(:order, :name)
-      end
-
-      #
-
-      private
-      def internal_root
-        @root ||= Template.gem_root.join("lib", "docker", "template", \
-          "hooks", "internal")
       end
 
       #

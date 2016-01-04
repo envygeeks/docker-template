@@ -10,10 +10,10 @@ module Docker
           klass.send :extend, Forwardable
           klass.def_delegator :"self.class", :hook_base
           klass.def_delegator :"self.class", :hooks
-          klass.send :extend, Klass
 
-          klass.send(:include, klass.const_set( \
-            :HookMethods, Module.new))
+          klass.send :extend, Klass
+          const = klass.const_set(:HookMethods, Module.new)
+          klass.send(:include, const)
         end
 
         #

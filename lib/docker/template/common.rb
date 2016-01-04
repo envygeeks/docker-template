@@ -52,7 +52,7 @@ module Docker
 
       [:normal, :scratch].each do |sym|
         define_method("#{sym}?") do
-          @repo.type == sym.to_s
+          @repo.type == sym.to_s && !rootfs?
         end
       end
 

@@ -33,10 +33,10 @@ module Docker
       #
 
       def unlink(img: false)
-        @copy.rmtree if @copy && @copy.directory?
-        @img.delete "force" => true if @img && img
-        @context.rmtree if @context && @context.directory?
-        @tar_gz.unlink if @tar_gz && @tar_gz.file?
+        @copy.rmtree if @copy&.directory?
+        @img&.delete "force" => true if img
+        @context.rmtree if @context&.directory?
+        @tar_gz.unlink if @tar_gz&.file?
       end
 
       #

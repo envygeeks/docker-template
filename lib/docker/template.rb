@@ -19,7 +19,8 @@ module Docker
   module Template
     module_function
     def repo_is_root?
-      root.join("copy").exist? && !root.join(config["repos_dir"]).exist?
+      root.join("copy").exist? && \
+        !root.join(config["repos_dir"]).exist?
     end
 
     #

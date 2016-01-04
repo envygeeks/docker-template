@@ -20,9 +20,7 @@ module Docker
       #
 
       def run
-        Parser.new(@raw_repos, @argv).parse.map do |repo|
-          repo.build
-        end
+        Parser.new(@raw_repos, @argv).parse.map(&:build)
       end
 
       #
