@@ -35,6 +35,8 @@ module Docker
 
         @cli_opts = cli_opts.freeze
         @base_metadata = base_metadata.freeze
+        raise Error::InvalidRepoType, type if !Template.config.build_types.include?(type)
+        raise Error::RepoNotFound unless root.exist?
         run_hooks :init
       end
 
