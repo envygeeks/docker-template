@@ -3,6 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
+require "docker/template/interface"
 describe Docker::Template::Interface do
   include_context :repos
 
@@ -17,65 +18,6 @@ describe Docker::Template::Interface do
   end
 
   #
-
-  describe ".bin?" do
-    it "should return true if 0 is Docker" do
-      expect(described_class.bin?("docker")).to eq true
-    end
-
-    #
-
-    context "with a bad value" do
-      it "should not throw; return false" do
-        expect(described_class.bin?(nil)).to eq false
-      end
-    end
-  end
-
-  #
-
-  describe ".discover" do
-    let :tmpbin do
-      Dir.mktmpdir("bin")
-    end
-
-    #
-
-    before do
-      file = File.join(tmpbin, "docker")
-      ENV["PATH"] = "#{tmpbin}:#{ENV["PATH"]}"
-      FileUtils.touch file
-      FileUtils.chmod("u+rx", \
-        file)
-    end
-
-    #
-
-    it "should find the Docker binary" do
-      expect(described_class.discover).to match %r!\/docker\Z!
-    end
-
-    #
-
-    after do
-      FileUtils.rm_rf(tmpbin)
-    end
-
-    #
-
-    context "with a bad path" do
-      before do
-        ENV["PATH"] = "/hello/world/bin:#{ENV["PATH"]}"
-      end
-
-      #
-
-      it "should not raise an error" do
-        expect { described_class.discover }.not_to \
-          raise_error
-      end
-    end
-  end
 
   describe ".start" do
     before :all do
@@ -115,7 +57,7 @@ describe Docker::Template::Interface do
       #
 
       it "should msg discover" do
-        expect(described_class).to receive(:discover)
+        expect(Docker::Template::Util::System).to receive(:docker_bin)
       end
 
       #
@@ -128,7 +70,7 @@ describe Docker::Template::Interface do
 
       context "when it cannot find a bin" do
         before do
-          allow(described_class).to receive(:discover) do
+          allow(Docker::Template::Util::System).to receive(:docker_bin) do
             nil
           end
         end
