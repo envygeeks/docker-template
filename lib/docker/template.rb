@@ -86,8 +86,6 @@ require "docker/template/config"
 require "docker/template/interface"
 # FIXME: -> interface/parser
 require "docker/template/parser"
-# ^ FIXME: -> logger/stream
-require "docker/template/stream"
 require "docker/template/repo"
 require "docker/template/builder"
 require "docker/template/rootfs"

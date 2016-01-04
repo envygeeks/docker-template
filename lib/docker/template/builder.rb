@@ -3,6 +3,7 @@
 # Encoding: utf-8
 
 require "docker/template/alias"
+require "docker/template/loggers/stream"
 require "docker/template/auth"
 
 module Docker
@@ -83,7 +84,7 @@ module Docker
 
         Auth.auth!
         img = @img || Docker::Image.get(@repo.to_s)
-        logger = Stream.new.method(:log)
+        logger = Loggers::Stream.new.method(:log)
         img.push(&logger)
         run_hooks :push
       end
@@ -125,7 +126,7 @@ module Docker
       private
       def chdir_build
         Dir.chdir(@context) do
-          @img = Docker::Image.build_from_dir(".", &Stream.new.method(:log))
+          @img = Docker::Image.build_from_dir(".", &Loggers::Stream.new.method(:log))
           @img.tag rootfs?? @repo.to_rootfs_h : @repo.to_tag_h
           push
         end
