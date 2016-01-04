@@ -2,6 +2,9 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
+require "docker/template/alias"
+require "docker/template/auth"
+
 module Docker
   module Template
     class Common
@@ -17,12 +20,6 @@ module Docker
       COPY = %W(setup_context copy_global simple_copy copy_all copy_type copy_tag
         copy_cleanup build_context verify_context cache_context).freeze
       register_hook_point(*COPY, :build, :push)
-
-      #
-
-      def hook_parent_base
-        :common
-      end
 
       #
 

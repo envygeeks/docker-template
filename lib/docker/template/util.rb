@@ -2,14 +2,15 @@
 # Copyright: 2015 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
+require "docker/template/util/copy"
+require "docker/template/util/stringify"
+require "docker/template/util/system"
+require "docker/template/util/data"
+
 module Docker
   module Template
     module Util
       module_function
-
-      autoload :Copy, "docker/template/util/copy"
-      autoload :Stringify, "docker/template/util/stringify"
-      autoload :Data, "docker/template/util/data"
 
       def notify_alias(aliased)
         repo = aliased.repo

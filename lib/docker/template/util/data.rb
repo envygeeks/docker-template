@@ -5,11 +5,6 @@
 module Docker
   module Template
     module Util
-
-      # Provides a way to encapsulate data for ERB processing so that we
-      # don't get full unfettered access to the entire binding from within
-      # our ERB processing context.  Nobody wants that.
-
       class Data
         def initialize(vars)
           vars.each do |key, val|
@@ -17,8 +12,10 @@ module Docker
           end
         end
 
+        #
+
         def _binding
-          binding
+          return binding
         end
       end
     end
