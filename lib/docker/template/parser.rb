@@ -46,29 +46,13 @@ module Docker
       private
       def to_repo_hash(val)
         data = val.split(SPLIT_REGEXP)
-        hsh  = {}
 
-        # repo
-        if data.one?
-          hsh["name"] = data[0]
+        return "name" => data[0] if data.one?
+        return "name" => data[0], "tag"  => data[1] if val =~ COLON_REGEXP && data.size == 2
+        return "user" => data[0], "name" => data[1] if val =~ SLASH_REGEXP && data.size == 2
+        return "user" => data[0], "name" => data[1], "tag" => data[2] if data.size == 3
 
-        # repo:tag
-        elsif val =~ COLON_REGEXP && data.size == 2
-          hsh["name"] = data[0]
-          hsh[ "tag"] = data[1]
-
-        # user/repo
-        elsif val =~ SLASH_REGEXP && data.size == 2
-          hsh["user"] = data[0]
-          hsh["name"] = data[1]
-
-        # user/repo:tag
-        elsif data.size == 3
-          hsh["user"] = data[0]
-          hsh["name"] = data[1]
-          hsh[ "tag"] = data[2]
-        end
-        hsh
+        {}
       end
     end
   end

@@ -35,7 +35,7 @@ module Docker
 
         @cli_opts = cli_opts.freeze
         @base_metadata = base_metadata.freeze
-        raise Error::InvalidRepoType, type if !Template.config.build_types.include?(type)
+        raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
         raise Error::RepoNotFound unless root.exist?
         run_hooks :init
       end
@@ -122,7 +122,7 @@ module Docker
 
       def tmpfile(*prefixes, root: nil)
         prefixes = [user, name, tag] + prefixes
-        ext = prefixes.pop if prefixes.last =~ /\A\./
+        ext = prefixes.pop if prefixes.last.start_with?(".")
         prefixes = ["#{prefixes.join("-")}-"]
         prefixes = ext ? prefixes.push(ext) : prefixes.first
         args = [prefixes, root].delete_if(&:nil?)
@@ -158,8 +158,7 @@ module Docker
         end
       end
 
-      #
-
+      # rubocop:disable Metrics/AbcSize
       def to_env(tar_gz: nil, copy_dir: nil)
         metadata["env"].as_hash.merge({
           "REPO" => name,

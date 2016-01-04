@@ -14,5 +14,5 @@ end
 # Time to play the game.
 require "docker/template"
 require "docker/template/interface"
-Docker::Template::Interface. \
-  start($PROGRAM_NAME)
+Docker::Template::Interface \
+  .start($PROGRAM_NAME)

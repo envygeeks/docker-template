@@ -74,8 +74,7 @@ module Docker
       def read_config_from(dir = Docker::Template.root)
         file = Dir[dir.join("opts.{json,yml}")].first
         return {} unless file && (file = Pathname.new(file)).file?
-        data = JSON.parse(file.read) if file.extname == ".json"
-        data = YAML.load_file( file) if file.extname == ".yml"
+        data = YAML.load_file(file) if file.extname == ".yml"
 
         return {} if !data || data.empty?
         raise Error::InvalidYAMLFile, file unless data.is_a?(Hash)
@@ -93,8 +92,9 @@ module Docker
       private
       def setup
         @config = DEFAULTS.deep_merge(read_config_from)
-        @config = @config.merge(EMPTY_DEFAULTS) { |_, oval, nval| oval.nil? || \
-          oval.empty?? nval : oval }.freeze
+        @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
+          oval.nil? || oval.empty?? nval : oval
+        end.freeze
       end
     end
   end

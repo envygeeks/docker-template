@@ -8,9 +8,11 @@ require "docker/template/alias"
 module Docker
   module Template
     class Builder
-      attr_reader :context, :repo, :img
-      include Hooks::Methods
+      attr_reader :repo
+      attr_reader :context
+      attr_reader :img
 
+      include Hooks::Methods
       def self.inherited(klass)
         klass.register_hook_point(*COPY, :build, :push)
       end
@@ -46,7 +48,7 @@ module Docker
       #
 
       def rootfs?
-        self.is_a?(Rootfs)
+        is_a?(Rootfs)
       end
 
       #
@@ -161,11 +163,11 @@ module Docker
 
       private
       def simple_copy
-        unless !simple_copy?
-          dir = @repo.copy_dir
-          Utils::Copy.directory(dir, @copy)
-          run_hooks :simple_copy, dir
-        end
+        return unless simple_copy?
+
+        dir = @repo.copy_dir
+        Utils::Copy.directory(dir, @copy)
+        run_hooks :simple_copy, dir
       end
 
       # <root>/<repo>/copy/tag/<tag> where tag is the container for

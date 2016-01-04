@@ -85,13 +85,14 @@ module Docker
         end
 
         output_oldlogs img unless output_given
-        if (status = img.json["State"]["ExitCode"]) != 0
+        status = img.json["State"]["ExitCode"]
+        if status != 0
           raise Error::BadExitStatus, status
         end
       ensure
-        if img
-          then img.tap(&:stop).delete("force" => true)
-        end
+        img&.tap(&:stop)&.delete({
+          "force" => true
+        })
       end
 
       # Sometimes the instance exists too quickly for attach to even work,

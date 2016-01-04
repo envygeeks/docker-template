@@ -194,9 +194,9 @@ module Docker
       private
       def merge_or_override(val, new_val)
         return new_val unless val
-        return val if (val && val.is_a?(String)) || !new_val || (val && !new_val.is_a?(val.class))
+        return val if (val&.is_a?(String)) || !new_val || (val && !new_val.is_a?(val.class))
         return new_val.merge(val) if val.respond_to?(:merge)
-        return new_val + val if val.respond_to?(:+)
+        return new_val | val if val.respond_to?(:|)
       end
     end
   end
