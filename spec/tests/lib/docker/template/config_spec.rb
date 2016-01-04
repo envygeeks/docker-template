@@ -12,7 +12,7 @@ describe Docker::Template::Config do
 
   describe "#initialize" do
     Docker::Template::Config::DEFAULTS.each do |key, _|
-      it { is_expected.to have_key key }
+      specify { expect(subject.key?(key)).to eq true }
     end
   end
 

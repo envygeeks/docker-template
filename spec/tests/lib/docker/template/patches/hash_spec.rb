@@ -35,41 +35,9 @@ describe Hash do
 
   #
 
-  describe "#leftover_keys?" do
-    it "should return true if there are any keys after removing the key" do
-      expect(hash.leftover_keys?(:hello)).to eq true
-    end
-
-    #
-
-    context "when all keys are tapped" do
-      it "should return false" do
-        expect(hash.leftover_keys?(:hello, :world)).to eq false
-      end
-    end
-  end
-
-  #
-
-  describe "keys?" do
-    it "should accept a single key, like #key?" do
-      expect(hash.keys?(:hello))
-    end
-
-    #
-
-    context "with a single invalid key" do
-      it "should return false" do
-        expect(hash.keys?(:invalid, :hello, :world)).to eq false
-      end
-    end
-  end
-
-  #
-
   describe "#to_env_ary" do
     subject { hash.to_env_ary }
-    it { is_expected.to eq ["hello=world", "world=hello"] }
+    it { is_expected.to eq ["HELLO=world", "WORLD=hello"] }
   end
 
   #

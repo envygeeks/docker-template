@@ -18,7 +18,6 @@ module Docker
       def_delegator :@config, :to_h
       def_delegator :@config, :to_enum
       def_delegator :@config, :key?, :has_default?
-      def_delegator :@config, :has_key?
       def_delegator :@config, :key?
       def_delegator :@config, :each
       def_delegator :@config, :[]

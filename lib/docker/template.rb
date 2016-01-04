@@ -4,7 +4,6 @@
 
 require "docker"
 require "forwardable"
-require "docker/template/patches/array"
 require "docker/template/patches/pathname"
 require "docker/template/patches/object"
 require "docker/template/patches/string"
