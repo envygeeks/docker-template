@@ -118,7 +118,7 @@ describe Docker::Template::Builder do
     #
 
     it "should try to auth" do
-      expect(Docker::Template::Auth).to receive :auth! do
+      expect(subject).to receive :auth! do
         nil
       end
     end
@@ -127,7 +127,7 @@ describe Docker::Template::Builder do
 
     context do
       before do
-        allow(Docker::Template::Auth).to receive :auth! do
+        allow(subject).to receive :auth! do
           nil
         end
       end

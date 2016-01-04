@@ -18,6 +18,12 @@ module Docker
 
         #
 
+        def any_hooks?(point)
+          Hooks.get_point(self, point).fetch(:hooks).any?
+        end
+
+        #
+
         def run_hooks(point, *args)
           Hooks.run(self, point, *args)
         end

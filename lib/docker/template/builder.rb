@@ -2,9 +2,8 @@
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-require "docker/template/alias"
 require "docker/template/loggers/stream"
-require "docker/template/auth"
+require "docker/template/alias"
 
 module Docker
   module Template
@@ -21,6 +20,7 @@ module Docker
       COPY = %W(setup_context copy_global simple_copy copy_all copy_type copy_tag
         copy_cleanup build_context verify_context cache_context).freeze
       register_hook_point(*COPY, :build, :push)
+      register_hook_point(:auth)
 
       #
 
@@ -82,7 +82,7 @@ module Docker
       def push
         return if rootfs? || !@repo.pushable?
 
-        Auth.auth!
+        auth!
         img = @img || Docker::Image.get(@repo.to_s)
         logger = Loggers::Stream.new.method(:log)
         img.push(&logger)
@@ -205,6 +205,29 @@ module Docker
         dir = @repo.copy_dir("all")
         Utils::Copy.directory(dir, @copy)
         run_hooks :copy_all, dir
+      end
+
+      #
+
+      private
+      def auth!
+        if !any_hooks?(:auth)
+          credentials = Pathname.new("~/.docker/config.json").expand_path
+          credentials = JSON.parse(credentials.read) if credentials.exist?
+          return unless credentials
+
+          credentials.fetch("auths").each do |server, info|
+            user, pass = Base64.decode64(info["auth"]).split(":", 2)
+            Docker.authenticate!({
+              "username" => user,
+              "serveraddress" => server,
+              "email" => info["email"],
+              "password" => pass
+            })
+          end
+        else
+          run_hooks :auth
+        end
       end
     end
   end
