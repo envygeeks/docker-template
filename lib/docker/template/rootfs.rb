@@ -2,11 +2,9 @@
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-require "docker/template/common"
-
 module Docker
   module Template
-    class Rootfs < Common
+    class Rootfs < Builder
       def data
         Template.get(:rootfs, {
           :rootfs_base_img => @repo.metadata["rootfs_base_img"]

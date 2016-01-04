@@ -7,7 +7,7 @@ require "docker/template/auth"
 
 module Docker
   module Template
-    class Common
+    class Builder
       attr_reader :context, :repo, :img
       include Hooks::Methods
 

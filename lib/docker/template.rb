@@ -76,15 +76,20 @@ module Docker
   end
 end
 
-require "docker/template/error"
-require "docker/template/version"
 require "docker/template/patches"
+require "docker/template/version"
 require "docker/template/routable"
+require "docker/template/error"
 require "docker/template/hooks"
 require "docker/template/utils"
 require "docker/template/config"
+require "docker/template/interface"
+# FIXME: -> interface/parser
+require "docker/template/parser"
+# ^ FIXME: -> logger/stream
 require "docker/template/stream"
 require "docker/template/repo"
+require "docker/template/builder"
 require "docker/template/rootfs"
 require "docker/template/scratch"
 require "docker/template/normal"

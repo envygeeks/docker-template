@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Common do
+describe Docker::Template::Builder do
   include_contexts :docker, :repos
 
   #
@@ -165,7 +165,7 @@ describe Docker::Template::Common do
 
     #
 
-    Docker::Template::Common::COPY.each do |method|
+    Docker::Template::Builder::COPY.each do |method|
       it "should message #{method}" do
         expect(subject).to receive(method) do
           nil
