@@ -13,6 +13,7 @@ Gem::Specification.new do |spec|
   spec.description = "Build and template awesome Docker images a variety of ways."
   spec.summary = "Build and template Docker images a variety of ways."
   spec.homepage = "http://github.com/envygeeks/docker-template/"
+  spec.required_ruby_version = ">= 2.3.0"
   spec.email = ["jordon@envygeeks.io"]
   spec.require_paths = ["lib"]
   spec.name = "docker-template"

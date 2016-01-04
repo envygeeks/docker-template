@@ -1,37 +1,6 @@
 engines:
-  rubocop:
-    enabled: true
-    checks:
-      Rubocop/Style/NegatedIf:                      { enabled: false }
-      Rubocop/Style/GuardClause:                    { enabled: false }
-      Rubocop/Lint/UselessAccessModifier:           { enabled: false }
-      Rubocop/Style/SpaceInsideParens:              { enabled: false }
-      Rubocop/Style/SpaceInsideBrackets:            { enabled: false }
-      Rubocop/Style/BracesAroundHashParameters:     { enabled: false }
-      Rubocop/Style/EmptyLinesAroundAccessModifier: { enabled: false }
-      Rubocop/Style/EmptyLinesAroundModuleBody:     { enabled: false }
-      Rubocop/Style/SpaceAroundOperators:           { enabled: false }
-      Rubocop/Style/AlignParameters:                { enabled: false }
-      Rubocop/Style/SignalException:                { enabled: false }
-      Rubocop/Style/Documentation:                  { enabled: false }
-      Rubocop/Style/DoubleNegation:                 { enabled: false }
-      Rubocop/Style/UnneededCapitalW:               { enabled: false }
-      Rubocop/Style/IfUnlessModifier:               { enabled: false }
-      Rubocop/Style/RescueModifier:                 { enabled: false }
-      Rubocop/Style/RegexpLiteral:                  { enabled: false }
-      Rubocop/Style/FileName:                       { enabled: false }
-      Rubocop/Style/ModuleFunction:                 { enabled: false }
-    exclude_fingerprints:
-    - 1fa49c478840c58733ac3be538355984
-    - fb031899b0d76c6e620613c37c2114a1
-    - 7af6f27ac6829dec72127082772fc532
-    - 90ef76e6fefc2880d2c69718e3cab94c
-    - c364c91ffa134c162428383b6f5f62b7
-    - 8d8ddd022560e18166104d0dcfde3b03
-    - ea28ffd910e9cd432385c0ad741f9e3b
-    - e62bc2ac873d6f165abc2c874723a4cd
-  fixme:
-    enabled: false
+  rubocop: { enabled: true  }
+  fixme:   { enabled: false }
 exclude_paths:
 - .rubocop.yml
 - .codeclimate.yml
@@ -49,8 +18,10 @@ exclude_paths:
 - LICENSE
 
 - test/**/*
+- vendor/**/*
+- features/**/*
 - script/**/*
 - spec/**/*
 ratings:
   paths:
-  - lib/**/*
+  - lib/**/*.rb
