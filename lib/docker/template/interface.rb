@@ -9,7 +9,6 @@ module Docker
   module Template
     class Interface
       include Hooks::Methods
-
       register_hook_point :parse
       def initialize(zero, argv = [])
         @zero = zero
@@ -27,14 +26,18 @@ module Docker
 
       def setup
         @argv = {}
-        parse = OptParse.new do |parser|
-          run_hooks :parse, parser
-          banner_bin = self.class.bin?(@zero) ? "docker template" : "docker-template"
-          parser.banner = "Usage: #{banner_bin} [repos] [flags]"
+        parser = OptParse.new do |optp|
+          run_hooks :parse, optp
+          banner = Util::System.docker_bin?(@zero) ? "docker template" : "docker-template"
+          parser.on("-p", "--[no-]push", "Push your repos after building.") { |bool| @argv["push"] = bool }
+          parser.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv["dockerhub_cache"] = bool }
+          parser.on("-c", "--[no-]clean", "Clean the cache folder.") { |bool| @argv["clean"] = bool }
+          parser.on("-h", "--help", "Show this message") { $stdout.puts parser; exit 0 }
+          parser.banner = "Usage: #{banner} [repos] [flags]"
         end
 
         @raw_repos = Set.new
-        @raw_repos.merge(parse.parse!(@raw_argv.dup))
+        @raw_repos.merge(parser.parse!(@raw_argv.dup))
         @raw_repos.freeze
         @argv.freeze
       end
