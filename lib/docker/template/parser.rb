@@ -34,7 +34,7 @@ module Docker
       def parse
         out = Set.new
         all.each do |val|
-          hash = build_repo_hash(val)
+          hash = to_repo_hash(val)
           raise Docker::Template::Error::BadRepoName, val if hash.empty?
           out |= Repo.new(hash, @argv).to_repos
         end
@@ -44,7 +44,7 @@ module Docker
       #
 
       private
-      def build_repo_hash(val)
+      def to_repo_hash(val)
         data = val.split(SPLIT_REGEXP)
         hsh  = {}
 
