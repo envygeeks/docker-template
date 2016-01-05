@@ -6,7 +6,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [UNRELEASED]
 #### Added
 - Aliased tags can have their own merged values.
-- Move `dockerhub_copy` to `dockerhub_cache`; add `dockerhub_cache_dir`.
 - Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore.
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml.
 - Added a User-Agent so Docker and other stuff can identify our software.
@@ -21,6 +20,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny`
 - Move the secondary logger out of Scratch#build_context and into it's own method.
 - Split `Ansi.jump` into `Ansi.jump`, `Ansi.down`, and `Ansi.up` for simpler interaction with the API.
+- Move caching to syncing for consistency, on the high level it's "sync" on the low level it uses "cache_dir".
 - Change "Simple" type to "Normal" type so it's not confused with "simple copy".
 - Correct an issue where pulling the parent_repo of an alias doesn't work.
 - Detect if a repo has multiple tags and only segement cache if they do.

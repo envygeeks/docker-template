@@ -26,7 +26,7 @@ module Docker
         parser = OptParse.new do |optp|
           banner = Utils::System.docker_bin?(@zero) ? "docker template" : "docker-template"
           optp.on("-p", "--[no-]push", "Push your repos after building.") { |bool| @argv["push"] = bool }
-          optp.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv["dockerhub_cache"] = bool }
+          optp.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv[ "sync"] = bool }
           optp.on("-c", "--[no-]clean", "Clean the cache folder.") { |bool| @argv["clean"] = bool }
           optp.on("-h", "--help", "Show this message") { $stdout.puts parser; exit 0 }
           optp.on("--tty", "Enable TTY output.") { @argv["tty"] = true }

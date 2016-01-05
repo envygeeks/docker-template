@@ -22,10 +22,10 @@ describe Docker::Template::Normal do
   #
 
   describe "#cache_context" do
-    context "when dockerhub_cache = false" do
+    context "when sync = false" do
       before do
         subject.repo.metadata.merge({
-          "dockerhub_cache" => false
+          "cache" => false
         })
       end
 
@@ -41,7 +41,7 @@ describe Docker::Template::Normal do
         #
 
         it "should not copy all the files" do
-          expect(subject.repo.root.join("cache")).not_to exist
+          expect(subject.repo.cache_dir).not_to exist
         end
       end
 
@@ -49,8 +49,9 @@ describe Docker::Template::Normal do
 
       context do
         it "should not call utils to copy it" do
-          expect(Docker::Template::Utils).not_to receive \
-            :create_dockerhub_context
+          expect(Docker::Template::Utils::Context).not_to receive :cache do
+            nil
+          end
         end
 
         #
@@ -63,10 +64,10 @@ describe Docker::Template::Normal do
 
     #
 
-    context "when dockerhub_cache = true" do
+    context "when sync = true" do
       before do
         subject.repo.metadata.merge({
-          "dockerhub_cache" => true
+          "sync" => true
         })
       end
 
@@ -82,7 +83,7 @@ describe Docker::Template::Normal do
         #
 
         it "should copy all the files" do
-          expect(subject.repo.root.join("cache")).to exist
+          expect(subject.repo.cache_dir).to exist
         end
       end
 
@@ -105,7 +106,7 @@ describe Docker::Template::Normal do
       after do
         subject.unlink
         subject.repo.metadata.merge({
-          "dockerhub_cache" => false
+          "cache" => false
         })
       end
     end

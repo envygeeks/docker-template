@@ -48,7 +48,7 @@ module Docker
       #
 
       def syncable?
-        metadata["dockerhub_cache"] != false
+        metadata["sync"] != false
       end
 
       #
@@ -62,7 +62,7 @@ module Docker
       #
 
       def cache_dir
-        dir = metadata["dockerhub_cache_dir"]
+        dir = metadata["cache_dir"]
         return root.join(dir, tag) unless tags.one?
         return root.join(dir) if tags.one?
       end
