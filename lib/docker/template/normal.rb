@@ -5,7 +5,6 @@
 module Docker
   module Template
     class Normal < Builder
-      register_hook_point :cache_context
 
       def unlink(img: false)
         @img.delete "force" => true if @img && img
@@ -38,7 +37,6 @@ module Docker
       def cache_context
         if @repo.syncable?
           Utils.create_dockerhub_context self, @context
-          run_hooks :cache_context
         end
       end
     end

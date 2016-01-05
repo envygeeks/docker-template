@@ -11,12 +11,7 @@ module Docker
 
     class Repo
       extend  Forwardable
-      include Hooks::Methods
       extend  Routable
-
-      #
-
-      register_hook_point :init
 
       #
 
@@ -35,7 +30,6 @@ module Docker
         @base_metadata = base_metadata.freeze
         raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
         raise Error::RepoNotFound unless root.exist?
-        run_hooks :init
       end
 
       #

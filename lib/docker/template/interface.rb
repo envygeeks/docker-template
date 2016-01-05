@@ -7,8 +7,6 @@ require "optparse"
 module Docker
   module Template
     class Interface
-      include Hooks::Methods
-      register_hook_point :parse
       def initialize(zero, argv = [])
         @zero = zero
         @raw_argv = argv
@@ -26,7 +24,6 @@ module Docker
       def setup
         @argv = {}
         parser = OptParse.new do |optp|
-          run_hooks :parse, optp
           banner = Utils::System.docker_bin?(@zero) ? "docker template" : "docker-template"
           optp.on("-p", "--[no-]push", "Push your repos after building.") { |bool| @argv["push"] = bool }
           optp.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv["dockerhub_cache"] = bool }

@@ -9,17 +9,10 @@ module Docker
       attr_reader :context
       attr_reader :img
 
-      include Hooks::Methods
-      def self.inherited(klass)
-        klass.register_hook_point(*COPY, :build, :push)
-      end
-
       #
 
       COPY = %W(setup_context copy_global simple_copy copy_all copy_type copy_tag
         copy_cleanup build_context verify_context cache_context).freeze
-      register_hook_point(*COPY, :build, :push)
-      register_hook_point(:auth)
 
       #
 
@@ -85,7 +78,6 @@ module Docker
         img = @img || Docker::Image.get(@repo.to_s)
         logger = Loggers::API.new.method(:log)
         img.push(&logger)
-        run_hooks :push
       end
 
       #
@@ -97,7 +89,6 @@ module Docker
         copy_prebuild_and_verify
         chdir_build
 
-        run_hooks :build
       rescue SystemExit => exit_
         unlink img: true
         raise exit_
@@ -161,7 +152,6 @@ module Docker
         return if rootfs? || Template.repo_is_root?
         dir = Template.root.join(@repo.metadata["copy_dir"])
         Utils::Copy.directory(dir, @copy)
-        run_hooks :copy_global, dir
       end
 
       # When you have no tag, type, all, this is called a simple
@@ -175,7 +165,6 @@ module Docker
 
         dir = @repo.copy_dir
         Utils::Copy.directory(dir, @copy)
-        run_hooks :simple_copy, dir
       end
 
       # <root>/<repo>/copy/tag/<tag> where tag is the container for
@@ -188,7 +177,6 @@ module Docker
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("tag", @repo.tag)
         Utils::Copy.directory(dir, @copy)
-        run_hooks :copy_tag, dir
       end
 
       # <root>/<repo>/copy/type/<type> where type is defined as
@@ -202,7 +190,6 @@ module Docker
         return if rootfs? || simple_copy? || !build_type
         dir = @repo.copy_dir("type", build_type)
         Utils::Copy.directory(dir, @copy)
-        run_hooks :copy_type, dir
       end
 
       # <root>/<repo>/copy/all where it is shared local-globally in the
@@ -214,29 +201,24 @@ module Docker
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("all")
         Utils::Copy.directory(dir, @copy)
-        run_hooks :copy_all, dir
       end
 
       #
 
       private
       def auth!
-        if !any_hooks?(:auth)
-          credentials = Pathname.new("~/.docker/config.json").expand_path
-          credentials = JSON.parse(credentials.read) if credentials.exist?
-          return unless credentials
+        credentials = Pathname.new("~/.docker/config.json").expand_path
+        credentials = JSON.parse(credentials.read) if credentials.exist?
+        return unless credentials
 
-          credentials.fetch("auths").each do |server, info|
-            user, pass = Base64.decode64(info["auth"]).split(":", 2)
-            Docker.authenticate!({
-              "username" => user,
-              "serveraddress" => server,
-              "email" => info["email"],
-              "password" => pass
-            })
-          end
-        else
-          run_hooks :auth
+        credentials.fetch("auths").each do |server, info|
+          user, pass = Base64.decode64(info["auth"]).split(":", 2)
+          Docker.authenticate!({
+            "username" => user,
+            "serveraddress" => server,
+            "email" => info["email"],
+            "password" => pass
+          })
         end
       end
     end
