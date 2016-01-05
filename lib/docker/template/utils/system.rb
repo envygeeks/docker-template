@@ -17,9 +17,13 @@ module Docker
         #
 
         def docker_bin
-          bins.find do |path|
+          rtn = bins.find do |path|
             path.basename.fnmatch?("docker") && path.executable_real?
-          end&.to_s
+          end
+
+          if rtn
+            then rtn.to_s
+          end
         end
 
         #

@@ -28,8 +28,8 @@ module Docker
       #
 
       def unlink(img: true)
-        @context.rmtree if @context&.directory?
-        @img&.delete "force" => true if img && !keep? \
+        @context.rmtree if @context && @context.directory?
+        @img.delete "force" => true if @img && img && !keep? \
          rescue Docker::Error::NotFoundError
       end
 

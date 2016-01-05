@@ -31,10 +31,11 @@ module Docker
       #
 
       def unlink(img: false)
-        @copy.rmtree if @copy&.directory?
-        @img&.delete "force" => true if img
-        @context.rmtree if @context&.directory?
-        @tar_gz.unlink if @tar_gz&.file?
+        @copy.rmtree if @copy && @copy.directory?
+        @context.rmtree if @context && @context.directory?
+        @tar_gz .unlink if @tar_gz  && @tar_gz.file?
+        @img.delete "force" => true if @img && img \
+          rescue Docker::Error::NotFoundError
       end
 
       #
@@ -87,9 +88,11 @@ module Docker
           raise Error::BadExitStatus, status
         end
       ensure
-        img&.tap(&:stop)&.delete({
-          "force" => true
-        })
+        if img
+          then img.tap(&:stop).delete({
+            "force" => true
+          })
+        end
       end
 
       #
