@@ -11,7 +11,7 @@ describe Docker::Template::Utils::Context do
   describe "#context" do
     before do
       template.send :copy_prebuild_and_verify
-      silence_io { described_class.context \
+      silence_io { described_class.cache \
           template, template.context }
     end
 
@@ -24,10 +24,8 @@ describe Docker::Template::Utils::Context do
 
     #
 
-    it "should copy the context to the repo root" do
-      repo = mocked_repos.to_repo
-      expect(repo.root.join(repo.metadata[ \
-        "cache_dir"])).to exist
+    it "should cache the context" do
+      expect(template.repo.cache_dir).to exist
     end
 
     #
