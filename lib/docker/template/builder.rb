@@ -90,10 +90,9 @@ module Docker
 
       #
 
-      def build
-        return Alias.new(self).build if alias?
-
+      def build(force: false)
         Simple::Ansi.clear
+        return build_alias if !force && alias?
         Utils.notify_build(@repo, rootfs: rootfs?)
         copy_prebuild_and_verify
         chdir_build
@@ -106,6 +105,16 @@ module Docker
         if rootfs?
           unlink img: false else unlink
         end
+      end
+
+      #
+
+      private
+      def build_alias
+        build(force: true) unless parent_img
+        parent_img.tag(@repo.to_tag_h)
+        Utils.notify_alias(self)
+        push
       end
 
       # The prebuild happens when a user has "build_context", which
