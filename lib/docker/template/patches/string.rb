@@ -3,7 +3,11 @@
 # Encoding: utf-8
 
 class String
-  def to_a
-    split " "
+  module Patches
+    def to_a
+      split " "
+    end
   end
+
+  prepend Patches
 end

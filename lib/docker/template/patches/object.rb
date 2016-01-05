@@ -3,7 +3,11 @@
 # Encoding: utf-8
 
 class Object
-  def to_pathname
-    Object::Pathname.new(self)
+  module Patches
+    def to_pathname
+      Object::Pathname.new(self)
+    end
   end
+
+  prepend Patches
 end
