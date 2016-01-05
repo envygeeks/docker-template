@@ -7,15 +7,17 @@ project adheres to [Semantic Versioning](http://semver.org/).
 #### Added
 - Aliased tags can have their own merged values.
 - Move `dockerhub_copy` to `dockerhub_cache`; add `dockerhub_cache_dir`.
-- Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore if you don't want to.
+- Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore.
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml.
 - Added a User-Agent so Docker and other stuff can identify our software.
 - Complex aliased metadata is not treated like a full build. [#7]
+- `--tty` option to enable tty scratch builds.
 - Added a default timeout of 480 to Excon.
 
 #### Changed
 - Switch to completely dynamic test fixtures.
 - Rewrite specs to be more verbose and easily organized.
+- Do inline tagging on build instead of after the build.
 - Implement hooks so users can extend the CLI interface quickly.
 - Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny`
 - Move the secondary logger out of Scratch#build_context and into it's own method.
@@ -24,9 +26,13 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Correct an issue where pulling the parent_repo of an alias doesn't work.
 - Start moving stuff to verifying with hooks, have the CLI use hooks for base.
 - Detect if a repo has multiple tags and only segement cache if they do.
+- Move `Docker::Template::Common` -> `Docker::Template::Builder`
 - Remove `Util#get_context`; we always copy the context anyways.
 - Move old coupled CLI stuff into config and off Interface.
 - Cleanup Metadata and it's API, making it less fragile.
+- Move Alias directly onto builder as a simple method.
+- Remove encapsulating auth into a class.
+- Encapsulate logger into classes.
 - Fix a few minor bugs.
 
 #### Fixed
