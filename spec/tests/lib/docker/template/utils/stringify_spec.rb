@@ -29,4 +29,10 @@ describe Docker::Template::Utils::Stringify do
       ]
     end
   end
+
+  describe "#set" do
+    it "should convert the keys and give back a set" do
+      expect(subject.set(Set.new([:hello, :world]))).to be_a Set
+    end
+  end
 end

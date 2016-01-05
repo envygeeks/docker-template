@@ -28,7 +28,7 @@ module Docker
         #
 
         def set(set)
-          return Set.new(array(set.to_a))
+          return Set.new(array(set))
         end
 
         #
