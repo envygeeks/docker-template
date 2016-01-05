@@ -7,11 +7,6 @@ module Docker
     class Scratch < Builder
       attr_reader :rootfs
 
-      # Caches and builds the master rootfs for repos, this is cached
-      # on the class because it could be used many times in a single build
-      # so we make sure to keep it around so you don't have tons of
-      # replication going about slowing down all of the builds.
-
       def self.rootfs_for(repo)
         (@rootfs ||= {})[repo.name] ||= begin
           Rootfs.new(repo).tap(&:build)
