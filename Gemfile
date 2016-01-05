@@ -7,12 +7,17 @@ gem "rake", :require => false
 gemspec
 
 group :test do
+  gem "luna-rspec-formatters", :require => false
   gem "codeclimate-test-reporter", :require => false
+  gem "rspec", :require => false
 end
 
 group :development do
-  gem "rspec", :require => false
-  gem "luna-rspec-formatters", :require => false
-  gem "rubocop", :github => "bbatsov/rubocop", :branch => :master, :require => false, :install_if => !ENV["CI"]
-  gem "pry", :require => false
+  unless ENV["CI"]
+    gem "pry", :require => false
+    gem "rubocop", {
+      :github => "bbatsov/rubocop",
+      :branch => :master, :require => false
+    }
+  end
 end
