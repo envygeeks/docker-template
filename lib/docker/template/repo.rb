@@ -59,9 +59,9 @@ module Docker
 
       #
 
-      def to_s(type = :image)
+      def to_s(rootfs: false)
         prefix = metadata["local_prefix"]
-        return "#{user}/#{name}:#{tag}" if type == :image
+        return "#{user}/#{name}:#{tag}" unless rootfs
         "#{prefix}/rootfs:#{name}"
       end
 

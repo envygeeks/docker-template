@@ -328,14 +328,6 @@ describe Docker::Template::Builder do
 
       #
 
-      it "should tag the image" do
-        expect(image_mock).to receive :tag do
-          nil
-        end
-      end
-
-      #
-
       it "should cleanup", :skip_unlink do
         expect(subject).to receive(:unlink).and_call_original
       end

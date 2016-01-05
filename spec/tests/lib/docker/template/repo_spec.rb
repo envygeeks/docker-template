@@ -100,10 +100,10 @@ describe Docker::Template::Repo do
       end
     end
 
-    context "when type == :rootfs" do
+    context "when rootfs: true" do
       it "should use the repo name as the tag" do
         prefix = Docker::Template.config["local_prefix"]
-        expect(mocked_repos.to_repo.to_s(:rootfs)).to eq "#{prefix}/rootfs:default"
+        expect(mocked_repos.to_repo.to_s(rootfs: true)).to eq "#{prefix}/rootfs:default"
       end
     end
   end

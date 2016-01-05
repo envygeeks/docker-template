@@ -25,7 +25,7 @@ module Docker
       #
 
       def notify_build(repo, rootfs: false)
-        img = rootfs ? repo.to_s(:rootfs) : repo.to_s
+        img = repo.to_s(rootfs: rootfs)
         $stdout.puts Simple::Ansi.green("Building: #{img}")
       end
 
