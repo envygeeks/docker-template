@@ -32,6 +32,7 @@ module Docker
           optp.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv["dockerhub_cache"] = bool }
           optp.on("-c", "--[no-]clean", "Clean the cache folder.") { |bool| @argv["clean"] = bool }
           optp.on("-h", "--help", "Show this message") { $stdout.puts parser; exit 0 }
+          optp.on("--tty", "Enable TTY output.") { |bool| @argv["tty"] = true }
           optp.banner = "Usage: #{banner} [repos] [flags]"
         end
 

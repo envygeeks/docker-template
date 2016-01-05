@@ -37,6 +37,7 @@ module Docker
         "copy_dir" => "copy",
         "tag" => "latest",
         "clean" => true,
+        "tty" => false,
 
         "env"      => { "tag" => {}, "type" => {}, "all" => nil },
         "pkgs"     => { "tag" => {}, "type" => {}, "all" => nil },

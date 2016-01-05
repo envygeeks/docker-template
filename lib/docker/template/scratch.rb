@@ -77,15 +77,12 @@ module Docker
       def build_context
         @rootfs ||= self.class.rootfs_for(@repo)
 
-        output_given = false
         img = Container.create(create_args)
-        img.start(start_args).attach do |type, str|
-          type == :stdout ? $stdout.print(str) : $stderr.print(Simple::Ansi.red(str))
-          output_given = true
-        end
-
-        output_oldlogs img unless output_given
+        logger = @repo.metadata["tty"] ? Loggers::TTY : Loggers::Simple
+        logger_opts = { :tty => @repo.metadata["tty"], :stdout => true, :stderr => true }
+        img.start(start_args).attach(logger_opts, &logger.new.method(:log))
         status = img.json["State"]["ExitCode"]
+
         if status != 0
           raise Error::BadExitStatus, status
         end
@@ -95,23 +92,12 @@ module Docker
         })
       end
 
-      # Sometimes the instance exists too quickly for attach to even work,
-      # through the remote API, so we need to detect those situations and stream
-      # the logs after it's exited if we have given no output, we want you to
-      # always get the output that was given.
-
-      private
-      def output_oldlogs(img)
-        img.streaming_logs "stdout" => true, "stderr" => true do |type, str|
-          type == :stdout ? $stdout.print(str) : $stderr.print(Simple::Ansi.red(str))
-        end
-      end
-
       #
 
       private
       def create_args
         {
+          "Tty"     => @repo.metadata["tty"],
           "Env"     => @repo.to_env(tar_gz: @tar_gz, copy_dir: @copy).to_env_ary,
           "Name"    => ["rootfs", @repo.name, @repo.tag, "image"].join("-"),
           "Image"   => @rootfs.img.id,

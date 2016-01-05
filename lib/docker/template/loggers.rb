@@ -1,7 +1,9 @@
 module Docker
   module Template
     module Loggers
-      autoload :Stream, "docker/template/loggers/stream"
+      autoload :API, "docker/template/loggers/api"
+      autoload :Simple, "docker/template/loggers/simple"
+      autoload :TTY, "docker/template/loggers/tty"
     end
   end
 end

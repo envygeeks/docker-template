@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Loggers::Stream do
+describe Docker::Template::Loggers::API do
   subject do
     described_class
   end

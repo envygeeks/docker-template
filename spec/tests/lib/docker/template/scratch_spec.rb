@@ -153,22 +153,6 @@ describe Docker::Template::Scratch do
 
     #
 
-    context "when nothing logged" do
-      before do
-        allow(container_mock).to \
-          receive :attach
-      end
-
-      #
-
-      it "should pull the logs out of the stream" do
-        expect(container_mock).to \
-          receive(:streaming_logs)
-      end
-    end
-
-    #
-
     context "when an image exists badly" do
       before do
         allow(container_mock).to receive :json do

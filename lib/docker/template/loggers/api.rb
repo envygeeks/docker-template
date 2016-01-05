@@ -5,7 +5,7 @@
 module Docker
   module Template
     module Loggers
-      class Stream
+      class API
         def initialize
           @lines = {}
         end
@@ -18,15 +18,16 @@ module Docker
           return $stdout.puts stream["status"] || stream["stream"] if stream.any_keys?("status", "stream")
           return progress_error(stream) if stream.any_keys?("errorDetail", "error")
 
-          warn Simple::Ansi.red("Unhandled stream message")
-          $stderr.puts Simple::Ansi.red("Please file a bug ticket.")
+          warn Object::Simple::Ansi.red("Unhandled stream message")
+          $stderr.puts Object::Simple::Ansi.red("Please file a bug ticket.")
           $stdout.puts part
         end
 
         #
 
         def progress_error(stream)
-          abort Simple::Ansi.red((stream["error"] || stream["errorDetail"]["message"]).capitalize)
+          abort Object::Simple::Ansi.red((stream["error"] \
+            || stream["errorDetail"]["message"]))
         end
 
         #
@@ -41,7 +42,7 @@ module Docker
           str = stream["progress"] || stream["status"]
           str = "#{id}: #{str}\r"
 
-          $stdout.print(Simple::Ansi.jump(str, diff))
+          $stdout.print(Object::Simple::Ansi.jump(str, diff))
         end
 
         #
