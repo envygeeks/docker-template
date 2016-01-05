@@ -36,7 +36,7 @@ module Docker
       private
       def cache_context
         if @repo.syncable?
-          Utils.create_dockerhub_context self, @context
+          Utils::Context.cache self, @context
         end
       end
     end

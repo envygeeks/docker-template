@@ -85,7 +85,7 @@ module Docker
       def build(force: false)
         Simple::Ansi.clear
         return build_alias if !force && alias?
-        Utils.notify_build(@repo, rootfs: rootfs?)
+        Utils::Notify.build(@repo, rootfs: rootfs?)
         copy_prebuild_and_verify
         chdir_build
 

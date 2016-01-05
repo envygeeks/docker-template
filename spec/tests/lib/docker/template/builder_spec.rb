@@ -341,7 +341,7 @@ describe Docker::Template::Builder do
       #
 
       it "should notify of the build", :noisey do
-        expect(Docker::Template::Utils).to receive :notify_build do
+        expect(Docker::Template::Utils::Notify).to receive :build do
           nil
         end
       end

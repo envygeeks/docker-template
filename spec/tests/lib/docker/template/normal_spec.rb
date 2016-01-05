@@ -90,8 +90,9 @@ describe Docker::Template::Normal do
 
       context do
         it "call the utils to copy it" do
-          expect(Docker::Template::Utils).to receive \
-            :create_dockerhub_context
+          expect(Docker::Template::Utils::Context).to receive :cache do
+            nil
+          end
         end
 
         after do
