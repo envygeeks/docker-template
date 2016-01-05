@@ -78,9 +78,9 @@ module Docker
         @rootfs ||= self.class.rootfs_for(@repo)
 
         img = Container.create(create_args)
-        logger = @repo.metadata["tty"] ? Loggers::TTY : Loggers::Simple
+        logger = @repo.metadata["tty"] ? :tty : :simple
         logger_opts = { :tty => @repo.metadata["tty"], :stdout => true, :stderr => true }
-        img.start(start_args).attach(logger_opts, &logger.new.method(:log))
+        img.start(start_args).attach(logger_opts, &Logger.new.method(logger))
         status = img.json["State"]["ExitCode"]
 
         if status != 0

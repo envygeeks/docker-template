@@ -30,7 +30,6 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Cleanup Metadata and it's API, making it less fragile.
 - Move Alias directly onto builder as a simple method.
 - Remove encapsulating auth into a class.
-- Encapsulate logger into classes.
 - Fix a few minor bugs.
 
 #### Fixed

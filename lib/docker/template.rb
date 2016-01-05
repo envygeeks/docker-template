@@ -25,7 +25,7 @@ module Docker
     autoload :Config, "docker/template/config"
     autoload :Error, "docker/template/error"
     autoload :Interface, "docker/template/interface"
-    autoload :Loggers, "docker/template/loggers"
+    autoload :Logger, "docker/template/logger"
     autoload :Metadata, "docker/template/metadata"
     autoload :Normal, "docker/template/normal"
     autoload :Parser, "docker/template/parser"

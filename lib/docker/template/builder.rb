@@ -75,8 +75,8 @@ module Docker
         return if rootfs? || !@repo.pushable?
 
         auth!
+        logger = Logger.new.method(:api)
         img = @img || Docker::Image.get(@repo.to_s)
-        logger = Loggers::API.new.method(:log)
         img.push(&logger)
       end
 
@@ -128,7 +128,7 @@ module Docker
         Dir.chdir(@context) do
           opts = { :t => @repo.to_s(rootfs: rootfs?) }
           $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.metadata["tty"]
-          @img = Docker::Image.build_from_dir(".", opts, &Loggers::API.new.method(:log))
+          @img = Docker::Image.build_from_dir(".", opts, &Logger.new.method(:api))
           push
         end
       end

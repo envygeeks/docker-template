@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Loggers::API do
+describe Docker::Template::Logger do
   subject do
     described_class
   end
@@ -11,7 +11,7 @@ describe Docker::Template::Loggers::API do
   #
 
   def log(type, what)
-    io = capture_io { described_class.new.log(what.to_json) }
+    io = capture_io { described_class.new.api(what.to_json) }
     type == :both ? io : io[type]
   end
 
