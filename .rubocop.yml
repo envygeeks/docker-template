@@ -52,7 +52,7 @@ Style/SpaceAroundOperators:           { Enabled: false }
 Style/RedundantReturn:                { Enabled: false }
 
 AllCops:
-  TargetRubyVersion: 2.3
+  TargetRubyVersion: 2.0
   Include:
     - lib/**/*.rb
 
