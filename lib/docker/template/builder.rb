@@ -82,9 +82,9 @@ module Docker
 
       #
 
-      def build(force: false)
+      def build
         Simple::Ansi.clear
-        return build_alias if !force && alias?
+        return build_alias if alias?
         Utils::Notify.build(@repo, rootfs: rootfs?)
         copy_prebuild_and_verify
         chdir_build
@@ -102,9 +102,9 @@ module Docker
 
       private
       def build_alias
-        build(force: true) unless parent_img
+        self.class.new(parent_repo).build unless parent_img
         parent_img.tag(@repo.to_tag_h)
-        Utils.notify_alias(self)
+        Utils::Notify.alias(self)
         push
       end
 
