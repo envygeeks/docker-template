@@ -6,19 +6,22 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [UNRELEASED]
 #### Added
 - Aliased tags can have their own merged values.
+- Allow Excon to be configured inside of opts.yml with excon_timeout.
 - Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore.
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml.
 - Added a User-Agent so Docker and other stuff can identify our software.
 - Complex aliased metadata is not treated like a full build. [#7]
 - `--tty` option to enable tty scratch builds.
-- Added a default timeout of 480 to Excon.
+- Added a default timeout of 1440 to Excon.
 
 #### Changed
 - Switch to completely dynamic test fixtures.
 - Rewrite specs to be more verbose and easily organized.
 - Do inline tagging on build instead of after the build.
+- Move alias building back into the main builder class to ease dev.
 - Move to using `envygeeks/ubuntu:latest` instead of `envygeeks/ubuntu:tiny`
 - Move the secondary logger out of Scratch#build_context and into it's own method.
+- Normal sync across the CLI and opts.yml to make things easier to follow and understand.
 - Split `Ansi.jump` into `Ansi.jump`, `Ansi.down`, and `Ansi.up` for simpler interaction with the API.
 - Move caching to syncing for consistency, on the high level it's "sync" on the low level it uses "cache_dir".
 - Change "Simple" type to "Normal" type so it's not confused with "simple copy".
@@ -37,6 +40,9 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Detect empty and invalid `opts.yml` and either ship a blank hash or raise.
 - Fix detection of directory is repo, it should use the *current directory* not 2 directories back.
 - Make sure RSpec helpers is always available first.
+
+#### Hacks
+- Work around a Docker/Excon/Docker-API JSON bug.
 
 ## 0.2.0
 #### Added
