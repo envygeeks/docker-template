@@ -81,6 +81,15 @@ module Docker
 
       #
 
+      def self.excon_timeouts(config = {}, default = 1440)
+        Excon.defaults.update({
+           :read_timeout => config["excon_timeout"] || default,
+          :write_timeout => config["excon_timeout"] || default
+        })
+      end
+
+      #
+
       def build_types
         @build_types ||= %W(normal scratch).freeze
       end
@@ -89,6 +98,7 @@ module Docker
 
       private
       def setup
+        self.class.excon_timeouts
         @config = DEFAULTS.deep_merge(read_config_from)
         @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
           oval.nil? || oval.empty?? nval : oval

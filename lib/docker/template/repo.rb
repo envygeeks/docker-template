@@ -146,7 +146,9 @@ module Docker
 
           metadata = Template.config.read_config_from(root)
           metadata = Metadata.new(metadata, root: true).merge(@base_metadata)
-          metadata.merge(@cli_opts)
+          metadata = metadata.merge(@cli_opts)
+          Config.excon_timeouts(metadata)
+          metadata
         end
       end
 
