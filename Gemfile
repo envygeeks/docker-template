@@ -9,12 +9,12 @@ gemspec
 group :test do
   gem "luna-rspec-formatters", :require => false
   gem "codeclimate-test-reporter", :require => false
+  gem "rspec-helpers", :require => false
   gem "rspec", :require => false
 end
 
 group :development do
   unless ENV["CI"]
-    gem "rspec-helpers", :require => false
     gem "pry", :require => false
     gem "rubocop", {
       :github => "bbatsov/rubocop",
