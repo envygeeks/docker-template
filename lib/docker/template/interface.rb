@@ -7,6 +7,8 @@ require "optparse"
 module Docker
   module Template
     class Interface
+      autoload :Opts, "docker/template/interface/opts"
+
       def initialize(zero, argv = [])
         @zero = zero
         @raw_argv = argv
@@ -22,15 +24,11 @@ module Docker
       #
 
       def setup
-        @argv = {}
-        parser = OptParse.new do |optp|
+        @argv  = {}
+        parser = OptParse.new do |opt_p|
           banner = Utils::System.docker_bin?(@zero) ? "docker template" : "docker-template"
-          optp.on("-p", "--[no-]push", "Push your repos after building.") { |bool| @argv["push"] = bool }
-          optp.on("-s", "--[no-]sync", "Sync repos to the cache.") { |bool| @argv[ "sync"] = bool }
-          optp.on("-c", "--[no-]clean", "Clean the cache folder.") { |bool| @argv["clean"] = bool }
-          optp.on("-h", "--help", "Show this message") { $stdout.puts parser; exit 0 }
-          optp.on("--tty", "Enable TTY output.") { @argv["tty"] = true }
-          optp.banner = "Usage: #{banner} [repos] [flags]"
+          opt_p.banner = "Usage: #{banner} [repos] [flags]"
+          Opts.new(opt_p, @argv, parser)
         end
 
         @raw_repos = Set.new
