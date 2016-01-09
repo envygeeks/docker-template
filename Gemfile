@@ -14,6 +14,7 @@ end
 
 group :development do
   unless ENV["CI"]
+    gem "rspec-helpers", :require => false
     gem "pry", :require => false
     gem "rubocop", {
       :github => "bbatsov/rubocop",
