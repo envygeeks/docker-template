@@ -4,7 +4,7 @@ Metrics/ClassLength: { Max: 240 }
 Metrics/ModuleLength: { Max: 240 }
 Metrics/CyclomaticComplexity: { Max: 8 }
 Metrics/PerceivedComplexity: { Max: 8 }
-Metrics/ParameterLists: { Max: 4 }
+Metrics/ParameterLists: { Max: 6 }
 Metrics/MethodLength: { Max: 12 }
 Metrics/MethodLength: { Max: 24 }
 Metrics/AbcSize: { Max: 20 }
@@ -38,6 +38,7 @@ Style/StringLiterals:                 { Enabled: false }
 Style/Documentation:                  { Enabled: false }
 Style/DoubleNegation:                 { Enabled: false }
 Style/UnneededCapitalW:               { Enabled: false }
+Style/MultilineTernaryOperator:       { Enabled: false }
 Style/EmptyLinesAroundModuleBody:     { Enabled: false }
 Style/EmptyLinesAroundAccessModifier: { Enabled: false }
 Style/BracesAroundHashParameters:     { Enabled: false }
