@@ -10,14 +10,15 @@ module Docker
     # * Think of an image as the binary of the source in the repo.
 
     class Repo
-      extend  Forwardable
-      extend  Routable
+      extend Forwardable::Extended
 
       #
 
       def_delegator :builder, :build
       def_delegator :metadata, :complex_alias?
-      route_to_hash [:tag, :type, :user, :name], :metadata
+      def_hash_delegator :metadata, :tag, :type, :user, :name
+      def_hash_delegator :metadata, :pushable, key: :push, bool: true
+      def_hash_delegator :metadata, :syncable, key: :sync, bool: true
       def_delegator :@base_metadata, :to_h
       def_delegator :metadata, :alias?
       def_delegator :metadata, :tags
@@ -37,18 +38,6 @@ module Docker
       def builder
         const = Template.const_get(type.capitalize)
         const.new(self)
-      end
-
-      #
-
-      def pushable?
-        !!metadata["push"]
-      end
-
-      #
-
-      def syncable?
-        metadata["sync"] != false
       end
 
       #

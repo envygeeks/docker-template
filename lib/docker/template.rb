@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "docker"
-require "forwardable"
+require "forwardable/extended"
 require "docker/template/patches/pathname"
 require "docker/template/patches/object"
 require "docker/template/patches/string"
@@ -31,7 +31,6 @@ module Docker
     autoload :Parser, "docker/template/parser"
     autoload :Repo, "docker/template/repo"
     autoload :Rootfs, "docker/template/rootfs"
-    autoload :Routable, "docker/template/routable"
     autoload :Scratch, "docker/template/scratch"
     autoload :Utils, "docker/template/utils"
 

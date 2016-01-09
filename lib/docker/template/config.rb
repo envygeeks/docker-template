@@ -12,7 +12,7 @@ module Docker
     # in a opts.{json,yml} file in the current working directory.
 
     class Config
-      extend Forwardable
+      extend Forwardable::Extended
 
       def_delegator :@config, :keys
       def_delegator :@config, :to_h

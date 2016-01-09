@@ -6,7 +6,7 @@ require "yaml"
 
 module Mocks
   class Repos
-    extend Forwardable
+    extend Forwardable::Extended
 
     #
 

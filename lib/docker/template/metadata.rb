@@ -5,8 +5,8 @@
 module Docker
   module Template
     class Metadata
-      extend  Forwardable
-      extend  Routable
+      attr_reader :metadata, :root_metadata
+      extend Forwardable::Extended
 
       # Provides aliases for the root element so you can do something like:
       #   * data["release"].fallback
@@ -23,13 +23,12 @@ module Docker
       def_delegator :@metadata, :size
       def_delegator :@metadata, :inspect
       def_delegator :@metadata, :to_enum
+      def_ivar_delegator :@root, :root, bool: true
+      def_hash_delegator :self, :for_all, key: :all
       def_delegator :@metadata, :has_key?
       def_delegator :@metadata, :each
       def_delegator :@metadata, :to_h
       def_delegator :@metadata, :key?
-      route_to_ivar :root, :@root, bool: true
-      route_to_hash :for_all, :self, :all
-      attr_reader :metadata, :root_metadata
 
       def initialize(metadata, root: false, root_metadata: nil)
         @base = Template.config if root
