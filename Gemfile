@@ -7,10 +7,11 @@ gem "rake", :require => false
 gemspec
 
 group :test do
+  gem "rspec", :require => false
   gem "luna-rspec-formatters", :require => false
   gem "codeclimate-test-reporter", :require => false
   gem "rspec-helpers", :require => false
-  gem "rspec", :require => false
+  gem "cucumber", :require => false
 end
 
 group :development do
