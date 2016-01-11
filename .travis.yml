@@ -1,6 +1,8 @@
 ---
+distro: trusty
 bundler_args: --without development
 cache: bundler
+sudo: true
 rvm:
 - 2.3.0
 - 2.2.4
