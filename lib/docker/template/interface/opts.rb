@@ -23,7 +23,7 @@ module Docker
         #
 
         def travis
-          @opt_p.on("--travis", "Load a Travis-CI Shell") do
+          @opt_p.on("-T", "--travis", "Load a Travis-CI Shell") do
             @opt_h["travis"] = true
           end
         end
@@ -31,7 +31,7 @@ module Docker
         #
 
         def pry
-          @opt_p.on("--pry", "Load a Pry REPL.") do
+          @opt_p.on("-P", "--pry", "Load a Pry REPL.") do
             @opt_h["pry"] = true
           end
         end
@@ -39,7 +39,7 @@ module Docker
         #
 
         def tty
-          @opt_p.on("--tty", "Enable TTY output.") do
+          @opt_p.on("-t", "--tty", "Enable TTY output.") do
             @opt_h["tty"] = true
           end
         end
