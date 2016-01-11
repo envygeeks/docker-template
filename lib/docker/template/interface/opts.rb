@@ -14,6 +14,14 @@ module Docker
 
         #
 
+        def mocking
+          @opt_p.on("--mocking", "--testing", "Disable remote push.") do
+            @opt_h.update("mocking" => true, "testing" => true)
+          end
+        end
+
+        #
+
         def travis
           @opt_p.on("--travis", "Load a Travis-CI Shell") do
             @opt_h["travis"] = true

@@ -80,7 +80,7 @@ module Docker
       def push
         return if rootfs? || !@repo.pushable?
 
-        auth!
+        auth! unless testing?
         logger = Logger.new.method(:api)
         img = @img || Docker::Image.get(@repo.to_s)
         img.push(&logger) unless testing?
