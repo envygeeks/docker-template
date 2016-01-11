@@ -22,6 +22,12 @@ module Docker
 
       #
 
+      def testing?
+        @repo.metadata["mocking"] || @repo.metadata["testing"]
+      end
+
+      #
+
       def simple_copy?
         @repo.copy_dir.exist? && \
           !@repo.copy_dir.join("tag").exist? && \
@@ -77,7 +83,7 @@ module Docker
         auth!
         logger = Logger.new.method(:api)
         img = @img || Docker::Image.get(@repo.to_s)
-        img.push(&logger)
+        img.push(&logger) unless testing?
       end
 
       #
