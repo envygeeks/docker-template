@@ -7,7 +7,10 @@ require "optparse"
 module Docker
   module Template
     class Interface
+      extend Forwardable::Extended
       autoload :Opts, "docker/template/interface/opts"
+      def_hash_delegator :@argv, :travis, bool: true
+      def_hash_delegator :@argv, :pry, bool: true
 
       def initialize(zero, argv = [])
         @zero = zero
@@ -18,6 +21,7 @@ module Docker
       #
 
       def run
+        return if travis? || pry?
         Parser.new(@raw_repos, @argv).parse.map(&:build)
       end
 
@@ -35,6 +39,31 @@ module Docker
         @raw_repos.merge(parser.parse!(@raw_argv.dup))
         @raw_repos.freeze
         @argv.freeze
+        travis
+        pry
+      end
+
+      #
+
+      def travis
+        return unless travis?
+
+        Travis.create
+        Travis.delete
+        exit 0
+      end
+
+      #
+
+      def pry
+        return unless pry?
+
+        require "pry"
+        Pry.output = STDOUT
+        Pry.config.docker_template_repos = @raw_repos
+        Template.gem_root.join("lib/docker/template/cmd/pry").children.each { |file| require file }
+        Pry.config.docker_template_argv = @argv
+        Template.pry
       end
 
       #

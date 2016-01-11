@@ -32,6 +32,7 @@ module Docker
     autoload :Repo, "docker/template/repo"
     autoload :Rootfs, "docker/template/rootfs"
     autoload :Scratch, "docker/template/scratch"
+    autoload :Travis, "docker/template/travis"
     autoload :Utils, "docker/template/utils"
 
     #
