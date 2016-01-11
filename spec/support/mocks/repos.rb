@@ -63,6 +63,12 @@ module Mocks
 
     #
 
+    def cucumber?
+      @context == :cucumber
+    end
+
+    #
+
     def join(*paths)
       strip_and_split(*paths)
     end
@@ -195,7 +201,7 @@ module Mocks
     def clear
       teardown
       new_self = self.class.new(@context)
-      @context.__memoized.memoized[:mocked_repos] = new_self
+      @context.__memoized.memoized[:mocked_repos] = new_self unless cucumber?
       new_self
     rescue => error
       new_self.teardown if new_self
@@ -212,8 +218,10 @@ module Mocks
 
     private
     def stub
-      @context.allow(Dir).to @context.receive(:pwd).and_return @dir
-      @context.allow(Docker::Template).to @context.receive(:root).and_return @dir
+      @context.allow(Dir).to @context.receive(:pwd).and_return @dir unless cucumber?
+      @context.allow(Docker::Template).to @context.receive(:root).and_return @dir unless cucumber?
+      Docker::Template.stub(:root).and_return @dir if cucumber?
+      Dir.stub(:pwd).and_return @dir.to_s if cucumber?
     end
 
     #
@@ -230,8 +238,8 @@ module Mocks
         end)
 
         repos_root = @simple ? rtn : @dir.join(repos_dir)
-        # That way no matter which route you go get at it, you can get at it.
-        @context.allow(Docker::Template).to @context.receive(:repos_root).and_return repos_root
+        @context.allow(Docker::Template).to @context.receive(:repos_root).and_return repos_root unless cucumber?
+        Docker::Template.stub(:repos_root).and_return repos_root if cucumber?
         rtn
       end
     end
@@ -249,6 +257,7 @@ module Mocks
 
     private
     def make_readable
+      return if cucumber?
       @context.instance_variable_get(:@__memoized).class.send(:attr_reader, :memoized)
       @context.class.send(:attr_reader, \
         :__memoized)
