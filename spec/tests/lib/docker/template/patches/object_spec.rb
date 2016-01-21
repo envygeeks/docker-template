@@ -5,8 +5,8 @@
 require "rspec/helper"
 describe Object do
   describe "#to_pathname" do
-    it "converts blindly runs Pathname.new" do
-      expect("hello".to_pathname).to be_a Pathname
+    it "converts blindly runs Pathutil.new" do
+      expect("hello".to_pathname).to be_a Pathutil
     end
   end
 end

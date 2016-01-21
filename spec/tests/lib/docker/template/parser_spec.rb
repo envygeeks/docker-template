@@ -15,7 +15,9 @@ describe Docker::Template::Parser do
   #
 
   before do
-    mocked_repos.as :normal
+    mocked_repo.init({
+      :type => :normal
+    })
   end
 
   #

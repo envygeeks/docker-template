@@ -18,8 +18,9 @@ describe Docker::Template::Utils::Context do
     #
 
     let :template do
-      mocked_repos.as :normal
-      mocked_repos. to_normal
+      mocked_repo.init :type => :normal
+      mocked_repo. \
+        to_normal
     end
 
     #

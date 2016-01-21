@@ -21,13 +21,13 @@ describe Docker::Template::Config do
   describe "#read_config_from" do
     include_context :repos do
       before do
-        mocked_repos.as(:normal).with_opts({
+        mocked_repo.init(:type => :normal).with_opts({
           "maintainer" => "Some Girl <lyfe@thug.programmer>"
         })
       end
 
       subject do
-        root = mocked_repos.to_repo.root
+        root = mocked_repo.to_repo.root
         Docker::Template.config.read_config_from(root)
       end
 
@@ -43,7 +43,7 @@ describe Docker::Template::Config do
 
       context "when empty" do
         before do
-          mocked_repos.write("opts.yml", "")
+          mocked_repo.write("opts.yml", "")
         end
 
         it "returns a hash" do
@@ -59,11 +59,11 @@ describe Docker::Template::Config do
 
       context "when invalid" do
         before do
-          mocked_repos.write("opts.yml", "[hello]")
+          mocked_repo.write("opts.yml", "[hello]")
         end
 
         it "should raise an error" do
-          expect { mocked_repos.to_repo }.to raise_error \
+          expect { mocked_repo.to_repo }.to raise_error \
             Docker::Template::Error::InvalidYAMLFile
         end
       end

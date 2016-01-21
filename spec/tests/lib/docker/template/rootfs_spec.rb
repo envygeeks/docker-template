@@ -9,14 +9,16 @@ RSpec.describe Docker::Template::Rootfs do
   #
 
   subject do
-    mocked_repos.with_init("tag" => "default")
-    mocked_repos.to_rootfs
+    mocked_repo.with_repo_init("tag" => "default")
+    mocked_repo.to_rootfs
   end
 
   #
 
   before do
-    mocked_repos.as :scratch
+    mocked_repo.init({
+      :type => :scratch
+    })
   end
 
   #
@@ -132,7 +134,7 @@ RSpec.describe Docker::Template::Rootfs do
 
   context "when no mkimg exists" do
     before do
-      mocked_repos.delete("copy/rootfs")
+      mocked_repo.delete("copy/rootfs")
     end
 
     #

@@ -15,7 +15,10 @@ describe Docker::Template::Utils::Copy do
   #
 
   before do
-    mocked_repos.as :simple_normal
+    mocked_repo.init({
+      :layout => :simple,
+      :type   => :normal
+    })
   end
 
   #
@@ -23,9 +26,10 @@ describe Docker::Template::Utils::Copy do
   describe "#directory" do
     let :tmpdir do
       [
-        Pathname.new(Dir.mktmpdir),
-        Pathname.new(Dir.mktmpdir) \
-          .tap(&:rmtree)
+        Pathutil.new(Dir.mktmpdir),
+        Pathutil.new(Dir.mktmpdir).tap(
+          &:rm_rf
+        )
       ]
     end
 
@@ -33,7 +37,7 @@ describe Docker::Template::Utils::Copy do
 
     after :each do
       tmpdir.map do |dir|
-        dir.rmtree rescue nil
+        dir.rm_rf rescue nil
       end
     end
 
@@ -41,14 +45,15 @@ describe Docker::Template::Utils::Copy do
 
     context "when the symlink is not in the path" do
       before do
-        dir = mocked_repos.join("copy/hello")
-        mocked_repos.external_symlink(tmpdir.first, dir)
+        mocked_repo.external_symlink(
+          tmpdir.first, "copy/hello"
+        )
       end
 
       #
 
       it "should raise a permission error" do
-        expect { subject.directory(mocked_repos.join("copy"), tmpdir.last) }.to \
+        expect { subject.directory(mocked_repo.join("copy"), tmpdir.last) }.to \
           raise_error Errno::EPERM
       end
     end
@@ -57,9 +62,9 @@ describe Docker::Template::Utils::Copy do
 
     context do
       before do
-        mocked_repos.symlink("copy/hello", "copy/world")
-        mocked_repos.  touch("copy/hello")
-        subject.directory(mocked_repos.join("copy"), \
+        mocked_repo.symlink("copy/hello", "copy/world")
+        mocked_repo.  touch("copy/hello")
+        subject.directory(mocked_repo.join("copy"), \
           tmpdir.first)
       end
 
@@ -81,9 +86,10 @@ describe Docker::Template::Utils::Copy do
   describe "#file" do
     let :tmpfile do
       [
-        Pathname.new(Tempfile.new("file-")),
-        Pathname.new(Tempfile.new("file-")) \
-          .tap(&:unlink)
+        Pathutil.new(Tempfile.new("file-")),
+        Pathutil.new(Tempfile.new("file-")).tap(
+          &:rm_rf
+        )
       ]
     end
 
@@ -91,7 +97,7 @@ describe Docker::Template::Utils::Copy do
 
     after :each do
       tmpfile.map do |file|
-        file.unlink rescue nil
+        file.rm_rf rescue nil
       end
     end
 
@@ -99,14 +105,15 @@ describe Docker::Template::Utils::Copy do
 
     context "when the symlink is not in the path" do
       before do
-        file = mocked_repos.join("copy/hello")
-        mocked_repos.external_symlink(tmpfile.first, file)
+        mocked_repo.external_symlink(
+          tmpfile.first, "copy/hello"
+        )
       end
 
       #
 
       it "should raise a permission error" do
-        expect { subject.file(mocked_repos.join("copy/hello"), tmpfile.last) }.to \
+        expect { subject.file(mocked_repo.join("copy/hello"), tmpfile.last) }.to \
           raise_error Errno::EPERM
       end
     end
@@ -115,9 +122,9 @@ describe Docker::Template::Utils::Copy do
 
     context do
       before do
-        mocked_repos.symlink("copy/hello", "copy/world")
-        mocked_repos.  touch("copy/hello")
-        subject.file(mocked_repos.join("copy/world"), \
+        mocked_repo.symlink("copy/hello", "copy/world")
+        mocked_repo.  touch("copy/hello")
+        subject.file(mocked_repo.join("copy/world"), \
           tmpfile.first)
       end
 

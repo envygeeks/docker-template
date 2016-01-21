@@ -19,7 +19,10 @@ describe Docker::Template do
 
   include_context :repos do
     before do
-      mocked_repos.as :simple_normal
+      mocked_repo.init({
+        :layout => :simple,
+        :type   => :normal
+      })
     end
 
     #
@@ -48,7 +51,7 @@ describe Docker::Template do
   [:gem_root, :template_root, :repos_root, :root].each do |val|
     describe "##{val}" do
       it "should be a Pathame" do
-        expect(template.send(val)).to be_a Pathname
+        expect(template.send(val)).to be_a Pathutil
       end
     end
   end

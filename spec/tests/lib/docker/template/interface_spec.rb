@@ -13,7 +13,7 @@ describe Docker::Template::Interface do
     allow(described_class).to receive( :exit).and_return nil
     allow(described_class).to receive(:abort).and_return nil
     allow(described_class).to receive( :exec).and_return nil
-    mocked_repos.as :normal
+    mocked_repo.init :type => :normal
   end
 
   #

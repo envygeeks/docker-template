@@ -3,14 +3,21 @@
 # Encoding: utf-8
 
 shared_context :repos do
-  let :mocked_repos do
-    Mocks::Repos.new \
+  before do
+    mocked_repo.setup
+  end
+
+  #
+
+  let :mocked_repo do
+    Mocks::Repo.new(
       self
+    )
   end
 
   #
 
   after do
-    mocked_repos.teardown
+    mocked_repo.teardown
   end
 end

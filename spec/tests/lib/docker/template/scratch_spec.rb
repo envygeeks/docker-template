@@ -9,14 +9,16 @@ describe Docker::Template::Scratch do
   #
 
   before do
-    mocked_repos.as :scratch
+    mocked_repo.init({
+      :type => :normal
+    })
   end
 
   #
 
   subject do
-    mocked_repos.with_init("tag" => "latest")
-    mocked_repos.to_scratch
+    mocked_repo.with_repo_init("tag" => "latest")
+    mocked_repo.to_scratch
   end
 
   #
@@ -72,7 +74,7 @@ describe Docker::Template::Scratch do
     #
 
     it "should copy the Dockerfile" do
-      expect(subject.instance_variable_get(:@context).all_children.map(&:to_s)).to \
+      expect(subject.instance_variable_get(:@context).find.map(&:to_s)).to \
         include match(/\/Dockerfile\Z/)
     end
 

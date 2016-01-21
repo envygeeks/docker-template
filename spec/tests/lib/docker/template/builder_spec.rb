@@ -17,13 +17,13 @@ describe Docker::Template::Builder do
   #
 
   subject do
-    mocked_repos.to_scratch
+    mocked_repo.to_scratch
   end
 
   #
 
   before do |ex|
-    mocked_repos.as ex.metadata[:repo_type] || :scratch
+    mocked_repo.init ex.metadata[:as] || :type => :scratch
     allow(subject).to receive( :build_context).and_return nil
     allow(subject).to receive(:verify_context).and_return nil
   end
@@ -32,8 +32,8 @@ describe Docker::Template::Builder do
 
   describe "#parent_repo" do
     before do
-      mocked_repos.with_init("tag" => "world")
-      mocked_repos.with_opts({
+      mocked_repo.with_repo_init("tag" => "world")
+      mocked_repo.with_opts({
         "tags" => {
           "hello" => "world"
         },
@@ -45,7 +45,7 @@ describe Docker::Template::Builder do
     end
 
     it "should pull out the aliased repo" do
-      expect(mocked_repos.to_normal.parent_repo.tag).to eq "hello"
+      expect(mocked_repo.to_normal.parent_repo.tag).to eq "hello"
     end
   end
 
@@ -53,12 +53,12 @@ describe Docker::Template::Builder do
 
   describe "#alias?" do
     it "should return false" do
-      expect(mocked_repos.to_normal.alias?).to eq false
+      expect(mocked_repo.to_normal.alias?).to eq false
     end
 
     context "when a simple alias" do
       before do
-        mocked_repos.with_opts({
+        mocked_repo.with_opts({
           "aliases" => { "hello" => "true" },
           "tags" => {
             "default" => "normal"
@@ -67,14 +67,14 @@ describe Docker::Template::Builder do
       end
 
       it "should return true" do
-        expect(mocked_repos.with_init("tag" => "hello") \
+        expect(mocked_repo.with_repo_init("tag" => "hello") \
           .to_normal.alias?).to eq true
       end
     end
 
     context "when a complex alias" do
       before do
-        mocked_repos.with_opts({
+        mocked_repo.with_opts({
           "aliases" => { "hello" => "default" },
           "tags" => {
             "default" => "normal"
@@ -91,7 +91,7 @@ describe Docker::Template::Builder do
       end
 
       it "should return false" do
-        expect(mocked_repos.with_init("tag" => "hello").to_normal \
+        expect(mocked_repo.with_repo_init("tag" => "hello").to_normal \
           .alias?).to eq false
       end
     end
@@ -357,7 +357,7 @@ describe Docker::Template::Builder do
 
     #
 
-    context "when @subject.type == normal", :repo_type => :normal do
+    context "when @subject.type == normal", :repo_as => { :type => :normal } do
       it_behaves_like :build
     end
 
