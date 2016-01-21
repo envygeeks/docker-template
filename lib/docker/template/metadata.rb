@@ -17,18 +17,16 @@ module Docker
         "version" => "versions",
         "script" => "scripts",
         "image" => "images"
-      }
+      }.freeze
 
-      def_delegator :@metadata, :keys
-      def_delegator :@metadata, :size
-      def_delegator :@metadata, :inspect
-      def_delegator :@metadata, :to_enum
-      def_ivar_delegator :@root, :root, bool: true
-      def_hash_delegator :self, :for_all, key: :all
-      def_delegator :@metadata, :has_key?
-      def_delegator :@metadata, :each
-      def_delegator :@metadata, :to_h
-      def_delegator :@metadata, :key?
+      rb_delegate :root,     :to => :@root, :type => :ivar, :bool => true
+      rb_delegate :for_all,  :to => :self,  :type => :hash, :key  => :all
+      rb_delegate :keys,     :to => :@metadata
+      rb_delegate :to_enum,  :to => :@metadata
+      rb_delegate :size,     :to => :@metadata
+      rb_delegate :key?,     :to => :@metadata
+      rb_delegate :to_h,     :to => :@metadata
+      rb_delegate :each,     :to => :@metadata
 
       def initialize(metadata, root: false, root_metadata: nil)
         @base = Template.config if root
@@ -78,7 +76,7 @@ module Docker
       # returning the returned value, as a `self.class` if it's a Hash.
 
       def [](key)
-        key = determine_key(key)
+        key = determine_key(key.to_s)
         val = @metadata[key]
 
         return try_default(key) if !val && root?

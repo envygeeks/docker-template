@@ -14,13 +14,14 @@ module Docker
     class Config
       extend Forwardable::Extended
 
-      def_delegator :@config, :keys
-      def_delegator :@config, :to_h
-      def_delegator :@config, :to_enum
-      def_delegator :@config, :key?, :has_default?
-      def_delegator :@config, :key?
-      def_delegator :@config, :each
-      def_delegator :@config, :[]
+      rb_delegate :has_default?, :to => :@config, :alias_of => :key?
+      rb_delegate :merge,        :to => :@config
+      rb_delegate :keys,         :to => :@config
+      rb_delegate :to_enum,      :to => :@config
+      rb_delegate :to_h,         :to => :@config
+      rb_delegate :key?,         :to => :@config
+      rb_delegate :each,         :to => :@config
+      rb_delegate :[],           :to => :@config
 
       DEFAULTS = {
         "push" => false,

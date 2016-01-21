@@ -14,14 +14,17 @@ module Docker
 
       #
 
-      def_delegator :builder, :build
-      def_delegator :metadata, :complex_alias?
-      def_hash_delegator :metadata, :tag, :type, :user, :name
-      def_hash_delegator :metadata, :pushable, key: :push, bool: true
-      def_hash_delegator :metadata, :syncable, key: :sync, bool: true
-      def_delegator :@base_metadata, :to_h
-      def_delegator :metadata, :alias?
-      def_delegator :metadata, :tags
+      rb_delegate :build, :to => :builder
+      rb_delegate :complex_alias?, :to => :metadata
+      rb_delegate :type, :to => :metadata, :type => :hash
+      rb_delegate :user, :to => :metadata, :type => :hash
+      rb_delegate :name, :to => :metadata, :type => :hash
+      rb_delegate :tag,  :to => :metadata, :type => :hash
+      rb_delegate :pushable?, :to => :metadata, :key => :push, :type => :hash, :bool => true
+      rb_delegate :syncable?, :to => :metadata, :key => :sync, :type => :hash, :bool => true
+      rb_delegate :to_h, :to => :@base_metadata
+      rb_delegate :alias?, :to => :metadata
+      rb_delegate :tags,   :to => :metadata
 
       def initialize(base_metadata = {}, cli_opts = {})
         raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
