@@ -4,6 +4,7 @@
 /coverage
 /objects.txt
 /Gemfile.lock
+/features
 /.analysis
 /opts.yml
 /.hidden
