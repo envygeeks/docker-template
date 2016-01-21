@@ -79,6 +79,7 @@ module Docker
 
       def push
         return if rootfs? || !@repo.pushable?
+        Utils::Notify.push(self)
 
         auth! unless testing?
         logger = Logger.new.method(:api)

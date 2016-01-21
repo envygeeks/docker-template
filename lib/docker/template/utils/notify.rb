@@ -10,6 +10,12 @@ module Docker
 
         #
 
+        def push(builder)
+          $stdout.puts Simple::Ansi.green("Pushing: #{builder.repo}")
+        end
+
+        #
+
         def alias(builder)
           repo = builder.repo
           parent_repo = builder.parent_repo
