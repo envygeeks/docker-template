@@ -213,7 +213,7 @@ module Docker
 
       private
       def auth!
-        credentials = Pathname.new("~/.docker/config.json").expand_path
+        credentials = Pathutil.new("~/.docker/config.json").expand_path
         credentials = JSON.parse(credentials.read) if credentials.exist?
         return unless credentials
 

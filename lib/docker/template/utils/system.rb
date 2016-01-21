@@ -30,7 +30,7 @@ module Docker
 
         def bins
           ENV["PATH"].split(":").each_with_object(Set.new) do |val, set|
-            path = Pathname.new(val)
+            path = Pathutil.new(val)
             if path.directory?
               set.merge path.children
             end

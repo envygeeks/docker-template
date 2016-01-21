@@ -99,7 +99,7 @@ module Docker
       def tmpdir(*prefixes, root: nil)
         prefixes = [user, name, tag] + prefixes
         args = ["#{prefixes.join("-")}-", root].delete_if(&:nil?)
-        Pathname.new(Dir.mktmpdir(*args))
+        Pathutil.new(Dir.mktmpdir(*args))
       end
 
       #
@@ -110,7 +110,7 @@ module Docker
         prefixes = ["#{prefixes.join("-")}-"]
         prefixes = ext ? prefixes.push(ext) : prefixes.first
         args = [prefixes, root].delete_if(&:nil?)
-        Pathname.new(Tempfile.new(*args))
+        Pathutil.new(Tempfile.new(*args))
       end
 
       # If a tag was given then it returns [self] and if a tag was not
@@ -133,7 +133,7 @@ module Docker
       #
 
       def metadata
-        @metadata ||= begin
+        return @metadata ||= begin
           root = Template.repo_root_for(@base_metadata["name"])
 
           metadata = Template.config.read_config_from(root)

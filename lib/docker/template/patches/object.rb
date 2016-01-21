@@ -5,7 +5,9 @@
 class Object
   module Patches
     def to_pathname
-      Object::Pathname.new(self)
+      Pathutil.new(
+        self
+      )
     end
   end
 

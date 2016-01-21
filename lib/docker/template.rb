@@ -4,13 +4,12 @@
 
 require "docker"
 require "forwardable/extended"
-require "docker/template/patches/pathname"
 require "docker/template/patches/object"
 require "docker/template/patches/string"
 require "docker/template/patches/hash"
 require "docker/template/version"
 require "simple/ansi"
-require "pathname"
+require "pathutil"
 require "set"
 require "erb"
 
@@ -54,16 +53,16 @@ module Docker
 
     def root
       @root ||= begin
-        Pathname.new(Dir.pwd)
+        Pathutil.new(Dir.pwd)
       end
     end
 
     #
 
     def repos_root
-      @repos_root ||= begin
-        root.join(config["repos_dir"])
-      end
+      root.join(config[
+        "repos_dir"
+      ])
     end
 
     #
@@ -77,7 +76,7 @@ module Docker
     def gem_root
       @gem_root ||= begin
         path = File.expand_path("../../", __dir__)
-        Pathname.new(path)
+        Pathutil.new(path)
       end
     end
 

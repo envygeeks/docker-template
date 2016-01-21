@@ -51,8 +51,8 @@ module Docker
       #
 
       EMPTY_DEFAULTS = {
-        "tags" => { "latest" => "normal" }
-      }
+        "tags" => { "latest" => "normal" }.freeze
+      }.freeze
 
       #
 
@@ -72,7 +72,7 @@ module Docker
 
       def read_config_from(dir = Docker::Template.root)
         file = Dir[dir.join("opts.{json,yml}")].first
-        return {} unless file && (file = Pathname.new(file)).file?
+        return {} unless file && (file = Pathutil.new(file)).file?
         data = YAML.load_file(file) if file.extname == ".yml"
 
         return {} if !data || data.empty?

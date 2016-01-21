@@ -9,8 +9,8 @@ module Docker
         def initialize(from, to)
           @root = Template.root.realpath
           @repos_root = Template.repo_is_root?? Template.root.realpath : Template.repos_root.realpath
-          @from = from.to_pathname
-          @to = to.to_pathname
+          @from = Pathutil.new(from)
+          @to = Pathutil.new(to)
         end
 
         #
@@ -33,7 +33,7 @@ module Docker
             :dereference_root => false
           }
 
-          @from.all_children.select(&:symlink?).each do |path|
+          @from.find.select(&:symlink?).each do |path|
             path = @to.join(path.relative_path_from(@from))
             resolved = path.realpath
 
