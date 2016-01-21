@@ -10,3 +10,9 @@ require "open3"
 task :default => [:spec]
 RSpec::Core::RakeTask.new :spec
 task :test => :spec
+
+[:travis, :pry].each do |key|
+  task key do
+    sh "bundle exec docker-template --#{key}"
+  end
+end
