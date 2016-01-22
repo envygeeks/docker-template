@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Scratch do
@@ -33,13 +35,17 @@ describe Docker::Template::Scratch do
 
   describe "#data" do
     before do
-      subject.send :setup_context
+      subject.send(
+        :setup_context
+      )
     end
 
     #
 
     it "adds the TARGZ file" do
-      expect(subject.data).to match %r!^ADD .*\.tar\.gz /$!m
+      expect(subject.data).to match(
+        %r!^ADD .*\.tar\.gz /$!m
+      )
     end
 
     #
@@ -53,8 +59,9 @@ describe Docker::Template::Scratch do
     #
 
     it "should not return empty data" do
-      expect(subject.data).not_to \
+      expect(subject.data).not_to(
         be_empty
+      )
     end
 
     #
@@ -68,14 +75,17 @@ describe Docker::Template::Scratch do
 
   describe "#setup_context" do
     before do
-      subject.send :setup_context
+      subject.send(
+        :setup_context
+      )
     end
 
     #
 
     it "should copy the Dockerfile" do
-      expect(subject.instance_variable_get(:@context).find.map(&:to_s)).to \
-        include match(/\/Dockerfile\Z/)
+      expect(subject.instance_variable_get(:@context).find.map(&:to_s)).to include match(
+        /\/Dockerfile\Z/
+      )
     end
 
     #
@@ -98,13 +108,17 @@ describe Docker::Template::Scratch do
 
     context "(img: true)" do
       it "should delete the image" do
-        expect(image_mock).to receive(:delete)
+        expect(image_mock).to receive(
+          :delete
+        )
       end
 
       #
 
       after do
-        subject.unlink(img: true)
+        subject.unlink({
+          :img => true
+        })
       end
     end
 
@@ -112,7 +126,9 @@ describe Docker::Template::Scratch do
 
     context do
       let :pathname do
-        subject.instance_variable_get(:@context)
+        subject.instance_variable_get(
+          :@context
+        )
       end
 
       #
@@ -124,8 +140,9 @@ describe Docker::Template::Scratch do
       #
 
       it "should remove the context" do
-        expect(pathname).not_to \
+        expect(pathname).not_to(
           exist
+        )
       end
     end
   end
@@ -142,15 +159,17 @@ describe Docker::Template::Scratch do
     #
 
     it "should stop the rootfs container once it's done" do
-      expect(container_mock).to \
-        receive :stop
+      expect(container_mock).to receive(
+        :stop
+      )
     end
 
     #
 
     it "should delete the rootfs container" do
-      expect(container_mock).to \
-        receive :delete
+      expect(container_mock).to receive(
+        :delete
+      )
     end
 
     #
@@ -169,8 +188,9 @@ describe Docker::Template::Scratch do
       #
 
       it "should raise an error", :nobuild do
-        expect { subject.send :build_context }.to raise_error \
+        expect { subject.send :build_context }.to raise_error(
           Docker::Template::Error::BadExitStatus
+        )
       end
     end
   end

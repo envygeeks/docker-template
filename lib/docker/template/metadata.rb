@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -8,8 +10,10 @@ module Docker
       attr_reader :metadata, :root_metadata
       extend Forwardable::Extended
 
+      # ----------------------------------------------------------------------
       # Provides aliases for the root element so you can do something like:
       #   * data["release"].fallback
+      # ----------------------------------------------------------------------
 
       ALIASES = {
         "entry" => "entries",
@@ -19,6 +23,8 @@ module Docker
         "image" => "images"
       }.freeze
 
+      # ----------------------------------------------------------------------
+
       rb_delegate :root,     :to => :@root, :type => :ivar, :bool => true
       rb_delegate :for_all,  :to => :self,  :type => :hash, :key  => :all
       rb_delegate :keys,     :to => :@metadata
@@ -27,6 +33,8 @@ module Docker
       rb_delegate :key?,     :to => :@metadata
       rb_delegate :to_h,     :to => :@metadata
       rb_delegate :each,     :to => :@metadata
+
+      # ----------------------------------------------------------------------
 
       def initialize(metadata, root: false, root_metadata: nil)
         @base = Template.config if root
@@ -40,7 +48,10 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # A complex alias happens when the user has an alias but also tries to
+      # add extra data, this allows them to use data from all parties.
+      # ----------------------------------------------------------------------
 
       def complex_alias?
         return false unless alias?
@@ -49,7 +60,9 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # This happens when the user has the tag in aliases.
+      # ----------------------------------------------------------------------
 
       def alias?
         return @alias ||= begin
@@ -57,13 +70,18 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # @note This is designed to be used with EnvyGeeks helpers.
+      # Outputs the version info as "gem@version".
+      # ----------------------------------------------------------------------
 
       def as_gem_version
         "#{from_root("name")}@#{self["version"].fallback}"
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Pulls out the tag or the alias name.
+      # ----------------------------------------------------------------------
 
       def aliased
         tag = from_root("tag")
@@ -72,8 +90,10 @@ module Docker
         tag
       end
 
+      # ----------------------------------------------------------------------
       # Queries providing a default value if on the root repo hash otherwise
       # returning the returned value, as a `self.class` if it's a Hash.
+      # ----------------------------------------------------------------------
 
       def [](key)
         key = determine_key(key.to_s)
@@ -84,13 +104,13 @@ module Docker
         val
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def tags
         from_root("tags").keys | from_root("aliases").keys
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def merge(new_)
         @metadata = @metadata.merge(Utils::Stringify.hash(new_))
@@ -98,13 +118,13 @@ module Docker
         self
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def as_string_set
         as_set.to_a.join(" ")
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def as_hash
         {} \
@@ -113,7 +133,7 @@ module Docker
           .merge(by_tag. to_h)
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def as_set
         Set.new \
@@ -122,7 +142,9 @@ module Docker
           .merge(by_tag .to_a)
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Pulls data from the root metadata if this is a sub-metadata instance.
+      # ----------------------------------------------------------------------
 
       def from_root(key)
         return self[key] if root?
@@ -130,14 +152,16 @@ module Docker
         root[key]
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def fallback
         by_tag || by_type || for_all
       end
 
+      # ----------------------------------------------------------------------
       # Pulls data based on the given tag through anything that provides a
       # "tag" key with the given tags. ("tags" is a `Hash`)
+      # ----------------------------------------------------------------------
 
       def by_tag
         alias_ = aliased
@@ -149,9 +173,11 @@ module Docker
         merge_or_override(hash[tag], hash[alias_])
       end
 
+      # ----------------------------------------------------------------------
       # Pull data based on the type given in { "tags" => { tag => type }}
       # through anything that provides a "type" key with the type as a
       # sub-key and the values.
+      # ----------------------------------------------------------------------
 
       def by_type
         tag = aliased
@@ -161,26 +187,39 @@ module Docker
         self["type"][type]
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Checks to see if the key is an alias and returns that master key.
+      # ----------------------------------------------------------------------
 
       private
       def determine_key(key)
         if root? && !key?(key) && ALIASES.key?(key)
-          key = ALIASES[key]
+          key = ALIASES[
+            key
+          ]
         end
+
         key
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def try_default(key)
-        val = @base[key]
-        return self.class.new(val, root_metadata: @root_metadata) if val.is_a?(Hash)
+        val = @base[
+          key
+        ]
+
+        if val.is_a?(Hash)
+          return self.class.new(val, {
+            :root_metadata => @root_metadata
+          })
+        end
+
         val
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def merge_or_override(val, new_val)

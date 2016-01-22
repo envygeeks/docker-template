@@ -10,8 +10,15 @@ describe Docker::Template::Utils::Notify do
 
   describe "#alias" do
     it "should have some color" do
-      capture = capture_io { subject.alias(mocked_repo.to_scratch) }
-      expect(Simple::Ansi.has?(capture[:stdout])).to eq true
+      capture = capture_io do
+        subject.alias(
+          mocked_repo.to_scratch
+        )
+      end
+
+      expect(Simple::Ansi.has?(capture[:stdout])).to eq(
+        true
+      )
     end
   end
 
@@ -19,7 +26,12 @@ describe Docker::Template::Utils::Notify do
 
   describe "#build" do
     it "should output the user, tag and repo" do
-      capture = capture_io { subject.build(mocked_repo.to_repo) }
+      capture = capture_io do
+        subject.build(
+          mocked_repo.to_repo
+        )
+      end
+
       expect(capture).to include({
         :stdout => %r!building:[:a-z\s]+/default:latest!i
       })

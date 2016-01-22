@@ -1,11 +1,19 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 module Docker
   module Template
     class Scratch < Builder
       attr_reader :rootfs
+
+      # ----------------------------------------------------------------------
+      # Stores and caches Rootfs images across multiple builds so if many
+      # imges use the same image they don't have to constantly rebuild causing
+      # an extreme inefficiency in the build system.
+      # ----------------------------------------------------------------------
 
       def self.rootfs_for(repo)
         (@rootfs ||= {})[repo.name] ||= begin
@@ -13,7 +21,9 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Pull and parse with ERB the Rootfs Docker template.
+      # ----------------------------------------------------------------------
 
       def data
         Template.get(:scratch, {
@@ -23,17 +33,23 @@ module Docker
         })
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def unlink(img: false)
-        @copy.rmtree if @copy && @copy.directory?
-        @context.rmtree if @context && @context.directory?
-        @tar_gz .unlink if @tar_gz  && @tar_gz.file?
-        @img.delete "force" => true if @img && img \
-          rescue Docker::Error::NotFoundError
+        @copy.rm_rf if @copy
+        @context.rm_rf if @context
+        @tar_gz.rm_rf if @tar_gz
+
+        if @img && img
+          then @img.delete({
+            "force" => true
+          })
+        end
+      rescue Docker::Error::NotFoundError
+        nil
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def setup_context
@@ -43,7 +59,9 @@ module Docker
         copy_dockerfile
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Copy the Dockerfile into the current context.
+      # ----------------------------------------------------------------------
 
       private
       def copy_dockerfile
@@ -52,31 +70,31 @@ module Docker
         dockerfile.write(data)
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # This taps into the Rootfs image to ask it to cleanup it's stuff.
+      # ----------------------------------------------------------------------
 
       def copy_cleanup
         @rootfs ||= self.class.rootfs_for(@repo)
         @rootfs.cleanup(@copy)
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def verify_context
-        unless @tar_gz.size > 0
+        if @tar_gz.zero?
           raise Error::InvalidTargzFile, @tar_gz
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def build_context
         @rootfs ||= self.class.rootfs_for(@repo)
 
         img = Container.create(create_args)
-        logger = @repo.metadata["tty"] ? :tty : :simple
-        logger_opts = { :tty => @repo.metadata["tty"], :stdout => true, :stderr => true }
-        img.start(start_args).attach(logger_opts, &Logger.new.method(logger))
+        img.start(start_args).attach(logger_opts, &Logger.new.method(logger_type))
         status = img.json["State"]["ExitCode"]
 
         if status != 0
@@ -90,7 +108,27 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+
+      private
+      def logger_type
+        @repo.metadata["tty"] ? :tty : :simple
+      end
+
+      # ----------------------------------------------------------------------
+
+      private
+      def logger_opts
+        return {
+          :tty => @repo.metadata["tty"], :stdout => true, :stderr => true
+        }
+      end
+
+      # ----------------------------------------------------------------------
+      # Create args are the arguments we use on Docker::Container.create.
+      # You'll notice that we have a volumes key, this key is only part of the
+      # shit that Docker puts us through, @see `#start_args`.
+      # ----------------------------------------------------------------------
 
       private
       def create_args
@@ -105,7 +143,10 @@ module Docker
         }
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Arguments used when doing Docker::Container#start.  This completes
+      # the volumes by binding them to the Docker instance.
+      # ----------------------------------------------------------------------
 
       private
       def start_args

@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "optparse"
 
@@ -12,20 +14,22 @@ module Docker
       def_hash_delegator :@argv, :travis, bool: true
       def_hash_delegator :@argv, :pry, bool: true
 
+      # ----------------------------------------------------------------------
+
       def initialize(zero, argv = [])
         @zero = zero
         @raw_argv = argv
         setup
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def run
         return if travis? || pry?
         Parser.new(@raw_repos, @argv).parse.map(&:build)
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def setup
         @argv  = {}
@@ -43,7 +47,7 @@ module Docker
         pry
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def travis
         return unless travis?
@@ -53,7 +57,7 @@ module Docker
         exit 0
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def pry
         return unless pry?
@@ -66,7 +70,7 @@ module Docker
         Template.pry
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def self.start(zero)
         if !Utils::System.docker_bin?(zero)

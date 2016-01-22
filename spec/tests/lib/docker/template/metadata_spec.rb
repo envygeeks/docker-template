@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Metadata do
@@ -13,14 +15,17 @@ describe Docker::Template::Metadata do
   #
 
   it "should raise if root: false and !root_metadata" do
-    expect { described_class.new({}) }.to raise_error \
+    expect { described_class.new({}) }.to raise_error(
       Docker::Template::Error::NoRootMetadata
+    )
   end
 
   #
 
   it "should be able to pull values similar to a hash" do
-    expect(subject["hello"]).to eq "world"
+    expect(subject["hello"]).to eq(
+      "world"
+    )
   end
 
   #
@@ -38,7 +43,9 @@ describe Docker::Template::Metadata do
     #
 
     it "should merge repo with version" do
-      expect(subject.as_gem_version).to eq "hello@3.2"
+      expect(subject.as_gem_version).to eq(
+        "hello@3.2"
+      )
     end
   end
 
@@ -96,7 +103,9 @@ describe Docker::Template::Metadata do
     #
 
     it "should query by that tag key" do
-      expect(subject["hello"].by_tag).to eq "world"
+      expect(subject["hello"].by_tag).to eq(
+        "world"
+      )
     end
   end
 
@@ -108,6 +117,7 @@ describe Docker::Template::Metadata do
         "tags" => {
           "latest" => "normal"
         },
+
         "hello" => {
           "type" => {
             "normal" => "world"
@@ -119,7 +129,9 @@ describe Docker::Template::Metadata do
     #
 
     it "should query by that type key" do
-      expect(subject["hello"].by_type).to eq "world"
+      expect(subject["hello"].by_type).to eq(
+        "world"
+      )
     end
   end
 
@@ -137,7 +149,9 @@ describe Docker::Template::Metadata do
     #
 
     it "should query by that all key" do
-      expect(subject["hello"].for_all).to eq "world"
+      expect(subject["hello"].for_all).to eq(
+        "world"
+      )
     end
   end
 
@@ -177,8 +191,9 @@ describe Docker::Template::Metadata do
     #
 
     it "should return a set combined as a string" do
-      expect(subject["hello"].as_string_set).to eq \
+      expect(subject["hello"].as_string_set).to eq(
         "everyone world person"
+      )
     end
   end
 
@@ -225,7 +240,9 @@ describe Docker::Template::Metadata do
       #
 
       it "should return type if no tag is available" do
-        expect(subject["hello"].fallback).to eq "world1"
+        expect(subject["hello"].fallback).to eq(
+          "world1"
+        )
       end
     end
 
@@ -247,7 +264,9 @@ describe Docker::Template::Metadata do
       #
 
       it "should return all when no tag or type is available" do
-        expect(subject["hello"].fallback).to eq "world3"
+        expect(subject["hello"].fallback).to eq(
+          "world3"
+        )
       end
     end
 
@@ -269,7 +288,9 @@ describe Docker::Template::Metadata do
       #
 
       it "should return tag" do
-        expect(subject["hello"].fallback).to eq "world2"
+        expect(subject["hello"].fallback).to eq(
+          "world2"
+        )
       end
     end
   end
@@ -301,7 +322,9 @@ describe Docker::Template::Metadata do
       #
 
       it "should return the aliased tags value" do
-        expect(subject.aliased).to eq "hello"
+        expect(subject.aliased).to eq(
+          "hello"
+        )
       end
     end
 
@@ -317,7 +340,9 @@ describe Docker::Template::Metadata do
       #
 
       it "should just return the current tag" do
-        expect(subject.aliased).to eq "hello"
+        expect(subject.aliased).to eq(
+          "hello"
+        )
       end
     end
   end
@@ -332,8 +357,12 @@ describe Docker::Template::Metadata do
       })
     end
 
+    #
+
     it "should return true" do
-      expect(subject.alias?).to eq true
+      expect(subject.alias?).to eq(
+        true
+      )
     end
 
     context "when the tag is not in the aliases field" do
@@ -343,8 +372,12 @@ describe Docker::Template::Metadata do
         })
       end
 
+      #
+
       it "should return false" do
-        expect(subject.alias?).to eq false
+        expect(subject.alias?).to eq(
+          false
+        )
       end
     end
   end
@@ -366,8 +399,12 @@ describe Docker::Template::Metadata do
       })
     end
 
+    #
+
     it "should return true" do
-      expect(subject.complex_alias?).to eq true
+      expect(subject.complex_alias?).to eq(
+        true
+      )
     end
   end
 
@@ -393,13 +430,17 @@ describe Docker::Template::Metadata do
 
   describe "#merge_or_override" do
     subject do
-      described_class.new({}, root: true)
+      described_class.new({}, {
+        :root => true
+      })
     end
 
     #
 
     def isend(*vals)
-      subject.send :merge_or_override, *vals
+      subject.send(
+        :merge_or_override, *vals
+      )
     end
 
     #
@@ -407,7 +448,9 @@ describe Docker::Template::Metadata do
     context "[1], '2'" do
       context "with two different unmergable types" do
         it "should return the original value" do
-          expect(isend([1], "2")).to eq [1]
+          expect(isend([1], "2")).to eq(
+            [1]
+          )
         end
       end
     end
@@ -417,7 +460,9 @@ describe Docker::Template::Metadata do
     context "'1', [2]" do
       context "with two different unmergable types" do
         it "should return the original value" do
-          expect(isend("1", [2])).to eq "1"
+          expect(isend("1", [2])).to eq(
+            "1"
+          )
         end
       end
     end
@@ -427,7 +472,9 @@ describe Docker::Template::Metadata do
     context "nil, [1]" do
       context "when the old val is nil" do
         it "should return the original value" do
-          expect(isend(nil, [1])).to eq [1]
+          expect(isend(nil, [1])).to eq([
+            1
+          ])
         end
       end
     end
@@ -437,7 +484,9 @@ describe Docker::Template::Metadata do
     context "[1], nil" do
       context "when the new val is nil" do
         it "should return the original value" do
-          expect(isend([1], nil)).to eq [1]
+          expect(isend([1], nil)).to eq([
+            1
+          ])
         end
       end
     end

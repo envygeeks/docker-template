@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Config do
@@ -12,7 +14,11 @@ describe Docker::Template::Config do
 
   describe "#initialize" do
     Docker::Template::Config::DEFAULTS.each do |key, _|
-      specify { expect(subject.key?(key)).to eq true }
+      specify do
+        expect(subject.key?(key)).to eq(
+          true
+        )
+      end
     end
   end
 
@@ -27,8 +33,9 @@ describe Docker::Template::Config do
       end
 
       subject do
-        root = mocked_repo.to_repo.root
-        Docker::Template.config.read_config_from(root)
+        Docker::Template.config.read_config_from(
+          mocked_repo.to_repo.root
+        )
       end
 
       #
@@ -43,28 +50,37 @@ describe Docker::Template::Config do
 
       context "when empty" do
         before do
-          mocked_repo.write("opts.yml", "")
+          mocked_repo.write(
+            "opts.yml", ""
+          )
         end
 
         it "returns a hash" do
-          expect(subject).to be_a Hash
+          expect(subject).to be_a(
+            Hash
+          )
         end
       end
 
       context "when non-existant" do
         it "returns a hash" do
-          expect(subject).to be_a Hash
+          expect(subject).to be_a(
+            Hash
+          )
         end
       end
 
       context "when invalid" do
         before do
-          mocked_repo.write("opts.yml", "[hello]")
+          mocked_repo.write(
+            "opts.yml", "[hello]"
+          )
         end
 
         it "should raise an error" do
-          expect { mocked_repo.to_repo }.to raise_error \
+          expect { mocked_repo.to_repo }.to raise_error(
             Docker::Template::Error::InvalidYAMLFile
+          )
         end
       end
     end
@@ -72,7 +88,9 @@ describe Docker::Template::Config do
 
   describe "#build_types" do
     it "returns an array of build types" do
-      expect(subject.build_types).to be_an Array
+      expect(subject.build_types).to be_an(
+        Array
+      )
     end
   end
 
@@ -80,14 +98,18 @@ describe Docker::Template::Config do
 
   describe "#has_default?" do
     it "should return true if the value is in DEFAULTS" do
-      expect(subject.has_default?("user")).to eq true
+      expect(subject.has_default?("user")).to eq(
+        true
+      )
     end
 
     #
 
     context "with a non-existant key" do
       it "should return false" do
-        expect(subject.has_default?("hello")).to eq false
+        expect(subject.has_default?("hello")).to eq(
+          false
+        )
       end
     end
   end

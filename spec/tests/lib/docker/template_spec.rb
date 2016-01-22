@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template do
@@ -21,7 +23,9 @@ describe Docker::Template do
     describe "#repo_is_root?" do
       context "when there is no repo dir" do
         it "should return true", :type => :normal, :layout => :simple do
-          expect(template.repo_is_root?).to eq true
+          expect(template.repo_is_root?).to eq(
+            true
+          )
         end
       end
     end
@@ -31,7 +35,9 @@ describe Docker::Template do
     describe "#repo_root_for" do
       context "when there is no repo dir" do
         it "should return the templates root as repo root", :type => :normal, :layout => :simple do
-          expect(template.repo_root_for("normal")).to eq template.root
+          expect(template.repo_root_for("normal")).to eq(
+            template.root
+          )
         end
       end
     end
@@ -42,7 +48,9 @@ describe Docker::Template do
   [:gem_root, :template_root, :repos_root, :root].each do |val|
     describe "##{val}" do
       it "should be a Pathame" do
-        expect(template.send(val)).to be_a Pathutil
+        expect(template.send(val)).to be_a(
+          Pathutil
+        )
       end
     end
   end
@@ -51,7 +59,9 @@ describe Docker::Template do
 
   describe "#config" do
     it "should be a always be a Config" do
-      expect(template.config).to be_a Docker::Template::Config
+      expect(template.config).to be_a(
+        Docker::Template::Config
+      )
     end
   end
 
@@ -60,7 +70,9 @@ describe Docker::Template do
   describe "#get" do
     context "when no data is given" do
       it "should still return a string" do
-        expect(template.get(:rootfs)).to be_a String
+        expect(template.get(:rootfs)).to be_a(
+          String
+        )
       end
     end
 
@@ -68,7 +80,9 @@ describe Docker::Template do
 
     context "when data is given" do
       it "should parse that data with ERB" do
-        expect(template.get(:rootfs, :rootfs_base_img => "hello world")).to start_with "FROM hello world\n"
+        expect(template.get(:rootfs, :rootfs_base_img => "hello world")).to start_with(
+          "FROM hello world\n"
+        )
       end
     end
   end

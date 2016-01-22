@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -9,24 +11,27 @@ module Docker
       attr_reader :context
       attr_reader :img
 
-      #
+      # ----------------------------------------------------------------------
 
       COPY = %W(setup_context copy_global simple_copy copy_all copy_type copy_tag
         copy_cleanup build_context verify_context cache_context).freeze
 
-      #
+      # ----------------------------------------------------------------------
 
       def initialize(repo)
         @repo = repo
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def testing?
         @repo.metadata["mocking"] || @repo.metadata["testing"]
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # A simple copy happens when a user doesn't group up and organize their
+      # copy folder because they don't need relative data.
+      # ----------------------------------------------------------------------
 
       def simple_copy?
         @repo.copy_dir.exist? && \
@@ -35,13 +40,15 @@ module Docker
           !@repo.copy_dir.join("all").exist?
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # An alias happens when the user creates a tag via aliases in opts.
+      # ----------------------------------------------------------------------
 
       def alias?
         !@repo.complex_alias? && @repo.alias? && !rootfs?
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def rootfs?
         is_a?(
@@ -49,15 +56,23 @@ module Docker
         )
       end
 
-      #
+      # ----------------------------------------------------------------------
 
-      [:normal, :scratch].each do |sym|
-        define_method("#{sym}?") do
-          @repo.type == sym.to_s && !rootfs?
-        end
+      def normal?
+        @repo.type == "normal" \
+          && !rootfs?
       end
 
-      #
+      # ----------------------------------------------------------------------
+
+      def scratch?
+        @repo.type == "scratch" \
+          && !rootfs?
+      end
+
+      # ----------------------------------------------------------------------
+      # Pull out the repository that this repository is an alias of.
+      # ----------------------------------------------------------------------
 
       def parent_repo
         return @parent_repo if @parent_repo
@@ -66,18 +81,25 @@ module Docker
         }))
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Pull out the image that this repository is aliasing if it's an alias.
+      # ----------------------------------------------------------------------
 
       def parent_img
         return unless alias?
-        @parent_img ||= Docker::Image.get(parent_repo.to_s)
+        @parent_img ||= Docker::Image.get(
+          parent_repo.to_s
+        )
+
       rescue Docker::Error::NotFoundError
         if alias?
           nil
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Push an image up to Dockerhub or another provider after building.
+      # ----------------------------------------------------------------------
 
       def push
         return if rootfs? || !@repo.pushable?
@@ -89,7 +111,9 @@ module Docker
         img.push(&logger) unless testing?
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Copy, prebuild, verify and then finally build the image.
+      # ----------------------------------------------------------------------
 
       def build
         Simple::Ansi.clear
@@ -107,7 +131,7 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def build_alias
@@ -117,9 +141,11 @@ module Docker
         push
       end
 
+      # ----------------------------------------------------------------------
       # The prebuild happens when a user has "build_context", which
       # typically only happens with scratch, which will prebuild it's rootfs
       # image so it can get to building it's actual image.
+      # ----------------------------------------------------------------------
 
       private
       def copy_prebuild_and_verify
@@ -136,7 +162,9 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Chdir to the context directory and build the image (or context.)
+      # ----------------------------------------------------------------------
 
       private
       def chdir_build
@@ -148,7 +176,9 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # A default method that disables caching and informs the user as such.
+      # ----------------------------------------------------------------------
 
       private
       def cache_context
@@ -157,10 +187,11 @@ module Docker
         end
       end
 
-      # The root can have it's own global copy directory shared
-      # across all repositories in your repo container directory so
-      # this encapsulates those.
-      # <root>/copy
+      # ----------------------------------------------------------------------
+      # The root can have it's own global copy directory shared across
+      # all repositories in your repo container directory so this encapsulates
+      # those. <root>/copy
+      # ----------------------------------------------------------------------
 
       private
       def copy_global
@@ -176,10 +207,12 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
       # When you have no tag, type, all, this is called a simple
       # copy, and we will skip caring about the other types of copies and
       # just do a direct copy of the copy root.
       # <root>/<repo>/copy
+      # ----------------------------------------------------------------------
 
       private
       def simple_copy
@@ -193,10 +226,12 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
       # <root>/<repo>/copy/tag/<tag> where tag is the container for
       # holding data for specific tags, so that if a specific tag needs
       # specific data it doesn't need to share it globally.
       # *Not used with simple copy*
+      # ----------------------------------------------------------------------
 
       private
       def copy_tag
@@ -210,10 +245,12 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
       # <root>/<repo>/copy/type/<type> where type is defined as
       # the value in the tags key of your opts.yml, types are like a
       # set of tags that share common data.
       # *Not used with simple copy*
+      # ----------------------------------------------------------------------
 
       private
       def copy_type
@@ -228,9 +265,11 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
       # <root>/<repo>/copy/all where it is shared local-globally in the
       # current repo, but not across all the other repos.
       # *Not used with simple copy*
+      # ----------------------------------------------------------------------
 
       private
       def copy_all
@@ -244,16 +283,20 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Read the credentials file for Docker and authenticate to push images.
+      # ----------------------------------------------------------------------
 
       private
       def auth!
-        credentials = Pathutil.new("~/.docker/config.json").expand_path
-        credentials = JSON.parse(credentials.read) if credentials.exist?
-        return unless credentials
+        credentials = Pathutil.new("~/.docker/config.json").expand_path.read_json
+        return if credentials.empty?
 
-        credentials.fetch("auths").each do |server, info|
-          user, pass = Base64.decode64(info["auth"]).split(":", 2)
+        credentials["auths"].each do |server, info|
+          user, pass = Base64.decode64(info["auth"]).split(
+            ":", 2
+          )
+
           Docker.authenticate!({
             "username" => user,
             "serveraddress" => server,

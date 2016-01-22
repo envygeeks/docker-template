@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -11,13 +13,22 @@ module Docker
         })
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # By default we will delete any rootfs image we make, but you can cache
+      # said image so that you don't constantly rebuild it if you wish.
+      # ----------------------------------------------------------------------
 
       def keep?
-        @repo.metadata["keep_rootfs"]
+        @repo.metadata[
+          "keep_rootfs"
+        ]
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # During a simple copy you store all the data (includin rootfs) data
+      # as a single unit, this helps us clean up data that is known to be for
+      # just the rootfs image and remove it so it doesn't impact.
+      # ----------------------------------------------------------------------
 
       def cleanup(dir)
         return unless simple_copy?
@@ -25,7 +36,7 @@ module Docker
         file.delete if file.exist?
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def unlink(img: true)
         @context.rmtree if @context && @context.directory?
@@ -33,7 +44,7 @@ module Docker
          rescue Docker::Error::NotFoundError
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def setup_context
@@ -44,7 +55,7 @@ module Docker
         copy_rootfs
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def copy_rootfs
@@ -56,7 +67,9 @@ module Docker
         )
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # When the user is doing a simple layout we detect inline mkimg.
+      # ----------------------------------------------------------------------
 
       private
       def simple_rootfs_copy
@@ -69,7 +82,9 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Check to see if the user has the mkimg at all and it's in context.
+      # ----------------------------------------------------------------------
 
       private
       def verify_context

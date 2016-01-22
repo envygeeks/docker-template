@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Repo do
@@ -33,8 +35,9 @@ describe Docker::Template::Repo do
       #
 
       it "should throw" do
-        expect { mocked_repo.to_repo }.to raise_error \
+        expect { mocked_repo.to_repo }.to raise_error(
           Docker::Template::Error::InvalidRepoType
+        )
       end
     end
 
@@ -42,8 +45,9 @@ describe Docker::Template::Repo do
 
     context "when repo does not exist" do
       it "should throw" do
-        expect { mocked_repo.empty.to_repo }.to raise_error \
+        expect { mocked_repo.empty.to_repo }.to raise_error(
           Docker::Template::Error::RepoNotFound
+        )
       end
     end
 
@@ -51,7 +55,9 @@ describe Docker::Template::Repo do
 
     context "when not a hash" do
       it "should throw" do
-        expect { described_class.new("hello") }.to raise_error ArgumentError
+        expect { described_class.new("hello") }.to raise_error(
+          ArgumentError
+        )
       end
     end
   end
@@ -70,7 +76,9 @@ describe Docker::Template::Repo do
         #
 
         it "should use the default user" do
-          expect(mocked_repo.to_repo.to_s).to match %r!\Ahello/[a-z]+:[a-z]+\Z!
+          expect(mocked_repo.to_repo.to_s).to match(
+            %r!\Ahello/[a-z]+:[a-z]+\Z!
+          )
         end
       end
 
@@ -86,7 +94,9 @@ describe Docker::Template::Repo do
         #
 
         it "should use the default tag" do
-          expect(mocked_repo.to_repo.to_s).to match %r!\A[a-z]+/[a-z]+:hello!
+          expect(mocked_repo.to_repo.to_s).to match(
+            %r!\A[a-z]+/[a-z]+:hello!
+          )
         end
       end
     end
@@ -94,7 +104,9 @@ describe Docker::Template::Repo do
     context "when rootfs: true" do
       it "should use the repo name as the tag" do
         prefix = Docker::Template.config["local_prefix"]
-        expect(mocked_repo.to_repo.to_s(rootfs: true)).to eq "#{prefix}/rootfs:default"
+        expect(mocked_repo.to_repo.to_s(rootfs: true)).to eq(
+          "#{prefix}/rootfs:default"
+        )
       end
     end
   end
@@ -103,14 +115,18 @@ describe Docker::Template::Repo do
 
   describe "#copy_dir" do
     it "should be a pathname" do
-      expect(mocked_repo.to_repo.copy_dir).to be_a Pathutil
+      expect(mocked_repo.to_repo.copy_dir).to be_a(
+        Pathutil
+      )
     end
 
     #
 
     context "(*)" do
       it "should join arguments sent" do
-        expect(mocked_repo.to_repo.copy_dir("world").basename.to_s).to eq "world"
+        expect(mocked_repo.to_repo.copy_dir("world").basename.to_s).to eq(
+          "world"
+        )
       end
     end
   end
@@ -119,8 +135,9 @@ describe Docker::Template::Repo do
 
   describe "#root" do
     it "should put me into pry" do
-      expect(mocked_repo.to_repo.root.relative_path_from(Docker::Template.root). \
-        to_s).to eq "repos/default"
+      expect(mocked_repo.to_repo.root.relative_path_from(Docker::Template.root).to_s).to eq(
+        "repos/default"
+      )
     end
   end
 
@@ -128,7 +145,8 @@ describe Docker::Template::Repo do
 
   describe "#to_tag_h" do
     it "should include user/repo" do
-      expect(mocked_repo.to_repo.to_tag_h).to include({
+      expect(mocked_repo.to_repo.to_tag_h).to \
+      include({
         "repo" => match(%r!\A[a-z]+/default!)
       })
     end
@@ -136,7 +154,8 @@ describe Docker::Template::Repo do
     #
 
     it "should include a tag" do
-      expect(mocked_repo.to_repo.to_tag_h).to include({
+      expect(mocked_repo.to_repo.to_tag_h).to \
+      include({
         "tag" => "latest"
       })
     end
@@ -163,7 +182,8 @@ describe Docker::Template::Repo do
     #
 
     it "should include a tag" do
-      expect(mocked_repo.to_repo.to_rootfs_h).to include({
+      expect(mocked_repo.to_repo.to_rootfs_h).to \
+      include({
         "tag" => "default"
       })
     end
@@ -173,7 +193,9 @@ describe Docker::Template::Repo do
 
   describe "#tmpdir" do
     it "should be a pathname" do
-      expect(mocked_repo.to_repo.tmpdir.tap(&:rm_rf)).to be_a Pathutil
+      expect(mocked_repo.to_repo.tmpdir.tap(&:rm_rf)).to be_a(
+        Pathutil
+      )
     end
 
     #
@@ -188,8 +210,9 @@ describe Docker::Template::Repo do
 
     context "(*prefixes)" do
       it "should add those prefixes" do
-        expect(mocked_repo.to_repo.tmpdir("hello").tap(&:rm_rf).to_s).to \
-          match %r!-hello-!
+        expect(mocked_repo.to_repo.tmpdir("hello").tap(&:rm_rf).to_s).to match(
+          %r!-hello-!
+        )
       end
     end
   end
@@ -198,7 +221,9 @@ describe Docker::Template::Repo do
 
   describe "#tmpfile" do
     it "should be a Pathutil" do
-      expect(mocked_repo.to_repo.tmpfile.tap(&:unlink)).to be_a Pathutil
+      expect(mocked_repo.to_repo.tmpfile.tap(&:unlink)).to be_a(
+        Pathutil
+      )
     end
 
     #
@@ -213,8 +238,9 @@ describe Docker::Template::Repo do
 
     context "(*prefixes)" do
       it "should add those prefixes" do
-        expect(mocked_repo.to_repo.tmpfile("hello").tap(&:unlink).to_s).to \
-          match %r!-hello-!
+        expect(mocked_repo.to_repo.tmpfile("hello").tap(&:unlink).to_s).to match(
+          %r!-hello-!
+        )
       end
     end
   end
@@ -235,7 +261,9 @@ describe Docker::Template::Repo do
       #
 
       it "should pull all tags as individual repos" do
-        expect(mocked_repo.to_repo.to_repos.size).to eq 2
+        expect(mocked_repo.to_repo.to_repos.size).to eq(
+          2
+        )
       end
     end
 
@@ -251,8 +279,9 @@ describe Docker::Template::Repo do
       #
 
       it "should return all repos" do
-        expect(mocked_repo.to_repo.to_repos.first).to \
-          be_a Docker::Template::Repo
+        expect(mocked_repo.to_repo.to_repos.first).to be_a(
+          Docker::Template::Repo
+        )
       end
     end
 
@@ -260,13 +289,17 @@ describe Docker::Template::Repo do
 
     context "when a tag is given" do
       before do
-        mocked_repo.with_repo_init("tag" => "default")
+        mocked_repo.with_repo_init({
+          "tag" => "default"
+        })
       end
 
       #
 
       it "should only return the current repo" do
-        expect(mocked_repo.to_repo.to_repos.size).to eq 1
+        expect(mocked_repo.to_repo.to_repos.size).to eq(
+          1
+        )
       end
     end
   end
@@ -275,8 +308,9 @@ describe Docker::Template::Repo do
 
   describe "#metadata" do
     it "should be a Metadata" do
-      expect(mocked_repo.to_repo.metadata).to \
-        be_a Docker::Template::Metadata
+      expect(mocked_repo.to_repo.metadata).to be_a(
+        Docker::Template::Metadata
+      )
     end
   end
 
@@ -284,7 +318,9 @@ describe Docker::Template::Repo do
 
   describe "#to_env" do
     it "should return a hash to you" do
-      expect(mocked_repo.to_repo.to_env).to be_a Hash
+      expect(mocked_repo.to_repo.to_env).to be_a(
+        Hash
+      )
     end
 
     #

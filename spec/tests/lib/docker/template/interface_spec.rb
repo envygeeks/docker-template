@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Interface do
@@ -32,7 +34,9 @@ describe Docker::Template::Interface do
     #
 
     after :all do
-      Mocks.send(:remove_const, :Interface)
+      Mocks.send(
+        :remove_const, :Interface
+      )
     end
 
     #
@@ -48,36 +52,42 @@ describe Docker::Template::Interface do
 
     context "when called as docker" do
       before do
-        allow(described_class).to receive(:abort) do
+        allow(described_class).to receive(:abort).and_return(
           nil
-        end
+        )
       end
 
       #
 
       it "should msg discover" do
-        expect(Docker::Template::Utils::System).to receive(:docker_bin)
+        expect(Docker::Template::Utils::System).to receive(
+          :docker_bin
+        )
       end
 
       #
 
       after do
-        described_class.start("docker")
+        described_class.start(
+          "docker"
+        )
       end
 
       #
 
       context "when it cannot find a bin" do
         before do
-          allow(Docker::Template::Utils::System).to receive(:docker_bin) do
+          allow(Docker::Template::Utils::System).to receive(:docker_bin).and_return(
             nil
-          end
+          )
         end
 
         #
 
         it "should abort" do
-          expect(described_class).to receive(:abort)
+          expect(described_class).to receive(
+            :abort
+          )
         end
       end
     end
@@ -95,7 +105,9 @@ describe Docker::Template::Interface do
 
       it "should log the error" do
         result = capture_io { described_class.start("docker-template") }
-        expect(result[:stderr]).not_to be_empty
+        expect(result[:stderr]).not_to(
+          be_empty
+        )
       end
     end
   end

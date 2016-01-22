@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "docker"
 require "forwardable/extended"
@@ -16,7 +18,7 @@ module Docker
   module Template
     module_function
 
-    #
+    # ------------------------------------------------------------------------
 
     autoload :Alias, "docker/template/alias"
     autoload :Builder, "docker/template/builder"
@@ -33,14 +35,18 @@ module Docker
     autoload :Travis, "docker/template/travis"
     autoload :Utils, "docker/template/utils"
 
-    #
+    # ------------------------------------------------------------------------
+    # Checks to see if the repository is the actual root of everything.
+    # @note This happens when you do not have a repos folder.
+    # ------------------------------------------------------------------------
 
     def repo_is_root?
-      root.join("copy").exist? && \
-        !root.join(config["repos_dir"]).exist?
+      root.join("copy").exist? && !root.join(config["repos_dir"]).exist?
     end
 
-    #
+    # ------------------------------------------------------------------------
+    # The configuration pulled from `opts.yml`
+    # ------------------------------------------------------------------------
 
     def config
       @config ||= begin
@@ -48,7 +54,7 @@ module Docker
       end
     end
 
-    #
+    # ------------------------------------------------------------------------
 
     def root
       @root ||= begin
@@ -56,7 +62,7 @@ module Docker
       end
     end
 
-    #
+    # ------------------------------------------------------------------------
 
     def repos_root
       root.join(config[
@@ -64,13 +70,16 @@ module Docker
       ])
     end
 
-    #
+    # ------------------------------------------------------------------------
+    # Pulls the repository root depending on the type of root folder.
+    # @param [String,Symbol] the name of the repo.
+    # ------------------------------------------------------------------------
 
     def repo_root_for(name)
       repo_is_root?? root : repos_root.join(name)
     end
 
-    #
+    # ------------------------------------------------------------------------
 
     def gem_root
       @gem_root ||= begin
@@ -80,7 +89,7 @@ module Docker
       end
     end
 
-    #
+    # ------------------------------------------------------------------------
 
     def template_root
       @template_root ||= begin
@@ -88,7 +97,11 @@ module Docker
       end
     end
 
-    #
+    # ------------------------------------------------------------------------
+    # Pull a `template` from the `template_root` to parse it's data.
+    # @param [String,Symbol] name the name of the template from templates/*
+    # @param data any data you wish to be encapsulated into it.
+    # ------------------------------------------------------------------------
 
     def get(name, data = {})
       data = Utils::Data.new(data)

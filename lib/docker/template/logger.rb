@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -9,21 +11,28 @@ module Docker
         @lines = {}
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # A simple TTY stream that just prints out the data given it.
+      # ----------------------------------------------------------------------
 
       def tty(stream)
         $stdout.print stream
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # A simple logger that accepts a multi-type stream.
+      # ----------------------------------------------------------------------
 
       def simple(type, str)
         type == :stderr ? $stderr.print(str) : $stdout.print(str)
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # A more complex streamer designed for the actual output of Docker.
+      # @param [String<JSON:Hash>] part the JSON part given.
+      # ----------------------------------------------------------------------
 
-      def api(part, *args)
+      def api(part, *_)
         retried ||= false
 
         stream = JSON.parse(part)
@@ -44,13 +53,15 @@ module Docker
         end
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       def progress_error(stream)
-        abort Object::Simple::Ansi.red(stream["errorDetail"]["message"])
+        abort Object::Simple::Ansi.red(
+          stream["errorDetail"]["message"]
+        )
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def progress_bar(stream)
@@ -62,10 +73,12 @@ module Docker
         str = stream["progress"] || stream["status"]
         str = "#{id}: #{str}\r"
 
-        $stdout.print(Object::Simple::Ansi.jump(str, diff))
+        $stdout.print(Object::Simple::Ansi.jump(
+          str, diff
+        ))
       end
 
-      #
+      # ----------------------------------------------------------------------
 
       private
       def progress_diff(id)

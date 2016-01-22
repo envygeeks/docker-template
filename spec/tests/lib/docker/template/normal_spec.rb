@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Normal do
@@ -36,14 +38,18 @@ describe Docker::Template::Normal do
       context do
         before do
           silence_io do
-            subject.send :cache_context
+            subject.send(
+              :cache_context
+            )
           end
         end
 
         #
 
         it "should not copy all the files" do
-          expect(subject.repo.cache_dir).not_to exist
+          expect(subject.repo.cache_dir).not_to(
+            exist
+          )
         end
       end
 
@@ -51,15 +57,17 @@ describe Docker::Template::Normal do
 
       context do
         it "should not call utils to copy it" do
-          expect(Docker::Template::Utils::Context).not_to receive :cache do
-            nil
-          end
+          expect(Docker::Template::Utils::Context).not_to receive(
+            :cache
+          )
         end
 
         #
 
         after do
-          subject.send :cache_context
+          subject.send(
+            :cache_context
+          )
         end
       end
     end
@@ -86,7 +94,9 @@ describe Docker::Template::Normal do
         #
 
         it "should copy all the files" do
-          expect(subject.repo.cache_dir).to exist
+          expect(subject.repo.cache_dir).to(
+            exist
+          )
         end
       end
 
@@ -94,13 +104,17 @@ describe Docker::Template::Normal do
 
       context do
         it "call the utils to copy it" do
-          expect(Docker::Template::Utils::Context).to receive :cache do
+          expect(Docker::Template::Utils::Context).to receive(:cache).and_return(
             nil
-          end
+          )
         end
 
+        #
+
         after do
-          subject.send :cache_context
+          subject.send(
+            :cache_context
+          )
         end
       end
 
@@ -126,22 +140,26 @@ describe Docker::Template::Normal do
     #
 
     it "should delete the context folder" do
-      expect(subject.instance_variable_get(:@context)) \
-        .not_to exist
+      expect(subject.instance_variable_get(:@context)).not_to(
+        exist
+      )
     end
 
     #
 
     context "(img: true)" do
       before do
-        subject.instance_variable_set(:@img, image_mock)
+        subject.instance_variable_set(
+          :@img, image_mock
+        )
       end
 
       #
 
       it "should try to delete the image" do
-        expect(image_mock).to receive \
+        expect(image_mock).to receive(
           :delete
+        )
       end
 
       #
@@ -157,14 +175,17 @@ describe Docker::Template::Normal do
 
   describe "#setup_context" do
     before do
-      subject.send :setup_context
+      subject.send(
+        :setup_context
+      )
     end
 
     #
 
     it "should copy the Dockerfile" do
-      expect(subject.instance_variable_get(:@context).find.map(&:to_s)).to \
-        include match(/Dockerfile\Z/)
+      expect(subject.instance_variable_get(:@context).find.map(&:to_s)).to include match(
+        /Dockerfile\Z/
+      )
     end
 
     #

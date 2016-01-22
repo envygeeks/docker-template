@@ -1,10 +1,20 @@
+# ----------------------------------------------------------------------------
+# Frozen-string-literal: true
+# Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
+# Encoding: utf-8
+# ----------------------------------------------------------------------------
+
 module Docker
   module Template
     module Travis
       NAME = "travis-docker-template"
       module_function
 
-      #
+      # ----------------------------------------------------------------------
+      # Boot up a Travis-CI Image with our source so that you can debug
+      # possible issues you are having with specs failing and you don't know
+      # why.  This is rarely useful, but it's useful none-the-less.
+      # ----------------------------------------------------------------------
 
       def create
         system "docker", "run", "--volume=#{Dir.pwd}:/home/travis/builds/envygeeks/docker-template", \
@@ -15,11 +25,28 @@ module Docker
           "bash", "-il"
       end
 
-      #
+      # ----------------------------------------------------------------------
+      # Stop the Travis-CI Docker image forcefully, and instantly.
+      # ----------------------------------------------------------------------
+
+      def stop
+        system(
+          "docker", "stop", "-t", "0", NAME
+        )
+
+        self
+      end
+
+      # ----------------------------------------------------------------------
+      # Delete the instance of our Docker image once we've stopped it.
+      # ----------------------------------------------------------------------
 
       def delete
-        system "docker", "stop", "-t", "0", NAME
-        system "docker", "rm", "-fv", NAME
+        system(
+          "docker", "rm", "-fv", NAME
+        )
+
+        self
       end
     end
   end
