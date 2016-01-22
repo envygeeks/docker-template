@@ -3,13 +3,13 @@ bundler_args: --without development
 cache: bundler
 sudo: false
 rvm:
-- 2.3.0
-- 2.2.4
 - 2.1.8
-- jruby-9.0.3.0
+- 2.2.4
+- 2.3.0
+- jruby-9.0.4.0
 matrix:
  allow_failures:
- - rvm: jruby-9.0.3.0
+ - rvm: jruby-9.0.4.0
 notifications:
   email:
   - jordon@envygeeks.io
