@@ -74,8 +74,9 @@ module Docker
 
     def gem_root
       @gem_root ||= begin
-        path = File.expand_path("../../", __dir__)
-        Pathutil.new(path)
+        Pathutil.new("../../").expand_path(
+          __dir__
+        )
       end
     end
 

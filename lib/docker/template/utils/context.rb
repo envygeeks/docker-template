@@ -7,20 +7,25 @@ module Docker
         #
 
         def cache(builder, context)
-          dir = builder.repo.cache_dir
-          dir.rmtree if dir.exist?
+          return unless context
 
-          FileUtils.mkdir_p dir
+          builder.repo.cache_dir.rm_rf
           $stdout.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
-          Utils::Copy.file(readme(builder), dir)
-          Utils::Copy.directory(context, dir)
+          context.cp_r(builder.repo.cache_dir)
+          readme(builder)
         end
 
         #
 
         def readme(builder)
-          builder.repo.root.children.find do |val|
-            val.to_s =~ /readme/i
+          file = builder.repo.root.children.find do |val|
+            val =~ /readme/i
+          end
+
+          if file
+            then file.safe_copy(
+              builder.repo.cache_dir, :root => file.parent
+            )
           end
         end
       end

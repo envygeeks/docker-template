@@ -32,6 +32,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Move old coupled CLI stuff into config and off Interface.
 - Cleanup Metadata and it's API, making it less fragile.
 - Move Alias directly onto builder as a simple method.
+- Switched to `Pathutil` instead of `Pathname`.
 - Remove encapsulating auth into a class.
 - Fix a few minor bugs.
 

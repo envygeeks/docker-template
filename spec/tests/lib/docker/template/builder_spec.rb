@@ -16,36 +16,34 @@ describe Docker::Template::Builder do
 
   #
 
-  subject do
-    mocked_repo.to_scratch
+  subject do |ex|
+    mocked_repo.send(
+      "to_#{ex.metadata[:type]}"
+    )
   end
 
   #
 
   before do |ex|
-    mocked_repo.init ex.metadata[:as] || :type => :scratch
-    allow(subject).to receive( :build_context).and_return nil
     allow(subject).to receive(:verify_context).and_return nil
+    allow(subject).to receive( :build_context).and_return nil
   end
 
   #
 
   describe "#parent_repo" do
     before do
-      mocked_repo.with_repo_init("tag" => "world")
-      mocked_repo.with_opts({
-        "tags" => {
-          "hello" => "world"
-        },
-
-        "aliases" => {
-          "world" => "hello"
-        }
+      mocked_repo.add_alias :world, :tag => :hello
+      mocked_repo.add_tag :hello, :group => :world
+      mocked_repo.with_repo_init({
+        :tag => :world
       })
     end
 
     it "should pull out the aliased repo" do
-      expect(mocked_repo.to_normal.parent_repo.tag).to eq "hello"
+      expect(mocked_repo.to_normal.parent_repo.tag).to eq(
+        "hello"
+      )
     end
   end
 
@@ -53,33 +51,29 @@ describe Docker::Template::Builder do
 
   describe "#alias?" do
     it "should return false" do
-      expect(mocked_repo.to_normal.alias?).to eq false
+      expect(mocked_repo.to_normal.alias?).to eq(
+        false
+      )
     end
 
     context "when a simple alias" do
       before do
-        mocked_repo.with_opts({
-          "aliases" => { "hello" => "true" },
-          "tags" => {
-            "default" => "normal"
-          }
-        })
+        mocked_repo.add_alias(
+          "hello"
+        )
       end
 
       it "should return true" do
-        expect(mocked_repo.with_repo_init("tag" => "hello") \
-          .to_normal.alias?).to eq true
+        expect(mocked_repo.with_repo_init("tag" => "hello").to_normal.alias?).to eq(
+          true
+        )
       end
     end
 
     context "when a complex alias" do
       before do
+        mocked_repo.add_alias "hello"
         mocked_repo.with_opts({
-          "aliases" => { "hello" => "default" },
-          "tags" => {
-            "default" => "normal"
-          },
-
           "env" => {
             "tag" => {
               "hello" => [
@@ -91,8 +85,9 @@ describe Docker::Template::Builder do
       end
 
       it "should return false" do
-        expect(mocked_repo.with_repo_init("tag" => "hello").to_normal \
-          .alias?).to eq false
+        expect(mocked_repo.with_repo_init("tag" => "hello").to_normal.alias?).to eq(
+          false
+        )
       end
     end
   end
@@ -118,28 +113,30 @@ describe Docker::Template::Builder do
     #
 
     it "should try to auth" do
-      expect(subject).to receive :auth! do
+      expect(subject).to receive(:auth!).and_return(
         nil
-      end
+      )
     end
 
     #
 
     context do
       before do
-        allow(subject).to receive :auth! do
+        allow(subject).to receive(:auth!).and_return(
           nil
-        end
+        )
       end
 
       #
 
       it "should try to push" do
-        expect(image_mock).to receive(:push) do
+        expect(image_mock).to receive(:push).and_return(
           nil
-        end
+        )
       end
     end
+
+    #
 
     context "when push == false" do
       before do
@@ -148,28 +145,12 @@ describe Docker::Template::Builder do
         })
       end
 
+      #
+
       it "should not try to push the repo" do
-        expect(image_mock).not_to receive(:push) do
-          nil
-        end
-      end
-    end
-  end
-
-  #
-
-  describe "#copy_prebuild_and_verify" do
-    after do
-      subject.send :copy_prebuild_and_verify
-    end
-
-    #
-
-    Docker::Template::Builder::COPY.each do |method|
-      it "should message #{method}" do
-        expect(subject).to receive(method) do
-          nil
-        end
+        expect(image_mock).not_to receive(
+          :push
+        )
       end
     end
   end
@@ -177,118 +158,137 @@ describe Docker::Template::Builder do
   #
 
   context do
-    before do |ex|
-      subject.send :setup_context
-      allow(subject).to receive( :rootfs?).and_return ex.metadata[ :rootfs]
-      allow(subject).to receive(:scratch?).and_return ex.metadata[:scratch]
-      allow(subject).to receive( :normal?).and_return ex.metadata[ :normal]
-      allow(subject).to receive(:simple_copy?).and_return \
-        ex.metadata[:simple_copy]
+    before do
+      subject.send(
+        :setup_context
+      )
     end
 
     #
 
     describe "#copy_global" do
-      after do
-        subject.send :copy_global
+      context "when it's a scratch image" do
+        it "should copy", :type => :scratch do
+          expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
+            nil
+          )
+        end
       end
 
       #
 
-      [:scratch, :normal].each do |val|
-        context "when it's #{val}", val do
-          it "should copy" do
-            expect(Docker::Template::Utils::Copy).to receive :directory do
-              nil
-            end
-          end
+      context "when it's a normal image" do
+        it "should copy", :type => :normal do
+          expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
+            nil
+          )
         end
+      end
+
+      #
+
+      context "when it's a rootfs image" do
+        it "should not copy", :type => :rootfs do
+          expect_any_instance_of(Pathutil).not_to receive(:safe_copy).and_return(
+            nil
+          )
+        end
+      end
+
+      #
+
+      after do
+        subject.send(
+          :copy_global
+        )
       end
     end
 
     #
 
-    describe "#simple_copy", :simple do
-      after do
-        subject.send :simple_copy
-      end
-
-      #
-
-      it "should copy", :simple_copy do
-        expect(Docker::Template::Utils::Copy).to receive :directory do
+    describe "#simple_copy" do
+      it "should copy", :layout => :simple do
+        expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
           nil
-        end
+        )
       end
 
       #
 
       context "when !simple_copy?" do
-        it "should not copy" do
-          expect(Docker::Template::Utils::Copy).not_to receive :directory do
-            nil
-          end
+        it "should not copy", :layout => :complex do
+          expect_any_instance_of(Pathutil).not_to receive(
+            :safe_copy
+          )
         end
+      end
+
+      #
+
+      after do
+        subject.send(
+          :simple_copy
+        )
       end
     end
 
     #
 
     shared_examples :copy do
-      context "when it's scratch", :scratch do
-        it "should copy" do
-          expect(Docker::Template::Utils::Copy).to receive :directory do
+      context "when it's scratch" do
+        it "should copy", :type => :scratch do
+          expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
             nil
-          end
+          )
         end
 
         #
 
-        context "when simple_copy?", :simple_copy do
-          it "should not copy" do
-            expect(Docker::Template::Utils::Copy).not_to receive :directory do
-              nil
-            end
+        context "when simple_copy?" do
+          it "should not copy", :layout => :simple, :type => :scratch do
+            expect_any_instance_of(Pathutil).not_to receive(
+              :safe_copy
+            )
           end
         end
       end
 
       #
 
-      context "when it's simple", :simple do
-        it "should copy" do
-          expect(Docker::Template::Utils::Copy).to receive :directory do
+      context "when it's normal" do
+        it "should copy", :type => :normal do
+          expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
             nil
-          end
+          )
         end
 
         #
 
-        context "when simple_copy?", :simple_copy do
-          it "should not copy" do
-            expect(Docker::Template::Utils::Copy).not_to receive :directory do
-              nil
-            end
+        context "when simple_copy?" do
+          it "should not copy", :type => :normal, :layout => :simple do
+            expect_any_instance_of(Pathutil).not_to receive(
+              :safe_copy
+            )
           end
         end
       end
 
       #
 
-      context "when it's a rootfs", :rootfs do
-        it "should not copy" do
-          expect(Docker::Template::Utils::Copy).not_to receive :directory do
-            nil
-          end
+      context "when it's a rootfs" do
+        it "should not copy", :type => :rootfs do
+          expect_any_instance_of(Pathutil).not_to receive(
+            :safe_copy
+          )
         end
 
         #
 
         context "when simple_copy?", :simple_copy do
-          it "should not copy" do
-            expect(Docker::Template::Utils::Copy).not_to receive :directory do
-              nil
-            end
+          it "should not copy", :type => :rootfs, :layout => :simple do
+            expect_any_instance_of(Pathutil).not_to receive(
+              :safe_copy
+            )
           end
         end
       end
@@ -296,15 +296,46 @@ describe Docker::Template::Builder do
 
     #
 
-    [:copy_tag, :copy_type, :copy_all].each do |method|
-      describe "##{method}" do
-        after do
-          subject.send method
-        end
+    describe "#copy_tag" do
+      it_behaves_like(
+        :copy
+      )
 
-        # SHARED_EXAMPLES
-        it_behaves_like :copy
+      #
+
+      after do
+        subject.send(
+          :copy_tag
+        )
       end
+    end
+
+    #
+
+    describe "#copy_type" do
+      after do
+        subject.send(
+          :copy_type
+        )
+      end
+
+      it_behaves_like(
+        :copy
+      )
+    end
+
+    #
+
+    describe "#copy_all" do
+      after do
+        subject.send(
+          :copy_all
+        )
+      end
+
+      it_behaves_like(
+        :copy
+      )
     end
   end
 
@@ -323,54 +354,62 @@ describe Docker::Template::Builder do
 
     shared_examples :build do
       it "should build from the context" do
-        expect(Docker::Image).to receive :build_from_dir
+        expect(Docker::Image).to receive(
+          :build_from_dir
+        )
       end
 
       #
 
-      it "should cleanup", :skip_unlink do
-        expect(subject).to receive(:unlink).and_call_original
+      it "should cleanup", :skip_unlink => true do
+        expect(subject).to receive(:unlink). \
+          and_call_original
       end
 
       #
 
       it "should not throw any errors" do
-        expect { silence_io { subject.build }}.not_to raise_error
+        expect { silence_io { subject.build }}.not_to(
+          raise_error
+        )
       end
 
       #
 
       it "should notify of the build", :noisey do
-        expect(Docker::Template::Utils::Notify).to receive :build do
+        expect(Docker::Template::Utils::Notify).to receive(:build).and_return(
           nil
-        end
+        )
       end
 
       #
 
       it "should clear the screen" do
-        expect(Simple::Ansi).to receive :clear do
+        expect(Simple::Ansi).to receive(:clear).and_return(
           nil
-        end
+        )
       end
     end
 
     #
 
-    context "when @subject.type == normal", :repo_as => { :type => :normal } do
-      it_behaves_like :build
+    context "when @subject.type == normal", :type => :normal do
+      it_behaves_like(
+        :build
+      )
     end
 
     #
 
-    context "when @subject.type == scratch" do
+    context "when subject.type == scratch" do
       before do
         allow(subject).to receive(:create_args).and_return({})
         allow(subject).to receive( :start_args).and_return({})
       end
 
-      # SHARED EXAMPLES!
-      it_behaves_like :build
+      it_behaves_like(
+        :build
+      )
     end
   end
 end

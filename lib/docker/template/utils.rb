@@ -5,7 +5,6 @@
 module Docker
   module Template
     module Utils
-      autoload :Copy, "docker/template/utils/copy"
       autoload :Notify, "docker/template/utils/notify"
       autoload :Stringify, "docker/template/utils/stringify"
       autoload :Context, "docker/template/utils/context"

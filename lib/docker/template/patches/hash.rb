@@ -37,6 +37,14 @@ class Hash
         end
       end
     end
+
+    #
+
+    def deep_merge!(newh)
+      replace(deep_merge(
+        newh
+      ))
+    end
   end
 
   prepend Patches

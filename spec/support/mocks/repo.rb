@@ -20,7 +20,11 @@ module Mocks
         ],
 
         :complex => [
+          [:mkdir, "../../copy"],
           [:mkdir, "copy"],
+          [:mkdir, "copy/all"],
+          [:mkdir, "copy/tag/latest"],
+          [:mkdir, "copy/type/normal"],
           [:write, "copy/all/usr/local/bin/hello", "world"],
           [:touch, "Dockerfile"],
           [:with_opts, {}]
@@ -36,13 +40,23 @@ module Mocks
         ],
 
         :complex => [
+          [:mkdir, "../../copy"],
           [:mkdir, "copy"],
+          [:mkdir, "copy/all"],
+          [:mkdir, "copy/tag/latest"],
+          [:mkdir, "copy/type/normal"],
           [:write, "copy/all/usr/local/bin/hello", "world"],
           [:write, "copy/rootfs/usr/local/bin/mkimg", "hello"],
           [:with_opts, {}]
         ]
       }
     }
+
+    # ------------------------------------------------------------------------
+
+    FS_LAYOUTS[:rootfs] = FS_LAYOUTS[
+      :scratch
+    ]
 
     # ------------------------------------------------------------------------
 
@@ -73,6 +87,26 @@ module Mocks
       end
 
       raise
+    end
+
+    # ------------------------------------------------------------------------
+    # Adds a tag to opts.yml properly, on your behalf.
+    # ------------------------------------------------------------------------
+
+    def add_tag(name, group: :normal)
+      return with_opts("tags" => {
+        name => group
+      })
+    end
+
+    # ------------------------------------------------------------------------
+    # Adds an alias on your behalf, properly.
+    # ------------------------------------------------------------------------
+
+    def add_alias(name, tag: :default)
+      return with_opts("aliases" => {
+        name => tag
+      })
     end
 
     # ------------------------------------------------------------------------
@@ -125,7 +159,7 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def with_cli_opts(args)
-      @hashes[:cli].merge!(stringify(
+      @hashes[:cli].deep_merge!(stringify(
         args
       ))
 
@@ -135,7 +169,7 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def with_repo_init(hash)
-      @hashes[:init].merge!(stringify(
+      @hashes[:init].deep_merge!(stringify(
         hash
       ))
 
@@ -149,7 +183,7 @@ module Mocks
 
     def with_opts(opts)
       @hashes[:opts] ||= Docker::Template.config.read_config_from(repo_dir)
-      @hashes[:opts] = @hashes[:opts].merge(stringify(opts))
+      @hashes[:opts] = @hashes[:opts].deep_merge(stringify(opts))
       repo_dir.join("opts.yml").write(
         @hashes[:opts].to_yaml
       )

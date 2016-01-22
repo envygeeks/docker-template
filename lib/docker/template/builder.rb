@@ -44,7 +44,9 @@ module Docker
       #
 
       def rootfs?
-        is_a?(Rootfs)
+        is_a?(
+          Rootfs
+        )
       end
 
       #
@@ -121,10 +123,16 @@ module Docker
 
       private
       def copy_prebuild_and_verify
-        raise Error::NoSetupContext unless respond_to?(:setup_context, true)
+        unless respond_to?(:setup_context, true)
+          raise(
+            Error::NoSetupContext
+          )
+        end
 
         COPY.map do |val|
-          send(val) if respond_to?(val, true)
+          if respond_to?(val, true)
+            send(val)
+          end
         end
       end
 
@@ -132,7 +140,7 @@ module Docker
 
       private
       def chdir_build
-        Dir.chdir(@context) do
+        @context.chdir do
           opts = { :t => @repo.to_s(rootfs: rootfs?) }
           $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.metadata["tty"]
           @img = Docker::Image.build_from_dir(".", opts, &Logger.new.method(:api))
@@ -157,8 +165,15 @@ module Docker
       private
       def copy_global
         return if rootfs? || Template.repo_is_root?
-        dir = Template.root.join(@repo.metadata["copy_dir"])
-        Utils::Copy.directory(dir, @copy)
+        dir = Template.root.join(
+          @repo.metadata["copy_dir"]
+        )
+
+        if dir.exist?
+          then dir.safe_copy(
+            @copy, :root => Template.root
+          )
+        end
       end
 
       # When you have no tag, type, all, this is called a simple
@@ -169,9 +184,13 @@ module Docker
       private
       def simple_copy
         return unless simple_copy?
-
         dir = @repo.copy_dir
-        Utils::Copy.directory(dir, @copy)
+
+        if dir.exist?
+          then dir.safe_copy(
+            @copy, :root => Template.root
+          )
+        end
       end
 
       # <root>/<repo>/copy/tag/<tag> where tag is the container for
@@ -183,7 +202,12 @@ module Docker
       def copy_tag
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("tag", @repo.tag)
-        Utils::Copy.directory(dir, @copy)
+
+        if dir.exist?
+          then dir.safe_copy(
+            @copy, :root => Template.root
+          )
+        end
       end
 
       # <root>/<repo>/copy/type/<type> where type is defined as
@@ -196,7 +220,12 @@ module Docker
         build_type = @repo.metadata["tags"][@repo.tag]
         return if rootfs? || simple_copy? || !build_type
         dir = @repo.copy_dir("type", build_type)
-        Utils::Copy.directory(dir, @copy)
+
+        if dir.exist?
+          then dir.safe_copy(
+            @copy, :root => Template.root
+          )
+        end
       end
 
       # <root>/<repo>/copy/all where it is shared local-globally in the
@@ -207,7 +236,12 @@ module Docker
       def copy_all
         return if rootfs? || simple_copy?
         dir = @repo.copy_dir("all")
-        Utils::Copy.directory(dir, @copy)
+
+        if dir.exist?
+          then dir.safe_copy(
+            @copy, :root => Template.root
+          )
+        end
       end
 
       #

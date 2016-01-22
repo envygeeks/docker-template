@@ -18,18 +18,9 @@ describe Docker::Template do
   #
 
   include_context :repos do
-    before do
-      mocked_repo.init({
-        :layout => :simple,
-        :type   => :normal
-      })
-    end
-
-    #
-
     describe "#repo_is_root?" do
       context "when there is no repo dir" do
-        it "should return true" do
+        it "should return true", :type => :normal, :layout => :simple do
           expect(template.repo_is_root?).to eq true
         end
       end
@@ -39,7 +30,7 @@ describe Docker::Template do
 
     describe "#repo_root_for" do
       context "when there is no repo dir" do
-        it "should return the templates root as repo root" do
+        it "should return the templates root as repo root", :type => :normal, :layout => :simple do
           expect(template.repo_root_for("normal")).to eq template.root
         end
       end

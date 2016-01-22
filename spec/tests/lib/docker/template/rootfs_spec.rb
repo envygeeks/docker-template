@@ -9,56 +9,65 @@ RSpec.describe Docker::Template::Rootfs do
   #
 
   subject do
-    mocked_repo.with_repo_init("tag" => "default")
     mocked_repo.to_rootfs
   end
 
   #
 
   before do
-    mocked_repo.init({
-      :type => :scratch
-    })
+    mocked_repo.with_repo_init(
+      "tag" => "default"
+    )
   end
 
   #
 
   describe "#data" do
     it "should add the FROM line" do
-      expect(subject.data).to match %r!\AFROM [a-z]+/ubuntu!
+      expect(subject.data).to match(
+        %r!\AFROM [a-z]+/ubuntu!
+      )
     end
   end
 
   #
 
   describe "#copy_rootfs" do
+    before do
+      subject.send(
+        :setup_context
+      )
+    end
+
     after do
-      subject.send :copy_rootfs
+      subject.send(
+        :copy_rootfs
+      )
     end
 
     #
 
-    it "should copy" do
-      expect(Docker::Template::Utils::Copy).to receive :directory do
+    it "should copy", :type => :rootfs, :layout => :complex do
+      expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
         nil
-      end
+      )
     end
 
     #
 
     context "when simple_copy?" do
       before do
-        allow(subject).to receive(:simple_copy?) do
+        allow(subject).to receive(:simple_copy?).and_return(
           true
-        end
+        )
       end
 
       #
 
       it "should do a simple copy" do
-        expect(subject).to receive :simple_rootfs_copy do
+        expect(subject).to receive(:simple_rootfs_copy).and_return(
           nil
-        end
+        )
       end
     end
   end
@@ -75,7 +84,9 @@ RSpec.describe Docker::Template::Rootfs do
     #
 
     it "should delete the context it created" do
-      expect(subject.instance_variable_get(:@context)).not_to exist
+      expect(subject.instance_variable_get(:@context)).not_to(
+        exist
+      )
     end
 
     #
@@ -83,15 +94,17 @@ RSpec.describe Docker::Template::Rootfs do
     context "(img: true)" do
       context do
         it "should delete the image" do
-          expect(image_mock).to receive :delete do
+          expect(image_mock).to receive(:delete).and_return(
             nil
-          end
+          )
         end
 
         #
 
         after do
-          subject.unlink(img: true)
+          subject.unlink({
+            :img => true
+          })
         end
       end
 
@@ -113,9 +126,9 @@ RSpec.describe Docker::Template::Rootfs do
         #
 
         it "should not delete the rootfs img" do
-          expect(image_mock).not_to receive :delete do
-            nil
-          end
+          expect(image_mock).not_to receive(
+            :delete
+          )
         end
 
         #
@@ -132,16 +145,19 @@ RSpec.describe Docker::Template::Rootfs do
 
   #
 
-  context "when no mkimg exists" do
+  context "when no mkimg exists", :layout => :simple, :type => :scratch do
     before do
-      mocked_repo.delete("copy/rootfs")
+      mocked_repo.delete(
+        "copy/usr/local/bin/mkimg"
+      )
     end
 
     #
 
     it "should raise an error" do
-      expect { silence_io { subject.build }}.to raise_error \
+      expect { silence_io { subject.build }}.to raise_error(
         Docker::Template::Error::NoRootfsMkimg
+      )
     end
   end
 end

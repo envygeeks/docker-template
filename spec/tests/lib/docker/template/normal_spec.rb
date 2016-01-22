@@ -78,6 +78,7 @@ describe Docker::Template::Normal do
       context do
         before do
           silence_io do
+            subject.send :setup_context
             subject.send :cache_context
           end
         end

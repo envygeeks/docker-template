@@ -26,6 +26,8 @@ module Docker
       rb_delegate :alias?, :to => :metadata
       rb_delegate :tags,   :to => :metadata
 
+      #
+
       def initialize(base_metadata = {}, cli_opts = {})
         raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
         raise ArgumentError, "CLI Opts not a hash" unless cli_opts.is_a?(Hash)
@@ -39,8 +41,9 @@ module Docker
       #
 
       def builder
-        const = Template.const_get(type.capitalize)
-        const.new(self)
+        Template.const_get(type.capitalize).new(
+          self
+        )
       end
 
       #

@@ -2,8 +2,6 @@
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
 
-require "yaml"
-
 module Docker
   module Template
 
@@ -71,22 +69,23 @@ module Docker
       # wish to merge it (if you even care to merge it.)
 
       def read_config_from(dir = Docker::Template.root)
-        file = Dir[dir.join("opts.{json,yml}")].first
-        return {} unless file && (file = Pathutil.new(file)).file?
-        data = YAML.load_file(file) if file.extname == ".yml"
+        data = dir.join("opts.yml").read_yaml || {}
+        unless data.is_a?(Hash)
+          raise Error::InvalidYAMLFile, dir.join(
+            "opts.yml"
+          )
+        end
 
-        return {} if !data || data.empty?
-        raise Error::InvalidYAMLFile, file unless data.is_a?(Hash)
-        Utils::Stringify.hash(data)
+        Utils::Stringify.hash(
+          data
+        )
       end
 
       #
 
       def self.excon_timeouts(config = {}, default = 1440)
-        Excon.defaults.update({
-           :read_timeout => config["excon_timeout"] || default,
-          :write_timeout => config["excon_timeout"] || default
-        })
+        Excon.defaults[ :read_timeout] = config["excon_timeout"] || default
+        Excon.defaults[:write_timeout] = config["excon_timeout"] || default
       end
 
       #
