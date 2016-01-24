@@ -11,8 +11,8 @@ module Docker
     class Interface
       extend Forwardable::Extended
       autoload :Opts, "docker/template/interface/opts"
-      def_hash_delegator :@argv, :travis, bool: true
-      def_hash_delegator :@argv, :pry, bool: true
+      rb_delegate "travis", :to => :@argv, :bool => true, :type => :hash
+      rb_delegate "pry", :to => :@argv, :bool => true, :type => :hash
 
       # ----------------------------------------------------------------------
 
