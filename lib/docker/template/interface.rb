@@ -12,6 +12,7 @@ module Docker
       extend Forwardable::Extended
       autoload :Opts, "docker/template/interface/opts"
       rb_delegate "travis", :to => :@argv, :bool => true, :type => :hash
+      rb_delegate "profile", :to => :@argv, :bool => true, :type => :hash
       rb_delegate "pry", :to => :@argv, :bool => true, :type => :hash
 
       # ----------------------------------------------------------------------
@@ -26,7 +27,26 @@ module Docker
 
       def run
         return if travis? || pry?
-        Parser.new(@raw_repos, @argv).parse.map(&:build)
+        with_profiling do
+          Parser.new(@raw_repos, @argv).parse.map(
+            &:build
+          )
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def with_profiling
+        if profile?
+          require "memory_profiler"
+          profiler = MemoryProfiler.report(:top => 10_240) { yield }
+          profiler.pretty_print(:to_file => "mem.txt")
+        else
+          yield
+        end
+      rescue LoadError
+        abort "You must install 'memory_profiler' " \
+          "for profiling to work."
       end
 
       # ----------------------------------------------------------------------

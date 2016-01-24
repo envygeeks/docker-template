@@ -19,6 +19,16 @@ module Docker
         end
 
         # --------------------------------------------------------------------
+        # Allows you to enable memory profiling, so you can see how bad I am.
+        # --------------------------------------------------------------------
+
+        def profile
+          @opt_p.on("--profile", "Profile Memory Usage.") do
+            @opt_h["profile"] = true
+          end
+        end
+
+        # --------------------------------------------------------------------
         # Enables testing (or mocking) whatever you call it, so that you don't
         # do certain actions when testing with things like Cucumber.
         # @note --mocking | --testing

@@ -8,6 +8,7 @@ gemspec
 
 group :test do
   gem "rspec", :require => false
+  gem "memory_profiler", :require => false
   gem "luna-rspec-formatters", :require => false
   gem "codeclimate-test-reporter", :require => false
   gem "rubocop", :github => "bbatsov/rubocop", :branch => :master, :require => false
