@@ -1,21 +1,26 @@
 ---
-bundler_args: --without development
-cache: bundler
 sudo: false
+cache: bundler
+os: linux
 rvm:
-- 2.1.8
-- 2.2.4
-- 2.3.0
-- jruby-9.0.4.0
+  - &ruby1 2.3.0
+  - &ruby2 2.2.4
+  - &ruby3 2.1.8
+  - &jruby jruby-9.0.4.0
+  - &rubyh ruby-head
+env:
+  - ""
+  - LINT=true
 matrix:
- allow_failures:
- - rvm: jruby-9.0.4.0
+  allow_failures:
+    - rvm: *jruby
+    - rmv: *rubyh
 notifications:
   email:
-  - jordon@envygeeks.io
+    - jordon@envygeeks.io
 branches:
   only:
-  - master
+    - master
 addons:
   code_climate:
     repo_token:
