@@ -170,9 +170,9 @@ describe Docker::Template::Metadata do
 
     #
 
-    specify { expect(subject["hello"].as_set).to include   "person" }
+    specify { expect(subject["hello"].as_set).to include "person" }
     specify { expect(subject["hello"].as_set).to include "everyone" }
-    specify { expect(subject["hello"].as_set).to include    "world" }
+    specify { expect(subject["hello"].as_set).to include "world" }
   end
 
   #
@@ -207,18 +207,30 @@ describe Docker::Template::Metadata do
         },
 
         "hello" => {
-          "type" => {   "normal" => { "world"  => "hello" }},
-           "tag" => {   "latest" => { "person" => "hello" }},
-           "all" => { "everyone" => "hello" }
+          "type" => {
+            "normal" => {
+              "world"  => "hello"
+            }
+          },
+
+          "tag" => {
+            "latest" => {
+              "person" => "hello"
+            }
+          },
+
+          "all" => {
+            "everyone" => "hello"
+          }
         }
       }, root: true)
     end
 
     #
 
-    specify { expect(subject["hello"].as_hash).to include   "person" => "hello" }
+    specify { expect(subject["hello"].as_hash).to include "person" => "hello" }
     specify { expect(subject["hello"].as_hash).to include "everyone" => "hello" }
-    specify { expect(subject["hello"].as_hash).to include    "world" => "hello" }
+    specify { expect(subject["hello"].as_hash).to include "world" => "hello" }
   end
 
   #
@@ -232,7 +244,9 @@ describe Docker::Template::Metadata do
           },
 
           "hello" => {
-            "type" => {   "normal" => "world1" },
+            "type" => {
+              "normal" => "world1"
+            }
           }
         }, root: true)
       end
@@ -256,7 +270,7 @@ describe Docker::Template::Metadata do
           },
 
           "hello" => {
-             "all" => "world3"
+            "all" => "world3"
           }
         }, root: true)
       end
@@ -280,7 +294,9 @@ describe Docker::Template::Metadata do
           },
 
           "hello" => {
-             "tag" => {   "latest" => "world2" },
+            "tag" => {
+              "latest" => "world2"
+            }
           }
         }, root: true)
       end
@@ -415,7 +431,7 @@ describe Docker::Template::Metadata do
       described_class.new({
         "tags" => {
           "hello" => "world"
-        },
+        }
       }, root: true)
     end
 

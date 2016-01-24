@@ -26,7 +26,7 @@ module Mocks
 
     #
 
-    def start(*args, &block)
+    def start(*_)
       self
     end
 

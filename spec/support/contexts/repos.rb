@@ -6,7 +6,7 @@ shared_context :repos do
   before do |ex|
     mocked_repo.setup
     ex.metadata[:layout] ||= :complex
-    ex.metadata[  :type] ||= :scratch
+    ex.metadata[:type]   ||= :scratch
 
     unless ex.metadata[:init] == false
       mocked_repo.init({

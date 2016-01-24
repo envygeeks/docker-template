@@ -56,18 +56,18 @@ describe Docker::Template::Parser do
     context "when given a valid identifier" do
       specify do
         expect(subject.new.send(:to_repo_hash, "repo:tag")).to \
-        include({
-          "name" => "repo"
-        })
+          include({
+            "name" => "repo"
+          })
       end
 
       #
 
       specify do
         expect(subject.new.send(:to_repo_hash, "repo:tag")).to \
-        include({
-          "tag" => "tag"
-        })
+          include({
+            "tag" => "tag"
+          })
       end
 
       #
@@ -75,54 +75,54 @@ describe Docker::Template::Parser do
       specify do
         # user/repo:tag
         expect(subject.new.send(:to_repo_hash, "user/repo:tag")).to \
-        include({
-          "user" => "user"
-        })
+          include({
+            "user" => "user"
+          })
       end
 
       #
 
       specify do
         expect(subject.new.send(:to_repo_hash, "user/repo:tag")).to \
-        include({
-          "name" => "repo"
-        })
+          include({
+            "name" => "repo"
+          })
       end
 
       #
 
       specify do
         expect(subject.new.send(:to_repo_hash, "user/repo:tag")).to \
-        include({
-          "tag" => "tag"
-        })
+          include({
+            "tag" => "tag"
+          })
       end
 
       #
 
       specify do
         expect(subject.new.send(:to_repo_hash, "user/repo")).to \
-        include({
-          "user" => "user"
-        })
+          include({
+            "user" => "user"
+          })
       end
 
       #
 
       specify do
         expect(subject.new.send(:to_repo_hash, "user/repo")).to \
-        include({
-          "name" => "repo"
-        })
+          include({
+            "name" => "repo"
+          })
       end
 
       #
 
       specify do
         expect(subject.new.send(:to_repo_hash, "repo")).to \
-        include({
-          "name" => "repo"
-        })
+          include({
+            "name" => "repo"
+          })
       end
 
       #

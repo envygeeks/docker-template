@@ -26,7 +26,8 @@ describe Docker::Template::Builder do
 
   #
 
-  before do |ex|
+  before do
+    # rubocop:disable Style/SpaceInsideParens
     allow(subject).to receive(:verify_context).and_return nil
     allow(subject).to receive( :build_context).and_return nil
   end
@@ -364,8 +365,8 @@ describe Docker::Template::Builder do
       #
 
       it "should cleanup", :skip_unlink => true do
-        expect(subject).to receive(:unlink). \
-          and_call_original
+        expect(subject).to receive(:unlink) \
+          .and_call_original
       end
 
       #

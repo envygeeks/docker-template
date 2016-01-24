@@ -54,9 +54,8 @@ module Mocks
 
     # ------------------------------------------------------------------------
 
-    FS_LAYOUTS[:rootfs] = FS_LAYOUTS[
-      :scratch
-    ]
+    FS_LAYOUTS[:rootfs] = FS_LAYOUTS[:scratch]
+    FS_LAYOUTS.freeze
 
     # ------------------------------------------------------------------------
 
@@ -140,9 +139,8 @@ module Mocks
 
     def init(type: :normal, layout: :complex)
       if !valid_layout?(type, layout)
-        raise ArgumentError, "Unknown type (#{type}) or layout (#{
-          layout
-        })"
+        raise ArgumentError, "Unknown type (#{type}) or " \
+          "layout (#{layout})"
 
       else
         @simple = true if layout == :simple
@@ -210,7 +208,9 @@ module Mocks
     # Initialize a repository to run mocks and tests against it.
     # ------------------------------------------------------------------------
 
-    def to_repo; repo_dir
+    def to_repo
+      repo_dir
+
       Docker::Template::Repo.new(
         @hashes[:init].dup, @hashes[:cli].dup
       )
@@ -303,7 +303,7 @@ module Mocks
     # @example mocked_repo.symlink("/etc", "etc")
     # ------------------------------------------------------------------------
 
-    def symlink(target, name, **kwd)
+    def symlink(target, name)
       repo_dir.join(target).symlink(repo_dir.join(
         name
       ))

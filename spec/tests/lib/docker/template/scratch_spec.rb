@@ -26,9 +26,9 @@ describe Docker::Template::Scratch do
   #
 
   before do
-    allow(subject).to receive(:verify_context).and_return nil
     allow(subject).to receive(:create_args).and_return({})
-    allow(subject).to receive( :start_args).and_return({})
+    allow(subject).to receive(:verify_context).and_return nil
+    allow(subject).to receive(:start_args).and_return({})
   end
 
   #

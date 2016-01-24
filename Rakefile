@@ -16,3 +16,8 @@ task :test => :spec
     sh "bundle exec docker-template --#{key}"
   end
 end
+
+task :rubocop do
+  sh "bundle", "exec", "rubocop", "-DE", "-r", "luna/rubocop/formatters/checks", \
+    "-f", "Luna::RuboCop::Formatters::Checks"
+end

@@ -146,18 +146,18 @@ describe Docker::Template::Repo do
   describe "#to_tag_h" do
     it "should include user/repo" do
       expect(mocked_repo.to_repo.to_tag_h).to \
-      include({
-        "repo" => match(%r!\A[a-z]+/default!)
-      })
+        include({
+          "repo" => match(%r!\A[a-z]+/default!)
+        })
     end
 
     #
 
     it "should include a tag" do
       expect(mocked_repo.to_repo.to_tag_h).to \
-      include({
-        "tag" => "latest"
-      })
+        include({
+          "tag" => "latest"
+        })
     end
   end
 
@@ -183,9 +183,9 @@ describe Docker::Template::Repo do
 
     it "should include a tag" do
       expect(mocked_repo.to_repo.to_rootfs_h).to \
-      include({
-        "tag" => "default"
-      })
+        include({
+          "tag" => "default"
+        })
     end
   end
 
@@ -328,9 +328,9 @@ describe Docker::Template::Repo do
     context "(tar_gz: val)" do
       it "should include the tar_gz" do
         expect(mocked_repo.to_repo.to_env(tar_gz: "val")).to \
-        include({
-          "TAR_GZ" => "val"
-        })
+          include({
+            "TAR_GZ" => "val"
+          })
       end
     end
 
@@ -339,9 +339,9 @@ describe Docker::Template::Repo do
     context "copy_dir: val" do
       it "should include the copy_dir" do
         expect(mocked_repo.to_repo.to_env(copy_dir: "val")).to \
-        include({
-          "COPY" => "val"
-        })
+          include({
+            "COPY" => "val"
+          })
       end
     end
   end

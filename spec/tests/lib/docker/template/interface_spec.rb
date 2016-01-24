@@ -12,9 +12,9 @@ describe Docker::Template::Interface do
 
   before do
     allow_any_instance_of(Docker::Template::Repo).to receive(:build).and_return nil
-    allow(described_class).to receive( :exit).and_return nil
+    allow(described_class).to receive(:exit).and_return nil
     allow(described_class).to receive(:abort).and_return nil
-    allow(described_class).to receive( :exec).and_return nil
+    allow(described_class).to receive(:exec).and_return nil
     mocked_repo.init :type => :normal
   end
 

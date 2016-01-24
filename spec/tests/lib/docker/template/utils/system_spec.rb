@@ -40,7 +40,7 @@ describe Docker::Template::Utils::System do
       ENV["PATH"] = "#{tmpbin}:#{ENV["PATH"]}"
       FileUtils.touch file
       FileUtils.chmod(
-        "u+rx",file
+        "u+rx", file
       )
     end
 
