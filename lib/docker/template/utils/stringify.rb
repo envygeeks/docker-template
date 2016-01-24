@@ -8,7 +8,7 @@ module Docker
   module Template
     module Utils
       module Stringify
-        extend self
+        module_function
 
         # --------------------------------------------------------------------
 
