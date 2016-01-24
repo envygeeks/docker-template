@@ -2,8 +2,11 @@ engines:
   rubocop: { enabled: true  }
   fixme:   { enabled: false }
 exclude_paths:
-- .rubocop.yml
-- .codeclimate.yml
-- .travis.yml
-- .gitignore
-- .rspec
+  - .rubocop.yml
+  - .codeclimate.yml
+  - .travis.yml
+  - .gitignore
+  - .rspec
+ratings:
+   paths:
+     - "lib/**.rb"
