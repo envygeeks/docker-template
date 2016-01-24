@@ -8,9 +8,6 @@ rvm:
   - &ruby3 2.1.8
   - &jruby jruby-9.0.4.0
   - &rubyh ruby-head
-env:
-  - ""
-  - LINT=true
 matrix:
   allow_failures:
     - rvm: *jruby
