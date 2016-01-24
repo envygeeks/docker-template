@@ -73,13 +73,13 @@ module Docker
       # ----------------------------------------------------------------------
 
       def self.start(zero)
+        ARGV.unshift if ARGV.first == "template"
         if !Utils::System.docker_bin?(zero)
-          ARGV.unshift if ARGV.first == "template"
           new(zero, ARGV).run
         else
           exe = Utils::System.docker_bin
           return exec exe.to_s, *ARGV if exe
-          abort "No Docker."
+          abort "No System Docker."
         end
 
       rescue Error::StandardError => error
