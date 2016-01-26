@@ -25,14 +25,15 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      rb_delegate :root,     :to => :@root, :type => :ivar, :bool => true
-      rb_delegate :for_all,  :to => :self,  :type => :hash, :key  => :all
-      rb_delegate :keys,     :to => :@metadata
-      rb_delegate :to_enum,  :to => :@metadata
-      rb_delegate :size,     :to => :@metadata
-      rb_delegate :key?,     :to => :@metadata
-      rb_delegate :to_h,     :to => :@metadata
-      rb_delegate :each,     :to => :@metadata
+      rb_delegate :root,      :to => :@root, :type => :ivar, :bool => true
+      rb_delegate :for_all,   :to => :self,  :type => :hash, :key  => :all
+      rb_delegate :keys,      :to => :@metadata
+      rb_delegate :size,      :to => :@metadata
+      rb_delegate :values_at, :to => :@metadata
+      rb_delegate :to_enum,   :to => :@metadata
+      rb_delegate :key?,      :to => :@metadata
+      rb_delegate :to_h,      :to => :@metadata
+      rb_delegate :each,      :to => :@metadata
 
       # ----------------------------------------------------------------------
 
