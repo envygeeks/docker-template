@@ -63,8 +63,6 @@ module Docker
         @raw_repos.merge(parser.parse!(@raw_argv.dup))
         @raw_repos.freeze
         @argv.freeze
-        travis
-        pry
       end
 
       # ----------------------------------------------------------------------
