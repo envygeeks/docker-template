@@ -12,8 +12,15 @@ module Docker
 
         # --------------------------------------------------------------------
 
-        ALLOWED_CLASSES = [TrueClass, FalseClass,
-          String, Hash, Array, Set].freeze
+        ALLOWED_CLASSES = [
+          Hash,
+          String,
+          TrueClass,
+          FalseClass,
+          Regexp,
+          Array,
+          Set
+        ].freeze
 
         # --------------------------------------------------------------------
         # Stringify a hash and it' keys, unless it's an allowed value type.

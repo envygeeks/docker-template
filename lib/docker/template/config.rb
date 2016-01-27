@@ -29,7 +29,14 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      YAML_OPTS = {
+        :whitelist_classes => [Regexp]
+      }.freeze
+
+      # ----------------------------------------------------------------------
+
       DEFAULTS = {
+        "log_filters" => [],
         "push" => false,
         "sync" => false,
         "type" => "normal",
@@ -79,7 +86,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def read_config_from(dir = Docker::Template.root)
-        data = dir.join("opts.yml").read_yaml || {}
+        data = dir.join("opts.yml").read_yaml(YAML_OPTS) || {}
         unless data.is_a?(Hash)
           raise Error::InvalidYAMLFile, dir.join(
             "opts.yml"

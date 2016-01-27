@@ -19,7 +19,25 @@ describe Docker::Template::Logger do
 
   #
 
-  describe "#progress_log" do
+  include_context :repos do
+    describe "#output" do
+      before do
+        mocked_repo.with_opts("log_filters" => [
+          /hello/
+        ])
+      end
+
+      it "should be able to filter messages" do
+        expect(described_class.new(mocked_repo.to_normal).send(:output, "hello world")).to(
+          be_nil
+        )
+      end
+    end
+  end
+
+  #
+
+  describe "#progress_bar" do
     subject do
       log :stdout, {
         "progress" => "world",
@@ -54,7 +72,7 @@ describe Docker::Template::Logger do
 
   #
 
-  describe "#log" do
+  describe "#api" do
     context "when it's a stream" do
       subject do
         log :stdout, {
@@ -66,7 +84,7 @@ describe Docker::Template::Logger do
 
       it "should output what it gets" do
         expect(subject).to eq(
-          "hello\nworld\n"
+          "hello\nworld"
         )
       end
     end

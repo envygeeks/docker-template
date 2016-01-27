@@ -171,7 +171,7 @@ module Docker
         @context.chdir do
           opts = { :t => @repo.to_s(rootfs: rootfs?) }
           $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.metadata["tty"]
-          @img = Docker::Image.build_from_dir(".", opts, &Logger.new.method(:api))
+          @img = Docker::Image.build_from_dir(".", opts, &Logger.new(self).method(:api))
           push
         end
       end

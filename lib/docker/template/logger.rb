@@ -7,8 +7,10 @@
 module Docker
   module Template
     class Logger
-      def initialize
+      def initialize(builder = nil)
         @lines = {}
+        @builder = \
+          builder
       end
 
       # ----------------------------------------------------------------------
@@ -37,7 +39,7 @@ module Docker
 
         stream = JSON.parse(part)
         return progress_bar(stream) if stream.any_keys?("progress", "progressDetail")
-        return $stdout.puts stream["status"] || stream["stream"] if stream.any_keys?("status", "stream")
+        return output(stream["status"] || stream["stream"]) if stream.any_keys?("status", "stream")
         return progress_error(stream) if stream.any_keys?("errorDetail", "error")
 
         warn Object::Simple::Ansi.red("Unhandled stream message")
@@ -50,6 +52,14 @@ module Docker
           retry
         else
           raise e
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def output(msg)
+        unless filter_matches?(msg)
+          $stdout.print msg
         end
       end
 
@@ -89,6 +99,17 @@ module Docker
         @lines[id] = @lines.size
         before = "\n" unless @lines.one?
         return before, 0
+      end
+
+      # ----------------------------------------------------------------------
+
+      private
+      def filter_matches?(msg)
+        return false unless @builder
+
+        @builder.repo.metadata["log_filters"].any? do |filter|
+          filter.is_a?(Regexp) && msg =~ filter || msg == filter
+        end
       end
     end
   end
