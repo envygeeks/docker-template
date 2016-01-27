@@ -69,28 +69,6 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def travis
-        return unless travis?
-
-        Travis.create
-        Travis.delete
-        exit 0
-      end
-
-      # ----------------------------------------------------------------------
-
-      def pry
-        return unless pry?
-
-        require "pry"
-        Pry.output = STDOUT
-        Pry.config.docker_template_repos = @raw_repos
-        Template.gem_root.join("lib/docker/template/cmd/pry").children.each { |file| require file }
-        Pry.config.docker_template_argv = @argv
-        Template.pry
-      end
-
-      # ----------------------------------------------------------------------
 
       def self.start(zero)
         ARGV.unshift if ARGV.first == "template"

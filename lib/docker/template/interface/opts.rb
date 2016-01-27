@@ -41,29 +41,6 @@ module Docker
         end
 
         # --------------------------------------------------------------------
-        # Loads a Travis-CI shell with the Travis-CI Docker image, this is
-        # a pretty hefty image on a pretty slow server so be careful.
-        # @note --travis
-        # --------------------------------------------------------------------
-
-        def travis
-          @opt_p.on("-T", "--travis", "Load a Travis-CI Shell") do
-            @opt_h["travis"] = true
-          end
-        end
-
-        # --------------------------------------------------------------------
-        # This is useful for when you want to play around.
-        # @note --pry
-        # --------------------------------------------------------------------
-
-        def pry
-          @opt_p.on("-P", "--pry", "Load a Pry REPL.") do
-            @opt_h["pry"] = true
-          end
-        end
-
-        # --------------------------------------------------------------------
         # Enable TTY output, this only works on scratch.
         # @note --tty
         # --------------------------------------------------------------------
