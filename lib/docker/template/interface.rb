@@ -82,21 +82,20 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-
       def self.start(zero)
         ARGV.unshift if ARGV.first == "template"
         if !Utils::System.docker_bin?(zero)
           new(zero, ARGV).run
+
         else
           exe = Utils::System.docker_bin
           return exec exe.to_s, *ARGV if exe
           abort "No System Docker."
         end
-
       rescue Error::StandardError => error
         $stderr.puts Simple::Ansi.red(error.message)
         $stderr.puts Simple::Ansi.red("Aborting your build.")
-        exit error.status rescue 1
+        exit error.respond_to?(:status) ? error.status : 1
       end
     end
   end
