@@ -7,21 +7,18 @@
 module Docker
   module Template
     class Rootfs < Builder
+      extend Forwardable::Extended
+      rb_delegate :keep?, {
+        :key => :keep_rootfs,
+        :to => :"@repo.metadata",
+        :type => :hash
+      }
+
+      # ----------------------------------------------------------------------
       def data
         Template.get(:rootfs, {
           :rootfs_base_img => @repo.metadata["rootfs_base_img"]
         })
-      end
-
-      # ----------------------------------------------------------------------
-      # By default we will delete any rootfs image we make, but you can cache
-      # said image so that you don't constantly rebuild it if you wish.
-      # ----------------------------------------------------------------------
-
-      def keep?
-        @repo.metadata[
-          "keep_rootfs"
-        ]
       end
 
       # ----------------------------------------------------------------------
