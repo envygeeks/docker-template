@@ -15,6 +15,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Added a default timeout of 1440 to Excon.
 
 #### Changed
+- Make profiling a bit more readable.
 - Switch to completely dynamic test fixtures.
 - Rewrite specs to be more verbose and easily organized.
 - Do inline tagging on build instead of after the build.
