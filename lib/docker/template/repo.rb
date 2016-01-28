@@ -48,9 +48,11 @@ module Docker
       # ----------------------------------------------------------------------
 
       def builder
-        Template.const_get(type.capitalize).new(
-          self
-        )
+        return @builder ||= begin
+          Template.const_get(type.capitalize).new(
+            self
+          )
+        end
       end
 
       # ----------------------------------------------------------------------
