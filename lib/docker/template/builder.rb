@@ -137,6 +137,18 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # This method is a default reference.  It is called when when the
+      # image is done building or when there is an error and we need to clean
+      # up some stuff before exiting, use it... please.
+      # ----------------------------------------------------------------------
+
+      def unlink(*_)
+        $stdout.puts Ansi.red(
+          "#{__method__}: Not Implemented."
+        )
+      end
+
+      # ----------------------------------------------------------------------
 
       private
       def build_alias
@@ -181,6 +193,7 @@ module Docker
 
       # ----------------------------------------------------------------------
       # A default method that disables caching and informs the user as such.
+      # This method is a default reference: DO NOT REFERENCE SUPER.
       # ----------------------------------------------------------------------
 
       private
