@@ -57,11 +57,9 @@ module Docker
       private
       def copy_rootfs
         return simple_rootfs_copy if simple_copy?
-        dir = @repo.copy_dir("rootfs")
-
-        dir.safe_copy(
-          @copy, :root => Template.root
-        )
+        @repo.copy_dir("rootfs").safe_copy(@copy, {
+          :root => Template.root
+        })
       end
 
       # ----------------------------------------------------------------------
