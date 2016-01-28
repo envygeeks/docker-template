@@ -35,20 +35,35 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rubocop:disable Lint/RescueException
+      # ----------------------------------------------------------------------
 
       def with_profiling
         if profile?
           require "memory_profiler"
-          profiler = MemoryProfiler.report(:top => 10_240) { yield }
-          profiler.pretty_print(:to_file => "mem.txt")
+          MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
+            :to_file => "mem.txt"
+          })
+
         else
           yield
         end
       rescue LoadError
         abort "You must install 'memory_profiler' " \
-          "for profiling to work."
+          "to use memory profiling."
+
+      rescue Exception => _error
+        $ERROR_POSITION.delete_if do |source|
+          source =~ %r!#{Regexp.escape(
+            __FILE__
+          )}!o
+        end
+
+        raise
       end
 
+      # ----------------------------------------------------------------------
+      # rubocop:enable Lint/RescueException
       # ----------------------------------------------------------------------
 
       def setup
