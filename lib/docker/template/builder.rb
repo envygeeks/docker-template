@@ -24,6 +24,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # Allows you to disable actions if you wish during testing or mocking.
+      # ----------------------------------------------------------------------
 
       def testing?
         @repo.metadata["mocking"] || @repo.metadata["testing"]
