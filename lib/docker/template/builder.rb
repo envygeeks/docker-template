@@ -126,11 +126,13 @@ module Docker
         chdir_build
 
       rescue SystemExit => exit_
-        unlink img: true
+        unlink :img => true
         raise exit_
       ensure
-        if rootfs?
-          unlink img: false else unlink
+        if !rootfs?
+          unlink else unlink({
+            :img => false
+          })
         end
       end
 
