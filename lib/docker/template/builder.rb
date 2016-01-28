@@ -13,8 +13,9 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      COPY = %W(setup_context copy_global simple_copy copy_all copy_type copy_tag
-        copy_cleanup build_context verify_context cache_context).freeze
+      COPY = [:setup_context, :copy_global, :simple_copy, :copy_all,
+        :copy_type, :copy_tag, :copy_cleanup, :build_context,
+          :verify_context, :cache_context].freeze
 
       # ----------------------------------------------------------------------
 
