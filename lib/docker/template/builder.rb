@@ -155,9 +155,7 @@ module Docker
       private
       def copy_prebuild_and_verify
         unless respond_to?(:setup_context, true)
-          raise(
-            Error::NoSetupContext
-          )
+          raise Error::NoSetupContext
         end
 
         COPY.map do |val|
