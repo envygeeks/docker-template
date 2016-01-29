@@ -20,6 +20,34 @@ describe Docker::Template::Interface do
 
   #
 
+  include_context :repos do
+    describe ".run" do
+      before do
+        stub_const("ARGV", %W(default))
+        allow_any_instance_of(described_class).to receive(:with_profiling).and_return(
+          nil
+        )
+      end
+
+      #
+
+      it "should try to ask classes if they want to cleanup" do
+        expect(mocked_repo.to_repo.builder.class).to receive(:cleanup).and_return(
+          true
+        )
+      end
+
+      #
+
+      after do
+        described_class.new(nil, ["default"]) \
+          .tap(&:repos).run
+      end
+    end
+  end
+
+  #
+
   describe ".start" do
     before :all do
       module Mocks

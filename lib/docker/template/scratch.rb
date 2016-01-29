@@ -22,6 +22,16 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+
+      def self.cleanup
+        @rootfs.each do |key, val|
+          val.unlink({
+            :img => true
+          })
+        end
+      end
+
+      # ----------------------------------------------------------------------
       # Pull and parse with ERB the Rootfs Docker template.
       # ----------------------------------------------------------------------
 
@@ -75,8 +85,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def copy_cleanup
-        @rootfs ||= self.class.rootfs_for(@repo)
-        @rootfs.cleanup(@copy)
+        self.class.rootfs_for(@repo).cleanup(
+          @copy
+        )
       end
 
       # ----------------------------------------------------------------------

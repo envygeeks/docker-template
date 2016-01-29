@@ -11,9 +11,11 @@ module Docker
     class Interface
       extend Forwardable::Extended
       autoload :Opts, "docker/template/interface/opts"
-      rb_delegate "travis", :to => :@argv, :bool => true, :type => :hash
-      rb_delegate "profile", :to => :@argv, :bool => true, :type => :hash
-      rb_delegate "pry", :to => :@argv, :bool => true, :type => :hash
+      rb_delegate "profile", {
+        :to => :@argv,
+        :bool => true,
+        :type => :hash
+      }
 
       # ----------------------------------------------------------------------
 
@@ -25,12 +27,27 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      def repos
+        return @repos ||= begin
+          Parser.new(@raw_repos, @argv).parse
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
       def run
-        return if travis? || pry?
         with_profiling do
-          Parser.new(@raw_repos, @argv).parse.map(
+          repos.map(
             &:build
           )
+        end
+      ensure
+        if @repos
+          then repos.map { |repo| repo.builder.class }.uniq.map do |repo|
+            if repo.respond_to?(:cleanup)
+              then repo.cleanup
+            end
+          end
         end
       end
 

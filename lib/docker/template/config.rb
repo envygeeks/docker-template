@@ -36,6 +36,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       DEFAULTS = {
+        "keep_rootfs" => false,
         "log_filters" => [],
         "push" => false,
         "sync" => false,
