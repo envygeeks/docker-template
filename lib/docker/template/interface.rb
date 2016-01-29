@@ -52,7 +52,8 @@ module Docker
         abort "You must install 'memory_profiler' " \
           "to use memory profiling."
 
-      rescue Exception => _error
+      rescue Exception
+        raise unless $ERROR_POSITION
         $ERROR_POSITION.delete_if do |source|
           source =~ %r!#{Regexp.escape(
             __FILE__
