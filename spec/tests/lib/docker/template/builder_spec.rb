@@ -34,7 +34,7 @@ describe Docker::Template::Builder do
 
   #
 
-  describe "#parent_repo" do
+  describe "#aliased_repo" do
     before do
       mocked_repo.add_alias :world, :tag => :hello
       mocked_repo.add_tag :hello, :group => :world
@@ -44,7 +44,7 @@ describe Docker::Template::Builder do
     end
 
     it "should pull out the aliased repo" do
-      expect(mocked_repo.to_normal.parent_repo.tag).to eq(
+      expect(mocked_repo.to_normal.aliased_repo.tag).to eq(
         "hello"
       )
     end

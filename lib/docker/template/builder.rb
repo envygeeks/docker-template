@@ -77,8 +77,8 @@ module Docker
       # Pull out the repository that this repository is an alias of.
       # ----------------------------------------------------------------------
 
-      def parent_repo
-        return @parent_repo if @parent_repo
+      def aliased_repo
+        return @aliased_repo if @aliased_repo
         Repo.new(@repo.to_h.merge({
           "tag" => @repo.metadata.aliased
         }))
@@ -88,10 +88,10 @@ module Docker
       # Pull out the image that this repository is aliasing if it's an alias.
       # ----------------------------------------------------------------------
 
-      def parent_img
+      def aliased_img
         return unless alias?
-        @parent_img ||= Docker::Image.get(
-          parent_repo.to_s
+        @aliased_img ||= Docker::Image.get(
+          aliased_repo.to_s
         )
 
       rescue Docker::Error::NotFoundError
@@ -152,8 +152,8 @@ module Docker
 
       private
       def build_alias
-        self.class.new(parent_repo).build unless parent_img
-        parent_img.tag(@repo.to_tag_h)
+        self.class.new(aliased_repo).build unless aliased_img
+        aliased_img.tag(@repo.to_tag_h)
         Utils::Notify.alias(self)
         push
       end

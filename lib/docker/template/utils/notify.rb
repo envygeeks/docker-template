@@ -28,8 +28,8 @@ module Docker
 
         def alias(builder)
           repo = builder.repo
-          parent_repo = builder.parent_repo
-          msg = Simple::Ansi.green("Aliasing #{repo} -> #{parent_repo}")
+          aliased_repo = builder.aliased_repo
+          msg = Simple::Ansi.green("Aliasing #{repo} -> #{aliased_repo}")
           $stdout.puts msg
         end
 
