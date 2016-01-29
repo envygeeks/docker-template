@@ -86,7 +86,7 @@ module Docker
 
       def setup
         @argv  = {}
-        parser = OptParse.new do |opt_p|
+        parser = OptionParser.new do |opt_p|
           banner = Utils::System.docker_bin?(@zero) ? "docker template" : "docker-template"
           opt_p.banner = "Usage: #{banner} [repos] [flags]"
           Opts.new(opt_p, @argv, parser)
