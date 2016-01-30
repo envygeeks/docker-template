@@ -199,7 +199,7 @@ describe Docker::Template::Metadata do
 
   #
 
-  describe "#as_hash" do
+  describe "#to_h" do
     subject do
       described_class.new({
         "tags" => {
@@ -228,9 +228,19 @@ describe Docker::Template::Metadata do
 
     #
 
-    specify { expect(subject["hello"].as_hash).to include "person" => "hello" }
-    specify { expect(subject["hello"].as_hash).to include "everyone" => "hello" }
-    specify { expect(subject["hello"].as_hash).to include "world" => "hello" }
+    context "when there are more keys than tag,type,all" do
+      it "should revert to normal to_h" do
+        expect(subject.to_h).to eq(
+          subject.instance_variable_get(:@metadata)
+        )
+      end
+    end
+
+    #
+
+    specify { expect(subject["hello"].to_h).to include "person" => "hello" }
+    specify { expect(subject["hello"].to_h).to include "everyone" => "hello" }
+    specify { expect(subject["hello"].to_h).to include "world" => "hello" }
   end
 
   #

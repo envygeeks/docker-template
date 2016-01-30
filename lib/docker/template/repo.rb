@@ -179,7 +179,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def to_env(tar_gz: nil, copy_dir: nil)
-        metadata["env"].as_hash.merge({
+        metadata["env"].to_h.merge({
           "REPO" => name,
           "NAME" => name,
           "TAR_GZ" => tar_gz,

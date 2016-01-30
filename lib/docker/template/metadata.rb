@@ -32,7 +32,6 @@ module Docker
       rb_delegate :values_at, :to => :@metadata
       rb_delegate :to_enum,   :to => :@metadata
       rb_delegate :key?,      :to => :@metadata
-      rb_delegate :to_h,      :to => :@metadata
       rb_delegate :each,      :to => :@metadata
 
       # ----------------------------------------------------------------------
@@ -126,8 +125,12 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rb_delegate :to_h, :to => :@metadata
+      # ----------------------------------------------------------------------
 
-      def as_hash
+      def to_h(raw: !!!(@metadata.keys - %w(type tag all)).empty?)
+        return @metadata.to_h if raw
+
         {} \
           .merge(for_all.to_h) \
           .merge(by_type.to_h) \
