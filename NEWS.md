@@ -26,6 +26,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Split `Ansi.jump` into `Ansi.jump`, `Ansi.down`, and `Ansi.up` for simpler interaction with the API.
 - Move caching to syncing for consistency, on the high level it's "sync" on the low level it uses "cache_dir".
 - Change "Simple" type to "Normal" type so it's not confused with "simple copy".
+- Merge `#as_hash` and `#to_h`, you can force `raw` with `#to_h(raw: true)`.
 - Correct an issue where pulling the parent_repo of an alias doesn't work.
 - Detect if a repo has multiple tags and only segement cache if they do.
 - Move `Docker::Template::Common` -> `Docker::Template::Builder`
@@ -33,6 +34,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Move old coupled CLI stuff into config and off Interface.
 - Cleanup Metadata and it's API, making it less fragile.
 - Move Alias directly onto builder as a simple method.
+- Move all `Metadata#as_*` to `Metadata#to_*` methods.
 - Switched to `Pathutil` instead of `Pathname`.
 - Remove encapsulating auth into a class.
 - Fix a few minor bugs.
