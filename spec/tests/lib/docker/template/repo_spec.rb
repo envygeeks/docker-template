@@ -221,7 +221,7 @@ describe Docker::Template::Repo do
 
   describe "#tmpfile" do
     it "should be a Pathutil" do
-      expect(mocked_repo.to_repo.tmpfile.tap(&:unlink)).to be_a(
+      expect(mocked_repo.to_repo.tmpfile.tap(&:rm_rf)).to be_a(
         Pathutil
       )
     end
@@ -231,14 +231,14 @@ describe Docker::Template::Repo do
     it "should exist" do
       file = mocked_repo.to_repo.tmpfile
       expect(file).to exist
-      file.unlink
+      file.rm_rf
     end
 
     #
 
     context "(*prefixes)" do
       it "should add those prefixes" do
-        expect(mocked_repo.to_repo.tmpfile("hello").tap(&:unlink).to_s).to match(
+        expect(mocked_repo.to_repo.tmpfile("hello").tap(&:rm_rf).to_s).to match(
           %r!-hello-!
         )
       end

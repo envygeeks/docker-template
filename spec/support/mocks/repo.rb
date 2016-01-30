@@ -348,6 +348,8 @@ module Mocks
 
     def teardown
       @root.rm_rf
+      Docker::Template::Scratch \
+        .cleanup
     end
 
     # ------------------------------------------------------------------------

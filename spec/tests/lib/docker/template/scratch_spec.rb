@@ -67,7 +67,7 @@ describe Docker::Template::Scratch do
     #
 
     after do
-      subject.unlink
+      subject.cleanup
     end
   end
 
@@ -91,13 +91,13 @@ describe Docker::Template::Scratch do
     #
 
     after do
-      subject.unlink
+      subject.cleanup
     end
   end
 
   #
 
-  describe "#unlink" do
+  describe "#cleanup" do
     before do
       silence_io do
         subject.build
@@ -116,7 +116,7 @@ describe Docker::Template::Scratch do
       #
 
       after do
-        subject.unlink({
+        subject.cleanup({
           :img => true
         })
       end
@@ -134,7 +134,7 @@ describe Docker::Template::Scratch do
       #
 
       before do
-        subject.unlink
+        subject.cleanup
       end
 
       #

@@ -28,7 +28,7 @@ module Docker
       # just the rootfs image and remove it so it doesn't impact.
       # ----------------------------------------------------------------------
 
-      def cleanup(dir)
+      def simple_cleanup(dir)
         return unless simple_copy?
         file = dir.join("usr/local/bin/mkimg")
         file.delete if file.exist?
@@ -36,7 +36,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def unlink(img: true)
+      def cleanup(img: true)
         @context.rmtree if @context && @context.directory?
         @img.delete "force" => true if @img && img && !keep? \
           rescue nil

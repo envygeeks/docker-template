@@ -24,8 +24,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def self.cleanup
-        @rootfs.each do |key, val|
-          val.unlink({
+        return unless @rootfs
+        @rootfs.each do |_, rootfs|
+          rootfs.cleanup({
             :img => true
           })
         end
@@ -45,7 +46,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def unlink(img: false)
+      def cleanup(img: false)
         @copy.rm_rf if @copy
         @context.rm_rf if @context
         @tar_gz.rm_rf if @tar_gz
@@ -85,7 +86,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def copy_cleanup
-        self.class.rootfs_for(@repo).cleanup(
+        self.class.rootfs_for(@repo).simple_cleanup(
           @copy
         )
       end

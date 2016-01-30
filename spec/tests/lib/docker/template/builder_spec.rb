@@ -11,8 +11,8 @@ describe Docker::Template::Builder do
   #
 
   after do |ex|
-    unless ex.metadata[:skip_unlink]
-      subject.unlink
+    unless ex.metadata[:skip_cleanup]
+      subject.cleanup
     end
   end
 
@@ -364,8 +364,8 @@ describe Docker::Template::Builder do
 
       #
 
-      it "should cleanup", :skip_unlink => true do
-        expect(subject).to receive(:unlink) \
+      it "should cleanup", :skip_cleanup => true do
+        expect(subject).to receive(:cleanup) \
           .and_call_original
       end
 

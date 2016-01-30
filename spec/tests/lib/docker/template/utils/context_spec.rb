@@ -37,7 +37,7 @@ describe Docker::Template::Utils::Context do
     #
 
     after do
-      subject.unlink
+      subject.cleanup
     end
   end
 end

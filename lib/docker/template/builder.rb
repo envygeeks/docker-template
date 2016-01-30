@@ -126,11 +126,11 @@ module Docker
         chdir_build
 
       rescue SystemExit => exit_
-        unlink :img => true
+        cleanup :img => true
         raise exit_
       ensure
         if !rootfs?
-          unlink else unlink({
+          cleanup else cleanup({
             :img => false
           })
         end
@@ -142,7 +142,7 @@ module Docker
       # up some stuff before exiting, use it... please.
       # ----------------------------------------------------------------------
 
-      def unlink(*_)
+      def cleanup(*_)
         $stdout.puts Ansi.red(
           "#{__method__}: Not Implemented."
         )

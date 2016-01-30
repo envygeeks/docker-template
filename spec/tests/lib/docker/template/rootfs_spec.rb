@@ -41,18 +41,19 @@ RSpec.describe Docker::Template::Rootfs do
       )
     end
 
-    after do
-      subject.send(
-        :copy_rootfs
-      )
-    end
-
     #
 
     it "should copy", :type => :rootfs, :layout => :complex do
       expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
         nil
       )
+    end
+
+    #
+
+    after do
+      subject.send :copy_rootfs
+      subject.cleanup
     end
 
     #
@@ -76,7 +77,7 @@ RSpec.describe Docker::Template::Rootfs do
 
   #
 
-  describe "#unlink" do
+  describe "#cleanup" do
     before do
       silence_io do
         subject.build
@@ -104,7 +105,7 @@ RSpec.describe Docker::Template::Rootfs do
         #
 
         after do
-          subject.unlink({
+          subject.cleanup({
             :img => true
           })
         end
@@ -136,7 +137,7 @@ RSpec.describe Docker::Template::Rootfs do
         #
 
         after do
-          subject.unlink
+          subject.cleanup
           user_metadata.merge({
             "keep_rootfs" => false
           })
