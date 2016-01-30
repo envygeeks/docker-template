@@ -84,7 +84,7 @@ describe Docker::Template::Logger do
 
       it "should output what it gets" do
         expect(subject).to eq(
-          "hello\nworld"
+          "hello\nworld\n"
         )
       end
     end

@@ -14,6 +14,14 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+
+      def increment
+        @lines.update({
+          "blank_line##{@lines.size + 1}" => @lines.size
+        })
+      end
+
+      # ----------------------------------------------------------------------
       # A simple TTY stream that just prints out the data given it.
       # ----------------------------------------------------------------------
 
@@ -59,7 +67,8 @@ module Docker
 
       def output(msg)
         unless filter_matches?(msg)
-          $stdout.print msg
+          $stdout.puts msg
+          increment
         end
       end
 
