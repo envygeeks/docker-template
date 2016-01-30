@@ -8,7 +8,7 @@ module Docker
   module Template
     class Logger
       def initialize(builder = nil)
-        @lines = {}
+        @lines = { "" => "" }
         @builder = \
           builder
       end
