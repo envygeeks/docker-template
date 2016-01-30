@@ -8,7 +8,7 @@ module Docker
   module Template
     class Logger
       def initialize(builder = nil)
-        @lines = { "" => "" }
+        @lines = { 0 => 0 }
         @builder = \
           builder
       end
@@ -17,7 +17,7 @@ module Docker
 
       def increment
         @lines.update({
-          "blank_line##{@lines.size + 1}" => @lines.size
+          @lines.size => @lines.size
         })
       end
 
