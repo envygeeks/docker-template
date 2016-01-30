@@ -99,8 +99,8 @@ module Docker
         key = determine_key(key.to_s)
         val = @metadata[key]
 
-        return try_default(key) if !val && root?
-        return self.class.new(val, root_metadata: @root_metadata) if val.is_a?(Hash)
+        return try_default(key) if !key?(key) && root?
+        return self.class.new(val, :root_metadata => @root_metadata) if val.is_a?(Hash)
         val
       end
 
