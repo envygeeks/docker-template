@@ -112,6 +112,7 @@ module Docker
         logger = Logger.new.method(:api)
         img = @img || Docker::Image.get(@repo.to_s)
         img.push(&logger) unless testing?
+        $stdout.puts
       end
 
       # ----------------------------------------------------------------------
