@@ -21,8 +21,13 @@ module Docker
 
           builder.repo.cache_dir.rm_rf
           $stdout.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
-          context.cp_r(builder.repo.cache_dir)
+          cache_dir = builder.repo.cache_dir
+          cache_dir.parent.mkdir_p
+
           readme(builder)
+          context.cp_r(cache_dir.tap(
+            &:rm_rf
+          ))
         end
 
         # --------------------------------------------------------------------
