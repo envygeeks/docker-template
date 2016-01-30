@@ -75,7 +75,7 @@ module Docker
       # Outputs the version info as "gem@version".
       # ----------------------------------------------------------------------
 
-      def as_gem_version
+      def to_gem_version
         "#{from_root("name")}@#{self["version"].fallback}"
       end
 
@@ -120,8 +120,8 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def as_string_set
-        as_set.to_a.join(" ")
+      def to_string_set
+        return to_set.to_a.join(" ")
       end
 
       # ----------------------------------------------------------------------
@@ -139,7 +139,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def as_set
+      def to_set
         Set.new \
           .merge(for_all.to_a) \
           .merge(by_type.to_a) \

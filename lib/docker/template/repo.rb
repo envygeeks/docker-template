@@ -185,7 +185,7 @@ module Docker
           "TAR_GZ" => tar_gz,
           "TYPE" => metadata["tags"][tag],
           "VERSION" => metadata["version"].fallback,
-          "PKGS" => metadata["pkgs"].as_string_set,
+          "PKGS" => metadata["pkgs"].to_string_set,
           "RELEASE" => metadata["release"].fallback,
           "BUILD_TYPE" => type,
           "COPY" => copy_dir,

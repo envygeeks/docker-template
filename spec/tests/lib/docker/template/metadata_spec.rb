@@ -30,7 +30,7 @@ describe Docker::Template::Metadata do
 
   #
 
-  describe "#as_gem_version" do
+  describe "#to_gem_version" do
     subject do
       described_class.new({
         "name" => "hello",
@@ -43,7 +43,7 @@ describe Docker::Template::Metadata do
     #
 
     it "should merge repo with version" do
-      expect(subject.as_gem_version).to eq(
+      expect(subject.to_gem_version).to eq(
         "hello@3.2"
       )
     end
@@ -157,7 +157,7 @@ describe Docker::Template::Metadata do
 
   #
 
-  describe "#as_set" do
+  describe "#to_set" do
     subject do
       described_class.new({
         "tags" => { "latest" => "normal" }, "hello" => {
@@ -170,14 +170,14 @@ describe Docker::Template::Metadata do
 
     #
 
-    specify { expect(subject["hello"].as_set).to include "person" }
-    specify { expect(subject["hello"].as_set).to include "everyone" }
-    specify { expect(subject["hello"].as_set).to include "world" }
+    specify { expect(subject["hello"].to_set).to include "person" }
+    specify { expect(subject["hello"].to_set).to include "everyone" }
+    specify { expect(subject["hello"].to_set).to include "world" }
   end
 
   #
 
-  describe "#as_string_set" do
+  describe "#to_string_set" do
     subject do
       described_class.new({
         "tags" => { "latest" => "normal" }, "hello" => {
@@ -191,7 +191,7 @@ describe Docker::Template::Metadata do
     #
 
     it "should return a set combined as a string" do
-      expect(subject["hello"].as_string_set).to eq(
+      expect(subject["hello"].to_string_set).to eq(
         "everyone world person"
       )
     end
