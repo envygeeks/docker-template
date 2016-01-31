@@ -24,8 +24,9 @@ module Docker
       rb_delegate :user, :to => :metadata, :type => :hash
       rb_delegate :name, :to => :metadata, :type => :hash
       rb_delegate :tag,  :to => :metadata, :type => :hash
-      rb_delegate :pushable?, :to => :metadata, :key => :push, :type => :hash, :bool => true
-      rb_delegate :syncable?, :to => :metadata, :key => :sync, :type => :hash, :bool => true
+      rb_delegate :pushable?,  :to => :metadata, :key => :push,  :type => :hash, :bool => true
+      rb_delegate :buildable?, :to => :metadata, :key => :build, :type => :hash, :bool => true
+      rb_delegate :syncable?,  :to => :metadata, :key => :sync,  :type => :hash, :bool => true
       rb_delegate :to_h, :to => :@base_metadata
       rb_delegate :alias?, :to => :metadata
       rb_delegate :tags,   :to => :metadata

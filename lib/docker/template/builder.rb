@@ -79,6 +79,7 @@ module Docker
 
       def aliased_repo
         return @aliased_repo if @aliased_repo
+
         Repo.new(@repo.to_h.merge({
           "tag" => @repo.metadata.aliased
         }))
@@ -109,23 +110,32 @@ module Docker
         Utils::Notify.push(self)
 
         auth! unless testing?
-        logger = Logger.new.method(:api)
         img = @img || Docker::Image.get(@repo.to_s)
-        img.push(&logger) unless testing?
-        $stdout.puts
+        img.push(&Logger.new.method(:api))
+
+      rescue Docker::Error::NotFoundError
+        $stderr.puts Simple::Ansi.red "Image does not exist, " \
+          "unpushable."
       end
 
       # ----------------------------------------------------------------------
-      # Copy, prebuild, verify and then finally build the image.
+      # Copy, prebuild, verify and then finally build and push the image.
       # ----------------------------------------------------------------------
 
       def build
-        Simple::Ansi.clear
+        Simple::Ansi.clear if @repo.buildable?
         return build_alias if alias?
-        Utils::Notify.build(@repo, rootfs: rootfs?)
         copy_prebuild_and_verify
-        chdir_build
 
+        if @repo.buildable?
+          Utils::Notify.build(@repo, {
+            :rootfs => rootfs?
+          })
+
+          chdir_build
+        end
+
+        push
       rescue SystemExit => exit_
         cleanup :img => true
         raise exit_
@@ -153,9 +163,16 @@ module Docker
 
       private
       def build_alias
-        self.class.new(aliased_repo).build unless aliased_img
-        aliased_img.tag(@repo.to_tag_h)
-        Utils::Notify.alias(self)
+        if @repo.buildable?
+          aliased = self.class.new(aliased_repo)
+          aliased.build unless aliased_img
+          Utils::Notify.alias(self)
+
+          aliased_img.tag(
+            @repo.to_tag_h
+          )
+        end
+
         push
       end
 
@@ -188,7 +205,6 @@ module Docker
           opts = { :t => @repo.to_s(rootfs: rootfs?) }
           $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.metadata["tty"]
           @img = Docker::Image.build_from_dir(".", opts, &Logger.new(self).method(:api))
-          push
         end
       end
 

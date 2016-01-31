@@ -6,6 +6,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 ## [UNRELEASED]
 #### Added
 - Aliased tags can have their own merged values.
+- Add the ability to `--push-only` and `--sync-only`.
 - Allow Excon to be configured inside of opts.yml with excon_timeout.
 - Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore.
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml.

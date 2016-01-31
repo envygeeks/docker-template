@@ -30,6 +30,7 @@ describe Docker::Template::Builder do
     # rubocop:disable Style/SpaceInsideParens
     allow(subject).to receive(:verify_context).and_return nil
     allow(subject).to receive( :build_context).and_return nil
+    # rubocop:enable Style/SpaceInsideParens
   end
 
   #
@@ -356,6 +357,42 @@ describe Docker::Template::Builder do
     #
 
     shared_examples :build do
+      context do
+        before do
+          allow(subject.repo).to receive(:buildable?).and_return false
+          allow(subject).to receive(:build) \
+            .and_call_original
+        end
+
+        #
+
+        it "should check if the repo is buildable" do
+          expect(subject.repo).to receive(:buildable?).and_return(
+            nil
+          )
+        end
+      end
+
+      #
+
+      context "when building? is set to false" do
+        before do
+          allow(subject.repo).to receive(:buildable?).and_return false
+          allow(subject).to receive(:build) \
+            .and_call_original
+        end
+
+        #
+
+        it "should not build" do
+          expect(subject).not_to receive(
+            :chdir_build
+          )
+        end
+      end
+
+      #
+
       it "should build from the context" do
         expect(Docker::Image).to receive(
           :build_from_dir
@@ -406,8 +443,10 @@ describe Docker::Template::Builder do
 
     context "when subject.type == scratch" do
       before do
+        # rubocop:disable Style/SpaceInsideParens
         allow(subject).to receive(:create_args).and_return({})
         allow(subject).to receive( :start_args).and_return({})
+        # rubocop:enable Style/SpaceInsideParens
       end
 
       it_behaves_like(

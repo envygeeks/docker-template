@@ -47,7 +47,9 @@ module Docker
 
         def tty
           @opt_p.on("-t", "--tty", "Enable TTY output.") do
-            @opt_h["tty"] = true
+            unless @opt_h.key?("build") && !@opt_h["build"]
+              @opt_h["tty"] = true
+            end
           end
         end
 
@@ -67,7 +69,9 @@ module Docker
 
         def clean
           @opt_p.on("-c", "--[no-]clean", "Clean the cache folder.") do |bool|
-            @opt_h["clean"] = bool
+            unless @opt_h.key?("build") && !@opt_h["build"]
+              @opt_h["clean"] = bool
+            end
           end
         end
 
@@ -78,7 +82,9 @@ module Docker
 
         def push
           @opt_p.on("-p", "--[no-]push", "Push your repos after building.") do |bool|
-            @opt_h["push"] = bool
+            unless @opt_h.key?("build") && !@opt_h["build"]
+              @opt_h["push"] = bool
+            end
           end
         end
 
@@ -89,7 +95,9 @@ module Docker
 
         def sync
           @opt_p.on("-s", "--[no-]sync", "Sync repos to the cache.") do |bool|
-            @opt_h["sync"] = bool
+            unless @opt_h.key?("build") && !@opt_h["build"]
+              @opt_h["sync"] = bool
+            end
           end
         end
 
@@ -99,8 +107,18 @@ module Docker
         # --------------------------------------------------------------------
 
         def only_sync
-          @opt_p.on("-o", "--sync-only", "Only sync repos, do not build.") do |bool|
-            @opt_h["only_sync"] = bool
+          @opt_p.on("-S", "--sync-only", "Only sync repos, do not build.") do
+            @opt_h.update("build" => false, "sync" => true)
+          end
+        end
+
+        # --------------------------------------------------------------------
+        # Do not do anything but push the context.
+        # --------------------------------------------------------------------
+
+        def only_push
+          @opt_p.on("-P", "--push-only", "Only push repos, do not build.") do
+            @opt_h.update("build" => false, "push" => true)
           end
         end
       end
