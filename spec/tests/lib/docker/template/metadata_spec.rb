@@ -111,7 +111,7 @@ describe Docker::Template::Metadata do
 
   #
 
-  describe "#by_type" do
+  describe "#by_group" do
     subject do
       described_class.new({
         "tags" => {
@@ -119,7 +119,7 @@ describe Docker::Template::Metadata do
         },
 
         "hello" => {
-          "type" => {
+          "group" => {
             "normal" => "world"
           }
         }
@@ -128,8 +128,8 @@ describe Docker::Template::Metadata do
 
     #
 
-    it "should query by that type key" do
-      expect(subject["hello"].by_type).to eq(
+    it "should query by that group key" do
+      expect(subject["hello"].by_group).to eq(
         "world"
       )
     end
@@ -161,9 +161,9 @@ describe Docker::Template::Metadata do
     subject do
       described_class.new({
         "tags" => { "latest" => "normal" }, "hello" => {
-          "type" => { "normal" =>  "world" },
-          "tag"  => { "latest" => "person" },
-          "all"  => "everyone"
+          "tag"   => { "latest" => "person" },
+          "group" => { "normal" =>  "world" },
+          "all"   => "everyone"
         }
       }, root: true)
     end
@@ -181,9 +181,9 @@ describe Docker::Template::Metadata do
     subject do
       described_class.new({
         "tags" => { "latest" => "normal" }, "hello" => {
-          "type" => { "normal" =>  "world" },
-          "tag"  => { "latest" => "person" },
-          "all"  => "everyone"
+          "tag"   => { "latest" => "person" },
+          "group" => { "normal" =>  "world" },
+          "all"   => "everyone"
         }
       }, root: true)
     end
@@ -207,7 +207,7 @@ describe Docker::Template::Metadata do
         },
 
         "hello" => {
-          "type" => {
+          "group" => {
             "normal" => {
               "world"  => "hello"
             }
@@ -228,7 +228,7 @@ describe Docker::Template::Metadata do
 
     #
 
-    context "when there are more keys than tag,type,all" do
+    context "when there are more keys than tag, group, all" do
       it "should revert to normal to_h" do
         expect(subject.to_h).to eq(
           subject.instance_variable_get(:@metadata)
@@ -254,7 +254,7 @@ describe Docker::Template::Metadata do
           },
 
           "hello" => {
-            "type" => {
+            "group" => {
               "normal" => "world1"
             }
           }
@@ -263,7 +263,7 @@ describe Docker::Template::Metadata do
 
       #
 
-      it "should return type if no tag is available" do
+      it "should return group if no tag is available" do
         expect(subject["hello"].fallback).to eq(
           "world1"
         )
@@ -287,7 +287,7 @@ describe Docker::Template::Metadata do
 
       #
 
-      it "should return all when no tag or type is available" do
+      it "should return all when no tag or group is available" do
         expect(subject["hello"].fallback).to eq(
           "world3"
         )

@@ -24,7 +24,7 @@ module Mocks
           [:mkdir, "copy"],
           [:mkdir, "copy/all"],
           [:mkdir, "copy/tag/latest"],
-          [:mkdir, "copy/type/normal"],
+          [:mkdir, "copy/group/normal"],
           [:write, "copy/all/usr/local/bin/hello", "world"],
           [:touch, "Dockerfile"],
           [:with_opts, {}]
@@ -44,7 +44,7 @@ module Mocks
           [:mkdir, "copy"],
           [:mkdir, "copy/all"],
           [:mkdir, "copy/tag/latest"],
-          [:mkdir, "copy/type/normal"],
+          [:mkdir, "copy/group/normal"],
           [:write, "copy/all/usr/local/bin/hello", "world"],
           [:write, "copy/rootfs/usr/local/bin/mkimg", "hello"],
           [:with_opts, {}]

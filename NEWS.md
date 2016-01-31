@@ -18,6 +18,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 #### Changed
 - Make profiling a bit more readable.
 - Switch to completely dynamic test fixtures.
+- `copy/type/<type>` is not `copy/group/<group>`.
 - Rewrite specs to be more verbose and easily organized.
 - Do inline tagging on build instead of after the build.
 - Move alias building back into the main builder class to ease dev.
@@ -38,6 +39,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Move all `Metadata#as_*` to `Metadata#to_*` methods.
 - Switched to `Pathutil` instead of `Pathname`.
 - Remove encapsulating auth into a class.
+- Type queries are now group queries.
 - Fix a few minor bugs.
 
 #### Fixed

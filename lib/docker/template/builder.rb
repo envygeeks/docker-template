@@ -14,7 +14,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       COPY = [:setup_context, :copy_global, :simple_copy, :copy_all,
-        :copy_type, :copy_tag, :copy_cleanup, :build_context,
+        :copy_group, :copy_tag, :copy_cleanup, :build_context,
           :verify_context, :cache_context].freeze
 
       # ----------------------------------------------------------------------
@@ -39,7 +39,7 @@ module Docker
       def simple_copy?
         @repo.copy_dir.exist? && \
           !@repo.copy_dir.join("tag").exist? && \
-          !@repo.copy_dir.join("type").exist? && \
+          !@repo.copy_dir.join("group").exist? && \
           !@repo.copy_dir.join("all").exist?
       end
 
@@ -111,7 +111,9 @@ module Docker
 
         auth! unless testing?
         img = @img || Docker::Image.get(@repo.to_s)
-        img.push(&Logger.new.method(:api))
+        img.push(&Logger.new.method(
+          :api
+        ))
 
       rescue Docker::Error::NotFoundError
         $stderr.puts Simple::Ansi.red "Image does not exist, " \
@@ -241,7 +243,7 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # When you have no tag, type, all, this is called a simple
+      # When you have no tag, group, all, this is called a simple
       # copy, and we will skip caring about the other types of copies and
       # just do a direct copy of the copy root.
       # <root>/<repo>/copy
@@ -279,17 +281,17 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # <root>/<repo>/copy/type/<type> where type is defined as
-      # the value in the tags key of your opts.yml, types are like a
+      # <root>/<repo>/copy/group/<group> where group is defined as
+      # the value in the tags key of your opts.yml, groups are like a
       # set of tags that share common data.
       # *Not used with simple copy*
       # ----------------------------------------------------------------------
 
       private
-      def copy_type
-        build_type = @repo.metadata["tags"][@repo.tag]
-        return if rootfs? || simple_copy? || !build_type
-        dir = @repo.copy_dir("type", build_type)
+      def copy_group
+        build_group = @repo.metadata["tags"][@repo.tag]
+        return if rootfs? || simple_copy? || !build_group
+        dir = @repo.copy_dir("group", build_group)
 
         if dir.exist?
           then dir.safe_copy(

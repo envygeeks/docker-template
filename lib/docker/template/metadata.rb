@@ -128,12 +128,12 @@ module Docker
       # rb_delegate :to_h, :to => :@metadata
       # ----------------------------------------------------------------------
 
-      def to_h(raw: !!!(@metadata.keys - %w(type tag all)).empty?)
+      def to_h(raw: !!!(@metadata.keys - %w(group tag all)).empty?)
         return @metadata.to_h if raw
 
         {} \
           .merge(for_all.to_h) \
-          .merge(by_type.to_h) \
+          .merge(by_group.to_h) \
           .merge(by_tag. to_h)
       end
 
@@ -142,7 +142,7 @@ module Docker
       def to_set
         Set.new \
           .merge(for_all.to_a) \
-          .merge(by_type.to_a) \
+          .merge(by_group.to_a) \
           .merge(by_tag .to_a)
       end
 
@@ -159,7 +159,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def fallback
-        by_tag || by_type || for_all
+        by_tag || by_group || for_all
       end
 
       # ----------------------------------------------------------------------
@@ -178,17 +178,19 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Pull data based on the type given in { "tags" => { tag => type }}
-      # through anything that provides a "type" key with the type as a
+      # Pull data based on the group given in { "tags" => { tag => group }}
+      # through anything that provides a "group" key with the group as a
       # sub-key and the values.
       # ----------------------------------------------------------------------
 
-      def by_type
+      def by_group
         tag = aliased
-        type = from_root("tags")[tag]
-        return unless key?("type")
-        return unless type
-        self["type"][type]
+        group = from_root("tags")[tag]
+        return unless key?("group")
+        return unless group
+        self["group"][
+          group
+        ]
       end
 
       # ----------------------------------------------------------------------

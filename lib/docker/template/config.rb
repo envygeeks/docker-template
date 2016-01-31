@@ -54,11 +54,11 @@ module Docker
         "clean" => true,
         "tty" => false,
 
-        "env"      => { "tag" => {}, "type" => {}, "all" => nil },
-        "pkgs"     => { "tag" => {}, "type" => {}, "all" => nil },
-        "entries"  => { "tag" => {}, "type" => {}, "all" => nil },
-        "releases" => { "tag" => {}, "type" => {}, "all" => nil },
-        "versions" => { "tag" => {}, "type" => {}, "all" => nil },
+        "env"      => { "tag" => {}, "group" => {}, "all" => nil },
+        "pkgs"     => { "tag" => {}, "group" => {}, "all" => nil },
+        "entries"  => { "tag" => {}, "group" => {}, "all" => nil },
+        "releases" => { "tag" => {}, "group" => {}, "all" => nil },
+        "versions" => { "tag" => {}, "group" => {}, "all" => nil },
         "aliases"  => {},
         "tags"     => {}
       }.freeze

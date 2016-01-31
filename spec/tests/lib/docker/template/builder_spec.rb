@@ -316,10 +316,10 @@ describe Docker::Template::Builder do
 
     #
 
-    describe "#copy_type" do
+    describe "#copy_group" do
       after do
         subject.send(
-          :copy_type
+          :copy_group
         )
       end
 
