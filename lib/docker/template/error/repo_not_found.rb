@@ -10,7 +10,9 @@ module Docker
       class RepoNotFound < StandardError
         def initialize(repo = nil)
           ending = repo ? "the repo '#{repo}'" : "your repo folder"
-          super "Unable to find #{ending}"
+          super "Unable to find #{
+            ending
+          }"
         end
       end
     end

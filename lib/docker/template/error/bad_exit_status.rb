@@ -11,7 +11,9 @@ module Docker
         attr_reader :status
 
         def initialize(status)
-          super "Got bad exit status #{@status = status}"
+          super "Got bad exit status #{
+            @status = status
+          }"
         end
       end
     end

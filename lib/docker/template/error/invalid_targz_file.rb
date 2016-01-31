@@ -9,7 +9,9 @@ module Docker
     module Error
       class InvalidTargzFile < StandardError
         def initialize(tar_gz)
-          super "No data was given to the tar.gz file '#{tar_gz.basename}'"
+          super "No data was given to the tar.gz file '#{
+            tar_gz.basename
+          }'"
         end
       end
     end

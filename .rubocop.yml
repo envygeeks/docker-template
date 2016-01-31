@@ -43,6 +43,7 @@ Style/MultilineTernaryOperator:       { Enabled: false }
 Style/EmptyLinesAroundModuleBody:     { Enabled: false }
 Style/SpaceInsideHashLiteralBraces:   { Enabled: false }
 Style/EmptyLinesAroundAccessModifier: { Enabled: false }
+Style/SpaceInsideStringInterpolation: { Enabled: false }
 Style/BracesAroundHashParameters:     { Enabled: false }
 Style/EmptyLinesAroundClassBody:      { Enabled: false }
 Style/SpaceInsideBlockBraces:         { Enabled: false }

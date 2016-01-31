@@ -10,7 +10,9 @@ module Docker
       class InvalidRepoType < StandardError
         def initialize(type)
           build_types = Template.config.build_types.join(", ")
-          super "Uknown repo type given '#{type}' not in '#{build_types}'"
+          super "Uknown repo type given '#{type}' not in '#{
+            build_types
+          }'"
         end
       end
     end

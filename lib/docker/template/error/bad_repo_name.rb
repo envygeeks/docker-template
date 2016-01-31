@@ -9,7 +9,9 @@ module Docker
     module Error
       class BadRepoName < StandardError
         def initialize(name)
-          super "Only a-z0-9_- are allowed. Invalid repo name: #{name}"
+          super "Only a-z0-9_- are allowed. Invalid repo name: #{
+            name
+          }"
         end
       end
     end

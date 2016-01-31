@@ -9,7 +9,9 @@ module Docker
     module Error
       class NoHookExists < StandardError
         def initialize(base, point)
-          super "Unknown hook base '#{base}' or hook point '#{point}'"
+          super "Unknown hook base '#{base}' or hook point '#{
+            point
+          }'"
         end
       end
     end
