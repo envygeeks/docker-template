@@ -123,23 +123,22 @@ module Docker
       # Allows you to create a tempoary directory with a prefix if you wish.
       # ----------------------------------------------------------------------
 
-      def tmpdir(*prefixes, root: nil)
-        prefixes = [user, name, tag] + prefixes
-        args = ["#{prefixes.join("-")}-", root].delete_if(&:nil?)
-        Pathutil.new(Dir.mktmpdir(*args))
+      def tmpdir(*args, root: nil)
+        args.unshift(user, name, tag)
+        Pathutil.tmpdir(args,
+          "docker-template", root
+        )
       end
 
       # ----------------------------------------------------------------------
       # Allows you to create a temporary file with a prefix if you wish.
       # ----------------------------------------------------------------------
 
-      def tmpfile(*prefixes, root: nil)
-        prefixes = [user, name, tag] + prefixes
-        ext = prefixes.pop if prefixes.last.start_with?(".")
-        prefixes = ["#{prefixes.join("-")}-"]
-        prefixes = ext ? prefixes.push(ext) : prefixes.first
-        args = [prefixes, root].delete_if(&:nil?)
-        Pathutil.new(Tempfile.new(*args))
+      def tmpfile(*args, root: nil)
+        args.unshift(user, name, tag)
+        Pathutil.tmpfile(args,
+          "docker-template", root
+        )
       end
 
       # ----------------------------------------------------------------------
