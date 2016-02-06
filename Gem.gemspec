@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.has_rdoc = false
   spec.bindir = "bin"
 
+  spec.add_runtime_dependency("thor", "~> 0.19")
   spec.add_runtime_dependency("docker-api", "~> 1.24")
   spec.add_runtime_dependency("forwardable-extended", "~> 2.4")
   spec.add_runtime_dependency("simple-ansi", "~> 1.0")

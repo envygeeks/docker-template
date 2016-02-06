@@ -4,116 +4,62 @@
 # Encoding: utf-8
 # ----------------------------------------------------------------------------
 
-require "optparse"
+require "thor"
 
 module Docker
   module Template
-    class Interface
-      extend Forwardable::Extended
-      autoload :Opts, "docker/template/interface/opts"
-      rb_delegate "profile", {
-        :to => :@argv,
-        :bool => true,
-        :type => :hash
-      }
+    class Interface < Thor
+      desc "build <REPOS>", "Build all (or some) of your repostories"
+      option "only-sync", :type => :boolean, :desc => "Only sync your repositiries, don't build."
+      option "only-push", :type => :boolean, :desc => "Only push your repositories, don't build."
+      option :profile,    :type => :boolean, :desc => "Profile Memory."
+      option :tty,        :type => :boolean, :desc => "Enable TTY Output."
+      option :push,       :type => :boolean, :desc => "Push Repo After Building."
+      option :sync,       :type => :boolean, :desc => "Sync your repositories to cache."
+      option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
+      option :clean,      :type => :boolean, :desc => "Cleanup images after."
 
-      # ----------------------------------------------------------------------
-
-      def initialize(zero, argv = [])
-        @zero = zero
-        @raw_argv = argv
-        setup
-      end
-
-      # ----------------------------------------------------------------------
-
-      def repos
-        return @repos ||= begin
-          Parser.new(@raw_repos, @argv).parse
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      def run
-        with_profiling do
-          repos.map(
-            &:build
-          )
+      def build(*args)
+        repos = nil; with_profiling do
+          repos = Parser.new(args, options).parse
+          repos.map &:build
         end
       ensure
-        if @repos
-          then repos.map { |repo| repo.builder.class }.uniq.map do |repo|
-            if repo.respond_to?(:cleanup)
-              then repo.cleanup
-            end
+        if repos
+          Set.new(repos.map { |repo| repo.builder.class }).map do |repo|
+            repo.cleanup if repo.respond_to?(
+              :cleanup
+            )
           end
         end
       end
 
       # ----------------------------------------------------------------------
-      # rubocop:disable Lint/RescueException
-      # ----------------------------------------------------------------------
 
-      def with_profiling
-        if profile?
-          require "memory_profiler"
-          MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
-            :to_file => "mem.txt"
-          })
+      no_tasks do
+        def with_profiling
+          if options.profile?
+            require "memory_profiler"
+            MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
+              :to_file => "mem.txt"
+            })
 
-        else
-          yield
+          else
+            yield
+          end
+        rescue LoadError
+          abort "Gem 'memory_profiler' not found."
+
+        rescue Exception
+          raise unless $ERROR_POSITION
+          $ERROR_POSITION.delete_if do |source|
+            source =~ %r!#{Regexp.escape(
+              __FILE__
+            )}!o
+          end
+
+          raise
         end
-      rescue LoadError
-        abort "You must install 'memory_profiler' " \
-          "to use memory profiling."
-
-      rescue Exception
-        raise unless $ERROR_POSITION
-        $ERROR_POSITION.delete_if do |source|
-          source =~ %r!#{Regexp.escape(
-            __FILE__
-          )}!o
-        end
-
-        raise
-      end
-
-      # ----------------------------------------------------------------------
-      # rubocop:enable Lint/RescueException
-      # ----------------------------------------------------------------------
-
-      def setup
-        @argv  = {}
-        parser = OptionParser.new do |opt_p|
-          banner = Utils::System.docker_bin?(@zero) ? "docker template" : "docker-template"
-          opt_p.banner = "Usage: #{banner} [repos] [flags]"
-          Opts.new(opt_p, @argv, parser)
-        end
-
-        @raw_repos = Set.new
-        @raw_repos.merge(parser.parse!(@raw_argv.dup))
-        @raw_repos.freeze
-        @argv.freeze
-      end
-
-      # ----------------------------------------------------------------------
-
-      def self.start(zero)
-        ARGV.unshift if ARGV.first == "template"
-        if !Utils::System.docker_bin?(zero)
-          new(zero, ARGV).run
-
-        else
-          exe = Utils::System.docker_bin
-          return exec exe.to_s, *ARGV if exe
-          abort "No System Docker."
-        end
-      rescue Error::StandardError => error
-        $stderr.puts Simple::Ansi.red(error.message)
-        $stderr.puts Simple::Ansi.red("Aborting your build.")
-        exit error.respond_to?(:status) ? error.status : 1
       end
     end
   end

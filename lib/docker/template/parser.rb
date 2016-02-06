@@ -14,9 +14,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def initialize(raw_repos = [], argv = {})
+        @raw_repos = raw_repos
         @argv = argv
-        @raw_repos = \
-          raw_repos
       end
 
       # ----------------------------------------------------------------------

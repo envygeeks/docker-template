@@ -20,5 +20,8 @@ end
 group :development do
   unless ENV["CI"]
     gem "pry", :require => false
+    gem "msgpack", {
+      :require => false
+    }
   end
 end

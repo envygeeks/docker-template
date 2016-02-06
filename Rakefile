@@ -11,12 +11,6 @@ task :default => [:spec]
 RSpec::Core::RakeTask.new :spec
 task :test => :spec
 
-[:travis, :pry].each do |key|
-  task key do
-    sh "bundle exec docker-template --#{key}"
-  end
-end
-
 task :rubocop do
   sh "bundle", "exec", "rubocop", "-DE", "-r", "luna/rubocop/formatters/checks", \
     "-f", "Luna::RuboCop::Formatters::Checks"

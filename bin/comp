@@ -1,0 +1,9 @@
+#!/bin/bash
+_docker_template() {
+  comp=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/comp-list
+  COMPREPLY=($(compgen -W "$($comp ${COMP_WORDS[@]})" -- \
+    ${COMP_WORDS[COMP_CWORD]}))
+}
+
+complete -F _docker_template \
+  docker-template
