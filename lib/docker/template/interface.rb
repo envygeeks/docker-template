@@ -22,7 +22,7 @@ module Docker
       def build(*args)
         repos = nil; with_profiling do
           repos = Parser.new(args, options).parse
-          repos.map &:build
+          repos.map(&:build)
         end
       ensure
         if repos
@@ -34,6 +34,8 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
+      # rubocop:disable Lint/RescueException
       # ----------------------------------------------------------------------
 
       no_tasks do

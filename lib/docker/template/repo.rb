@@ -175,8 +175,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # rubocop:disable Metrics/AbcSize
-      # ----------------------------------------------------------------------
 
       def to_env(tar_gz: nil, copy_dir: nil)
         metadata["env"].to_h.merge({

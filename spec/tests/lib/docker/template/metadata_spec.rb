@@ -25,7 +25,7 @@ describe Docker::Template::Metadata do
   describe "#[]" do
     it "should be able to pull values similar to a hash" do
       expect(subject["hello"]).to eq(
-      "world"
+        "world"
       )
     end
 
@@ -228,27 +228,27 @@ describe Docker::Template::Metadata do
 
     specify do
       expect(subject["hello"].to_h).to \
-      include({
-        "person" => "hello"
-      })
+        include({
+          "person" => "hello"
+        })
     end
 
     #
 
     specify do
       expect(subject["hello"].to_h).to \
-      include({
-        "everyone" => "hello"
-      })
+        include({
+          "everyone" => "hello"
+        })
     end
 
     #
 
     specify do
       expect(subject["hello"].to_h).to \
-      include({
-        "world" => "hello"
-      })
+        include({
+          "world" => "hello"
+        })
     end
   end
 

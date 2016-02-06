@@ -235,7 +235,9 @@ module Docker
 
       def to_env_str(multiline: false)
         if multiline
-          env, str = to_env_ary, ""
+          env = to_env_ary
+          str = ""
+
           env[1..-1].each_with_index do |val, index|
             if env.size == 2
               str+= " \\"
@@ -276,8 +278,8 @@ module Docker
 
       def to_a
         for_all.to_a | \
-        by_group.to_a | \
-        by_tag.to_a
+          by_group.to_a | \
+          by_tag.to_a
       end
 
       # ----------------------------------------------------------------------

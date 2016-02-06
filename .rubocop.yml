@@ -1,12 +1,12 @@
 Metrics/LineLength: { Max: 112 }
 Metrics/BlockNesting: { Max: 4 }
-Metrics/ClassLength: { Max: 240 }
-Metrics/ModuleLength: { Max: 240 }
+Metrics/ClassLength: { Max: 480 }
+Metrics/ModuleLength: { Max: 480 }
 Metrics/CyclomaticComplexity: { Max: 8 }
 Metrics/PerceivedComplexity: { Max: 8 }
 Metrics/ParameterLists: { Max: 6 }
 Metrics/MethodLength: { Max: 12 }
-Metrics/MethodLength: { Max: 24 }
+Metrics/MethodLength: { Max: 32 }
 Metrics/AbcSize: { Max: 20 }
 
 Style/IndentHash: { EnforcedStyle: consistent }
@@ -43,6 +43,7 @@ Style/MultilineTernaryOperator:       { Enabled: false }
 Style/EmptyLinesAroundModuleBody:     { Enabled: false }
 Style/SpaceInsideHashLiteralBraces:   { Enabled: false }
 Style/EmptyLinesAroundAccessModifier: { Enabled: false }
+Style/ClosingParenthesisIndentation:  { Enabled: false }
 Style/SpaceInsideStringInterpolation: { Enabled: false }
 Style/BracesAroundHashParameters:     { Enabled: false }
 Style/EmptyLinesAroundClassBody:      { Enabled: false }
