@@ -7,8 +7,9 @@
 module Docker
   module Template
     class Metadata
-      attr_reader :metadata, :root_metadata
+      attr_reader :root_metadata
       extend Forwardable::Extended
+      attr_reader :metadata
 
       # ----------------------------------------------------------------------
       # Provides aliases for the root element so you can do something like:
@@ -22,17 +23,6 @@ module Docker
         "script" => "scripts",
         "image" => "images"
       }.freeze
-
-      # ----------------------------------------------------------------------
-
-      rb_delegate :root,      :to => :@root, :type => :ivar, :bool => true
-      rb_delegate :for_all,   :to => :self,  :type => :hash, :key  => :all
-      rb_delegate :keys,      :to => :@metadata
-      rb_delegate :size,      :to => :@metadata
-      rb_delegate :values_at, :to => :@metadata
-      rb_delegate :to_enum,   :to => :@metadata
-      rb_delegate :key?,      :to => :@metadata
-      rb_delegate :each,      :to => :@metadata
 
       # ----------------------------------------------------------------------
 
@@ -128,13 +118,19 @@ module Docker
       # rb_delegate :to_h, :to => :@metadata
       # ----------------------------------------------------------------------
 
-      def to_h(raw: !!!(@metadata.keys - %w(group tag all)).empty?)
+      def to_h(raw: !can_fallback?)
         return @metadata.to_h if raw
 
         {} \
           .merge(for_all.to_h) \
           .merge(by_group.to_h) \
           .merge(by_tag. to_h)
+      end
+
+      # ----------------------------------------------------------------------
+
+      def can_fallback?
+        (@metadata.keys - %w(group tag all)).empty?
       end
 
       # ----------------------------------------------------------------------
@@ -234,6 +230,44 @@ module Docker
         return new_val.merge(val) if val.respond_to?(:merge)
         return new_val | val if val.respond_to?(:|)
       end
+
+      # ----------------------------------------------------------------------
+      # Provides a wrapper for common delegations through `rb_delegate`
+      # @note expects that `obj` will have a `fallback` and `can_fallback?`.
+      # @return <Object> the resulting value or it's fallback.
+      # ----------------------------------------------------------------------
+
+      def fallback_wrapper(obj)
+        if obj.respond_to?(:fallback) && obj.can_fallback?
+          return obj.fallback
+        end
+
+        obj
+      end
+
+      # ----------------------------------------------------------------------
+
+      rb_delegate :root,      :to => :@root, :type => :ivar, :bool => true
+      rb_delegate :for_all,   :to => :self,  :type => :hash, :key  => :all
+      rb_delegate :keys,      :to => :@metadata
+      rb_delegate :size,      :to => :@metadata
+      rb_delegate :values_at, :to => :@metadata
+      rb_delegate :to_enum,   :to => :@metadata
+      rb_delegate :key?,      :to => :@metadata
+      rb_delegate :each,      :to => :@metadata
+
+      # ----------------------------------------------------------------------
+      # Delegate common hash keys as methods so you can easily access them.
+      # ----------------------------------------------------------------------
+
+      rb_delegate :tag,          :to => :self, :type => :hash, :wrap => :fallback_wrapper
+      rb_delegate :version,      :to => :self, :type => :hash, :wrap => :fallback_wrapper
+      rb_delegate :dev_packages, :to => :self, :type => :hash, :wrap => :fallback_wrapper
+      rb_delegate :packages,     :to => :self, :type => :hash, :wrap => :fallback_wrapper
+      rb_delegate :entry,        :to => :self, :type => :hash, :wrap => :fallback_wrapper
+      rb_delegate :env,          :to => :self, :type => :hash, :wrap => :fallback_wrapper
+
+      # ----------------------------------------------------------------------
     end
   end
 end
