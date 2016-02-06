@@ -22,10 +22,20 @@ describe Docker::Template::Metadata do
 
   #
 
-  it "should be able to pull values similar to a hash" do
-    expect(subject["hello"]).to eq(
+  describe "#[]" do
+    it "should be able to pull values similar to a hash" do
+      expect(subject["hello"]).to eq(
       "world"
-    )
+      )
+    end
+
+    #
+
+    it "should be indifferent" do
+      expect(subject[:hello]).to eq(
+        "world"
+      )
+    end
   end
 
   #
@@ -46,24 +56,6 @@ describe Docker::Template::Metadata do
       expect(subject.to_gem_version).to eq(
         "hello@3.2"
       )
-    end
-  end
-
-  #
-
-  describe "#to_h" do
-    context "when given a parent hash" do
-      subject do
-        described_class.new({}, root_metadata: {
-          "hello" => "world"
-        })
-      end
-
-      #
-
-      it "should not include the parent hash" do
-        expect(subject.to_h).to eq({})
-      end
     end
   end
 
@@ -177,29 +169,25 @@ describe Docker::Template::Metadata do
 
   #
 
-  describe "#to_string_set" do
-    subject do
-      described_class.new({
-        "tags" => { "latest" => "normal" }, "hello" => {
-          "tag"   => { "latest" => "person" },
-          "group" => { "normal" =>  "world" },
-          "all"   => "everyone"
-        }
-      }, root: true)
+  describe "#to_h" do
+    context "when given a parent hash" do
+      subject do
+        described_class.new({}, root_metadata: {
+          "hello" => "world"
+        })
+      end
+
+      #
+
+      it "should not include the parent hash" do
+        expect(subject.to_h).to eq({
+          #
+        })
+      end
     end
 
     #
 
-    it "should return a set combined as a string" do
-      expect(subject["hello"].to_string_set).to eq(
-        "everyone world person"
-      )
-    end
-  end
-
-  #
-
-  describe "#to_h" do
     subject do
       described_class.new({
         "tags" => {
@@ -238,9 +226,30 @@ describe Docker::Template::Metadata do
 
     #
 
-    specify { expect(subject["hello"].to_h).to include "person" => "hello" }
-    specify { expect(subject["hello"].to_h).to include "everyone" => "hello" }
-    specify { expect(subject["hello"].to_h).to include "world" => "hello" }
+    specify do
+      expect(subject["hello"].to_h).to \
+      include({
+        "person" => "hello"
+      })
+    end
+
+    #
+
+    specify do
+      expect(subject["hello"].to_h).to \
+      include({
+        "everyone" => "hello"
+      })
+    end
+
+    #
+
+    specify do
+      expect(subject["hello"].to_h).to \
+      include({
+        "world" => "hello"
+      })
+    end
   end
 
   #
@@ -454,6 +463,218 @@ describe Docker::Template::Metadata do
     end
   end
 
+  #
+
+  describe "#merge" do
+    subject do
+      described_class.new({}, {
+        :root => true
+      })
+    end
+
+    #
+
+    context do
+      before do
+        subject.merge({
+          :hello => :world
+        })
+      end
+
+      #
+
+      it "should stringify stuff" do
+        expect(subject.instance_variable_get(:@metadata)).to eq({
+          "hello" => "world"
+        })
+      end
+    end
+
+    #
+
+    describe "#to_env" do
+      subject do
+        described_class.new({ "hello" => "world" }, {
+          :root => true
+        })
+      end
+
+      context "when given an array" do
+        subject do
+          described_class.new({ "hello" => ["world"] }, {
+            :root => true
+          })
+        end
+
+        #
+
+        it "should join the array" do
+          expect(subject.to_env.to_h).to eq({
+            "HELLO" => "world"
+          })
+        end
+      end
+
+      #
+
+      context "when given hashes" do
+        subject do
+          described_class.new({ "world" => { "hello" => "you" }}, {
+            :root => true
+          })
+        end
+
+        #
+
+        it "should collapse them" do
+          expect(subject.to_env.to_h).to eq({
+            "HELLO" => "you"
+          })
+        end
+      end
+
+      #
+
+      it "should capitalize all the keys" do
+        expect(subject.to_env.to_h).to eq({
+          "HELLO" => "world"
+        })
+      end
+
+      #
+
+      it "should return a metadata" do
+        expect(subject.to_env).to be_a(
+          described_class
+        )
+      end
+    end
+
+    #
+
+    context "when at the root level" do
+      it "should also merge to root too" do
+        expect(subject.instance_variable_get(:@root_metadata)).to eq(
+          subject.instance_variable_get(
+            :@metadata
+          )
+        )
+      end
+    end
+  end
+
+  #
+
+  describe "#to_env_ary" do
+    it "should run #to_env and make it an array" do
+      expect(subject.to_env_ary).to eq [
+        "HELLO=world"
+      ]
+    end
+  end
+
+  #
+
+  describe "#to_env_str" do
+    it "should create a string from the hash" do
+      expect(subject.to_env_str).to eq(
+        "HELLO=world"
+      )
+    end
+
+    #
+
+    context "when told to make it multiline" do
+      subject do
+        described_class.new({ "hello" => "world", "world" => "hello" }, {
+          :root => true
+        })
+      end
+
+      #
+
+      it "should split it up" do
+        expect(subject.to_env_str(:multiline => true)).to eq(
+          "HELLO=world \\\n  WORLD=hello"
+        )
+      end
+    end
+  end
+
+  #
+
+  describe "#to_s" do
+    context "when given a mergeable array" do
+      let :hash do
+        {
+          "tag" => "default",
+          "env" => {
+            "tag" => {
+              "default" => [
+                "hello"
+              ]
+            },
+
+            "all" => [
+              "world"
+            ]
+          }
+        }
+      end
+
+      subject do
+        described_class.new(hash, {
+          :root => true
+        })
+      end
+
+      #
+
+      it "should merge the array" do
+        expect(subject["env"].to_s).to eq(
+          "world hello"
+        )
+      end
+    end
+
+    #
+
+    context "when given a mergable hash" do
+      let :hash do
+        {
+          "tag" => "default",
+          "env" => {
+            "tag" => {
+              "default" => {
+                "hello" => "world"
+              },
+
+              "all" => {
+                "world" => "hello"
+              }
+            }
+          }
+        }
+      end
+
+      #
+
+      subject do
+        described_class.new(hash, {
+          :root => true
+        })
+      end
+
+      it "should merge the hash" do
+        expect(subject["env"].to_s).to eq(
+          "HELLO=world WORLD=hello"
+        )
+      end
+    end
+  end
+
+  #
+
   describe "#merge_or_override" do
     subject do
       described_class.new({}, {
@@ -532,6 +753,46 @@ describe Docker::Template::Metadata do
       context "when the two values are mergeable" do
         specify { expect(isend({ 1 => 1 }, { 2 => 2 })).to include 2 => 2 }
         specify { expect(isend({ 1 => 1 }, { 2 => 2 })).to include 1 => 1 }
+      end
+    end
+  end
+
+  #
+
+  describe "#aliased" do
+    before do
+      subject.merge({
+        "aliases" => {
+          "hello" => "default"
+        },
+
+        "tag" => "hello",
+
+        "env" => {
+          "tag" => {
+            "hello" => {
+              "world" => "true"
+            }
+          }
+        }
+      })
+    end
+
+    #
+
+    it "should pull the parent tag" do
+      expect(subject.aliased).to eq(
+        "default"
+      )
+    end
+
+    #
+
+    context "when in a sub-metadata" do
+      it "should pull from root" do
+        expect(subject["env"].aliased).to eq(
+          "default"
+        )
       end
     end
   end

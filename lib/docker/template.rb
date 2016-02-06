@@ -6,7 +6,6 @@
 
 require "docker"
 require "forwardable/extended"
-require "docker/template/patches/array"
 require "docker/template/patches/string"
 require "docker/template/patches/hash"
 require "docker/template/version"

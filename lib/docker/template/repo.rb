@@ -183,15 +183,15 @@ module Docker
           "REPO" => name,
           "NAME" => name,
           "TAR_GZ" => tar_gz,
-          "TYPE" => metadata["tags"][tag],
-          "VERSION" => metadata["version"].fallback,
-          "PKGS" => metadata["pkgs"].to_string_set,
-          "RELEASE" => metadata["release"].fallback,
+          "PKGS" => metadata.pkgs,
+          "VERSION" => metadata.version,
+          "RELEASE" => metadata.release,
+          "TYPE" => metadata.tag,
           "BUILD_TYPE" => type,
           "COPY" => copy_dir,
           "TAR" => tar_gz,
           "TAG" => tag
-        }).to_env
+        })
       end
     end
   end

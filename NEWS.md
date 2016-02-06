@@ -5,15 +5,24 @@ project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [UNRELEASED]
 #### Added
+- Added a default timeout of 1440 to Excon.
+- `--tty` option to enable tty scratch builds.
 - Aliased tags can have their own merged values.
 - Add the ability to `--push-only` and `--sync-only`.
 - Allow Excon to be configured inside of opts.yml with excon_timeout.
+- Beef up Metadata and merge a lot of stuff directly onto Metadata and out of patches.
 - Added the ability to do simple copies, no need to care about `copy/{tag,type,all}` anymore.
 - Added support for naming a repo different than the folder name.  Use `name` in opts.yml.
 - Added a User-Agent so Docker and other stuff can identify our software.
 - Complex aliased metadata is not treated like a full build. [#7]
-- `--tty` option to enable tty scratch builds.
-- Added a default timeout of 1440 to Excon.
+- Add Metadata helper `Docker::Template::Metadata#tag`
+- Add Metadata helper `Docker::Template::Metadata#pkgs`
+- Add Metadata helper `Docker::Template::Metadata#version`
+- Add Metadata helper `Docker::Template::Metadata#dev_pkgs`
+- Add Metadata helper `Docker::Template::Metadata#release`
+- Add Metadata helper `Docker::Template::Metadata#version`
+- Add Metadata helper `Docker::Template::Metadata#entry`
+- Add Metadata helper `Docker::Template::Metadata#env`
 
 #### Changed
 - Make profiling a bit more readable.

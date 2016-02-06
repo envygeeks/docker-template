@@ -41,20 +41,6 @@ describe Hash do
 
   #
 
-  describe "#to_env_ary" do
-    subject do
-      hash.to_env_ary
-    end
-
-    specify do
-      is_expected.to eq [
-        "HELLO=world", "WORLD=hello"
-      ]
-    end
-  end
-
-  #
-
   describe "#deep_merge" do
     it "should handle hashception" do
       hash1 = { :hello => { :world1 => 1 }}
