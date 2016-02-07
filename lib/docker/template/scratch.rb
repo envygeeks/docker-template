@@ -129,13 +129,18 @@ module Docker
 
       private
       def create_args
-        {
+        name = ["rootfs", @repo.name, @repo.tag, "image"].join("-")
+        env  = @repo.to_env(:tar_gz => @tar_gz, :copy_dir => @copy)
+        env  = Metadata.new(env, :root => true).to_env_ary
+
+        return {
           "Tty"     => @repo.metadata["tty"],
-          "Env"     => @repo.to_env(tar_gz: @tar_gz, copy_dir: @copy).to_env_ary,
-          "Name"    => ["rootfs", @repo.name, @repo.tag, "image"].join("-"),
           "Image"   => @rootfs.img.id,
+          "Name"    => name,
+          "Env"     => env,
           "Volumes" => {
-            @tar_gz.to_s => {}, @copy.to_s => {}
+            @copy.to_s   => {},
+            @tar_gz.to_s => {}
           }
         }
       end
