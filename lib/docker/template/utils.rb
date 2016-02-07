@@ -10,7 +10,6 @@ module Docker
       autoload :Notify, "docker/template/utils/notify"
       autoload :Stringify, "docker/template/utils/stringify"
       autoload :Context, "docker/template/utils/context"
-      autoload :System, "docker/template/utils/system"
       autoload :Data, "docker/template/utils/data"
     end
   end
