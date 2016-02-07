@@ -35,10 +35,41 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # rubocop:disable Lint/RescueException
+
+      desc "list", "List all possible builds."
+      option :grep, :type => :boolean, :desc => "Make --only a Regexp search."
+      option :only, :type => :string,  :desc => "Only a specific repo."
+
+      def list
+        Parser.new([], {}).parse.each do |repo, repo_s = repo.to_s.gsub(/^[^\/]+\//, "")|
+          $stdout.puts repo_s if only.is_a?(Regexp) && repo_s =~ only
+          $stdout.puts repo_s if only && repo_s == only
+          $stdout.puts repo_s unless only
+        end
+      end
+
       # ----------------------------------------------------------------------
 
       no_tasks do
+        def only
+          return @only ||= begin
+            if !options.grep?
+              then options[
+                :only
+              ]
+
+            elsif options.only?
+              Regexp.new(options[
+                :only
+              ])
+            end
+          end
+        end
+
+        # --------------------------------------------------------------------
+        # rubocop:disable Lint/RescueException
+        # --------------------------------------------------------------------
+
         def with_profiling
           if options.profile?
             require "memory_profiler"
