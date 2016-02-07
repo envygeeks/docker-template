@@ -7,7 +7,7 @@
 module Docker
   module Template
     module Error
-      StandardError = Class.new(StandardError)
+      autoload :StandardError, "docker/template/error/standard_error"
       autoload :BadRepoName, "docker/template/error/bad_repo_name"
       autoload :NoHookExists, "docker/template/error/no_hook_exists"
       autoload :BadExitStatus, "docker/template/error/bad_exit_status"
