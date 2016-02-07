@@ -42,15 +42,32 @@ module Docker
 
       def list
         Parser.new([], {}).parse.each do |repo, repo_s = repo.to_s.gsub(/^[^\/]+\//, "")|
-          $stdout.puts repo_s if only.is_a?(Regexp) && repo_s =~ only
-          $stdout.puts repo_s if only && repo_s == only
-          $stdout.puts repo_s unless only
+          next unless (only.is_a?(Regexp) && repo_s =~ only) || (only && repo_s == only) || !only
+          $stdout.print repo_s
+          output_repo_alias(
+            repo
+          )
         end
       end
 
       # ----------------------------------------------------------------------
 
       no_tasks do
+        def output_repo_alias(repo)
+          if repo.alias?
+            $stdout.print " -> "
+            repo_s = Repo.new(repo.to_h.merge({
+              "tag" => repo.metadata.aliased
+            })).to_s
+
+            $stdout.print(
+              repo_s, "\n"
+            )
+          else
+            $stdout.puts
+          end
+        end
+
         def only
           return @only ||= begin
             if !options.grep?
