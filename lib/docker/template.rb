@@ -92,7 +92,9 @@ module Docker
 
     def template_root
       @template_root ||= begin
-        gem_root.join("lib/docker/template/templates")
+        gem_root.join(
+          "templates"
+        )
       end
     end
 
