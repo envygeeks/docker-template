@@ -43,16 +43,18 @@ module Docker
       # ----------------------------------------------------------------------
 
       def api(part, *_)
+        stream = JSON.parse(part)
         retried ||= false
 
-        stream = JSON.parse(part)
         return progress_bar(stream) if stream.any_keys?("progress", "progressDetail")
         return output(stream["status"] || stream["stream"]) if stream.any_keys?("status", "stream")
         return progress_error(stream) if stream.any_keys?("errorDetail", "error")
 
-        warn Object::Simple::Ansi.red("Unhandled stream message")
-        $stderr.puts Object::Simple::Ansi.red("Please file a bug ticket.")
-        $stdout.puts part
+        warn Object::Simple::Ansi.red("Unhandled Stream.")
+        $stdout.puts(
+          part
+        )
+
       rescue JSON::ParserError => e
         if !retried
           retried = true

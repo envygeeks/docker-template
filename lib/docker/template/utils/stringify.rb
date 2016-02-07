@@ -24,7 +24,7 @@ module Docker
 
         # --------------------------------------------------------------------
         # Stringify a hash and it' keys, unless it's an allowed value type.
-        # @param [Hash] hsh the hash to be converted.
+        # @param hsh [Hash] the hash to be converted.
         # --------------------------------------------------------------------
 
         def hash(hsh)
@@ -35,7 +35,7 @@ module Docker
 
         # --------------------------------------------------------------------
         # Stringify an Array's keys, unless it's an allow value type.
-        # @param [Array] ary the array to be converted.
+        # @param ary [Array] the array to be converted.
         # --------------------------------------------------------------------
 
         def array(ary)
@@ -47,7 +47,9 @@ module Docker
         # --------------------------------------------------------------------
 
         def set(set)
-          return Set.new(array(set))
+          return Set.new(array(
+            set
+          ))
         end
 
         # --------------------------------------------------------------------
@@ -64,11 +66,13 @@ module Docker
         # --------------------------------------------------------------------
 
         def convert(object)
-          return hash(object) if object.is_a?(Hash)
-          return array(object) if object.is_a?(Array)
-          return set(object) if object.is_a?(Set)
-          return object.to_s unless allowed?(object)
-          object
+          if object.is_a?(Hash) then hash(object)
+            elsif object.is_a?(Array) then array(object)
+            elsif object.is_a?(Set) then set(object)
+            elsif !allowed?(object) then object.to_s
+          else
+            object
+          end
         end
       end
     end

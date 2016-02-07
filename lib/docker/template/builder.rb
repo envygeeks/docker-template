@@ -32,7 +32,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def testing?
-        @repo.metadata["mocking"] || @repo.metadata["testing"]
+        @repo.metadata["mocking"] || @repo.metadata[
+          "testing"
+        ]
       end
 
       # ----------------------------------------------------------------------
@@ -99,17 +101,20 @@ module Docker
 
       def push
         return if rootfs? || !@repo.pushable?
-        Utils::Notify.push(self)
+        Utils::Notify.push self
+        unless testing?
+          auth!
+        end
 
-        auth! unless testing?
         img = @img || Docker::Image.get(@repo.to_s)
         img.push(&Logger.new.method(
           :api
         ))
 
       rescue Docker::Error::NotFoundError
-        $stderr.puts Simple::Ansi.red "Image does not exist, " \
-          "unpushable."
+        $stderr.puts Simple::Ansi.red(
+          "Image does not exist, unpushable."
+        )
       end
 
       # ----------------------------------------------------------------------
@@ -160,7 +165,9 @@ module Docker
         if @repo.buildable?
           aliased = self.class.new(aliased_repo)
           aliased.build unless aliased_img
-          Utils::Notify.alias(self)
+          Utils::Notify.alias(
+            self
+          )
 
           aliased_img.tag(
             @repo.to_tag_h

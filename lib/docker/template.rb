@@ -92,9 +92,7 @@ module Docker
 
     def template_root
       @template_root ||= begin
-        gem_root.join(
-          "templates"
-        )
+        gem_root.join("templates")
       end
     end
 
@@ -107,7 +105,11 @@ module Docker
     def get(name, data = {})
       data = Utils::Data.new(data)
       template = template_root.join("#{name}.erb").read
-      ERB.new(template).result(data._binding)
+      template = ERB.new(template)
+
+      return template.result(
+        data._binding
+      )
     end
   end
 end
