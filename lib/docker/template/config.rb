@@ -37,7 +37,6 @@ module Docker
 
       DEFAULTS = {
         "build" => true,
-        "keep_rootfs" => false,
         "log_filters" => [],
         "push" => false,
         "sync" => false,

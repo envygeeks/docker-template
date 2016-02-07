@@ -150,10 +150,26 @@ describe Docker::Template::Scratch do
   #
 
   describe "#build_context" do
+    before do
+      allow_any_instance_of(Docker::Template::Rootfs).to receive(:build).and_return(
+        nil
+      )
+    end
+
     after do |ex|
       unless ex.metadata[:nobuild]
-        subject.send :build_context
+        subject.send(
+          :build_context
+        )
       end
+    end
+
+    #
+
+    it "should build the rootfs context" do
+      expect(subject.rootfs).to receive(
+        :build
+      )
     end
 
     #
@@ -161,6 +177,14 @@ describe Docker::Template::Scratch do
     it "should stop the rootfs container once it's done" do
       expect(container_mock).to receive(
         :stop
+      )
+    end
+
+    #
+
+    it "should cleanup the rootfs image" do
+      expect(subject.rootfs).to receive(
+        :cleanup
       )
     end
 

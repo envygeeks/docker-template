@@ -1,7 +1,4 @@
 FROM <%= @rootfs_base_img %>
-RUN apt-get update && apt-get install --no-install-recommends -yf \
-    xz-utils git ca-certificates wget
-
 COPY copy /
 ENTRYPOINT [ \
   "/usr/local/bin/mkimg" \

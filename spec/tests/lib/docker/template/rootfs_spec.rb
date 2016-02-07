@@ -110,39 +110,6 @@ RSpec.describe Docker::Template::Rootfs do
           })
         end
       end
-
-      #
-
-      context "when metadata['keep_rootfs'] = true" do
-        before do
-          user_metadata.merge({
-            "keep_rootfs" => true
-          })
-        end
-
-        #
-
-        let :user_metadata do
-          subject.instance_variable_get(:@repo).metadata
-        end
-
-        #
-
-        it "should not delete the rootfs img" do
-          expect(image_mock).not_to receive(
-            :delete
-          )
-        end
-
-        #
-
-        after do
-          subject.cleanup
-          user_metadata.merge({
-            "keep_rootfs" => false
-          })
-        end
-      end
     end
   end
 

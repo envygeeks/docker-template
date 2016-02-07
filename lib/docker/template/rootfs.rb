@@ -8,13 +8,6 @@ module Docker
   module Template
     class Rootfs < Builder
       extend Forwardable::Extended
-      rb_delegate :keep?, {
-        :key => :keep_rootfs,
-        :to => :"@repo.metadata",
-        :type => :hash
-      }
-
-      # ----------------------------------------------------------------------
 
       def data
         Template.get(:rootfs, {
@@ -38,7 +31,7 @@ module Docker
 
       def cleanup(img: true)
         @context.rmtree if @context && @context.directory?
-        @img.delete "force" => true if @img && img && !keep? \
+        @img.delete "force" => true if @img && img \
           rescue nil
       end
 

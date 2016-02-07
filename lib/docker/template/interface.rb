@@ -21,16 +21,9 @@ module Docker
 
       def build(*args)
         repos = nil; with_profiling do
-          repos = Parser.new(args, options).parse
-          repos.map(&:build)
-        end
-      ensure
-        if repos
-          Set.new(repos.map { |repo| repo.builder.class }).map do |repo|
-            repo.cleanup if repo.respond_to?(
-              :cleanup
-            )
-          end
+          Parser.new(args, options).parse.map(
+            &:build
+          )
         end
       end
 

@@ -10,26 +10,11 @@ module Docker
       attr_reader :rootfs
 
       # ----------------------------------------------------------------------
-      # Stores and caches Rootfs images across multiple builds so if many
-      # imges use the same image they don't have to constantly rebuild causing
-      # an extreme inefficiency in the build system.
-      # ----------------------------------------------------------------------
 
-      def self.rootfs_for(repo)
-        (@rootfs ||= {})[repo.name] ||= begin
-          Rootfs.new(repo).tap(&:build)
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      def self.cleanup
-        return unless @rootfs
-        @rootfs.each do |_, rootfs|
-          rootfs.cleanup({
-            :img => true
-          })
-        end
+      def initialize(*args)
+        super; @rootfs = Rootfs.new(
+          repo
+        )
       end
 
       # ----------------------------------------------------------------------
@@ -86,7 +71,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def copy_cleanup
-        self.class.rootfs_for(@repo).simple_cleanup(
+        @rootfs.simple_cleanup(
           @copy
         )
       end
@@ -103,9 +88,7 @@ module Docker
 
       private
       def build_context
-        @rootfs ||= self.class.rootfs_for(@repo)
-
-        img = Container.create(create_args)
+        @rootfs.build; img = Container.create(create_args)
         img.start(start_args).attach(logger_opts, &Logger.new.method(logger_type))
         status = img.json["State"]["ExitCode"]
 
@@ -113,6 +96,8 @@ module Docker
           raise Error::BadExitStatus, status
         end
       ensure
+        @rootfs.cleanup
+
         if img
           then img.tap(&:stop).delete({
             "force" => true
