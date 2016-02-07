@@ -265,11 +265,8 @@ module Docker
 
       def to_s
         return to_env_str if mergeable_hash?
-        if mergeable_array?
-          return to_a.join(
-            " "
-          )
-        end
+        return to_a.join(" ") if mergeable_array?
+        return fallback.to_s if fallback?
 
         ""
       end
@@ -428,33 +425,10 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Provides a wrapper for common delegations through `rb_delegate`
-      # @note expects that `obj` will have a `fallback` and `fallback?`.
-      # @return [Object] the resulting value or it's fallback.
-      # ----------------------------------------------------------------------
 
       private
-      def fallbacks_wrapper(obj)
-        if obj.respond_to?(:fallback?) && obj.fallback?
-          return obj.fallback
-        end
-
-        obj
-      end
-
-      # ----------------------------------------------------------------------
-      # Provides a wrapper for common delegations through `rb_delegate`
-      # @note expects that `obj` will have a `mergeable` and `mergeable_*?`.
-      # @return [Object] the resulting value or it's merged `obj`.
-      # ----------------------------------------------------------------------
-
-      private
-      def mergeable_wrapper(obj)
-        if obj.respond_to?(:mergeable?) && obj.mergeable?
-          return obj.to_s
-        end
-
-        obj
+      def string_wrapper(obj)
+        obj.to_s
       end
 
       # ----------------------------------------------------------------------
@@ -463,25 +437,34 @@ module Docker
 
       private
       def method_missing(method, *args, &block)
-        return super if !args.empty? || block_given? || method !~ /\?$/
-        val = self[method.to_s.gsub(/\?$/, "")]
-        val != false && !val.nil? && \
-          !val.empty?
+        if !args.empty? || block_given? || (method !~ /\?$/ && !key?(method.to_s))
+          super
+
+        elsif method !~ /\?$/
+          self[method] \
+            .to_s
+
+        else
+          val = self[method.to_s.gsub(/\?$/, "")]
+          val != false && !val.nil? && \
+            !val.empty?
+        end
       end
 
       # ----------------------------------------------------------------------
       # Alias methods that act like one another, but can have different names.
       # ----------------------------------------------------------------------
 
-      rb_delegate :release,           :to => :self,  :type => :hash, :wrap => :fallbacks_wrapper
-      rb_delegate :entry,             :to => :self,  :type => :hash, :wrap => :fallbacks_wrapper
-      rb_delegate :version,           :to => :self,  :type => :hash, :wrap => :fallbacks_wrapper
-      rb_delegate :dev_pkgs,          :to => :self,  :type => :hash, :wrap => :mergeable_wrapper
-      rb_delegate :pkgs,              :to => :self,  :type => :hash, :wrap => :mergeable_wrapper
-      rb_delegate :env,               :to => :self,  :type => :hash, :wrap => :mergeable_wrapper
-      rb_delegate :tag,               :to => :self,  :type => :hash, :wrap => :fallbacks_wrapper
-      rb_delegate :root,              :to => :@root, :type => :ivar, :bool => true
+      rb_delegate :gems,              :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :release,           :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :entry,             :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :version,           :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :dev_pkgs,          :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :pkgs,              :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :env,               :to => :self,  :type => :hash, :wrap => :string_wrapper
+      rb_delegate :tag,               :to => :self,  :type => :hash, :wrap => :string_wrapper
       rb_delegate :for_all,           :to => :self,  :type => :hash, :key  => :all
+      rb_delegate :root,              :to => :@root, :type => :ivar, :bool => true
       rb_delegate :keys,              :to => :@metadata
       rb_delegate :size,              :to => :@metadata
       rb_delegate :values_at,         :to => :@metadata
