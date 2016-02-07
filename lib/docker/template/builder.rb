@@ -7,6 +7,10 @@
 module Docker
   module Template
     class Builder
+      extend Forwardable::Extended
+
+      # ----------------------------------------------------------------------
+
       attr_reader :repo
       attr_reader :context
       attr_reader :img
@@ -71,18 +75,6 @@ module Docker
       def scratch?
         @repo.type == "scratch" \
           && !rootfs?
-      end
-
-      # ----------------------------------------------------------------------
-      # Pull out the repository that this repository is an alias of.
-      # ----------------------------------------------------------------------
-
-      def aliased_repo
-        return @aliased_repo if @aliased_repo
-
-        Repo.new(@repo.to_h.merge({
-          "tag" => @repo.metadata.aliased
-        }))
       end
 
       # ----------------------------------------------------------------------
@@ -340,6 +332,12 @@ module Docker
           })
         end
       end
+
+      # ----------------------------------------------------------------------
+
+      rb_delegate :aliased_repo, {
+        :to => :repo, :alias_of => :aliased
+      }
     end
   end
 end

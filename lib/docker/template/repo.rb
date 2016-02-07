@@ -48,6 +48,16 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      def aliased
+        if alias?
+          self.class.new(to_h.merge({
+            "tag" => metadata.aliased
+          }))
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
       def builder
         return @builder ||= begin
           Template.const_get(type.capitalize).new(
@@ -154,7 +164,9 @@ module Docker
         else
           tags.each do |tag|
             hash = to_h.merge("tag" => tag)
-            set << self.class.new(hash, @cli_opts)
+            set << self.class.new(
+              hash, @cli_opts
+            )
           end
         end
         set

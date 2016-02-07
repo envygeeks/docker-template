@@ -64,6 +64,24 @@ describe Docker::Template::Repo do
 
   #
 
+  describe "#aliased" do
+    before do
+      mocked_repo.add_alias :world, :tag => :hello
+      mocked_repo.add_tag :hello, :group => :world
+      mocked_repo.with_repo_init({
+        :tag => :world
+      })
+    end
+
+    it "should pull out the aliased repo" do
+      expect(mocked_repo.to_repo.aliased.tag).to eq(
+        "hello"
+      )
+    end
+  end
+
+  #
+
   describe "#to_s" do
     context "when no type or type = :image" do
       context "without a user" do
