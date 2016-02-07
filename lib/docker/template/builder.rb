@@ -153,7 +153,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cleanup(*_)
-        $stdout.puts Ansi.red(
+        $stderr.puts Ansi.red(
           "#{__method__}: Not Implemented."
         )
       end
