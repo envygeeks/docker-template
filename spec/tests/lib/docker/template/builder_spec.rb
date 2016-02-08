@@ -11,8 +11,8 @@ describe Docker::Template::Builder do
   #
 
   after do |ex|
-    unless ex.metadata[:skip_cleanup]
-      subject.cleanup
+    unless ex.metadata[:skip_teardown]
+      subject.teardown
     end
   end
 
@@ -383,8 +383,8 @@ describe Docker::Template::Builder do
 
       #
 
-      it "should cleanup", :skip_cleanup => true do
-        expect(subject).to receive(:cleanup) \
+      it "should teardown", :skip_teardown => true do
+        expect(subject).to receive(:teardown) \
           .and_call_original
       end
 

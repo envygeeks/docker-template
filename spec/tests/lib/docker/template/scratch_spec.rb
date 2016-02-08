@@ -67,7 +67,7 @@ describe Docker::Template::Scratch do
     #
 
     after do
-      subject.cleanup
+      subject.teardown
     end
   end
 
@@ -91,13 +91,13 @@ describe Docker::Template::Scratch do
     #
 
     after do
-      subject.cleanup
+      subject.teardown
     end
   end
 
   #
 
-  describe "#cleanup" do
+  describe "#teardown" do
     before do
       silence_io do
         subject.build
@@ -116,7 +116,7 @@ describe Docker::Template::Scratch do
       #
 
       after do
-        subject.cleanup({
+        subject.teardown({
           :img => true
         })
       end
@@ -134,7 +134,7 @@ describe Docker::Template::Scratch do
       #
 
       before do
-        subject.cleanup
+        subject.teardown
       end
 
       #
@@ -182,9 +182,9 @@ describe Docker::Template::Scratch do
 
     #
 
-    it "should cleanup the rootfs image" do
+    it "should teardown the rootfs image" do
       expect(subject.rootfs).to receive(
-        :cleanup
+        :teardown
       )
     end
 

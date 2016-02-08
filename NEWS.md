@@ -25,6 +25,7 @@ project adheres to [Semantic Versioning](http://semver.org/).
 - Add Metadata helper `Docker::Template::Metadata#env`
 
 #### Changed
+- Change `Builder#cleanup` to `Builder#teardown`.
 - Make profiling a bit more readable.
 - Switch to completely dynamic test fixtures.
 - `copy/type/<type>` is not `copy/group/<group>`.

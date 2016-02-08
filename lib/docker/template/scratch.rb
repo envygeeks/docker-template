@@ -31,7 +31,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def cleanup(img: false)
+      def teardown(img: false)
         @copy.rm_rf if @copy
         @context.rm_rf if @context
         @tar_gz.rm_rf if @tar_gz
@@ -96,7 +96,7 @@ module Docker
           raise Error::BadExitStatus, status
         end
       ensure
-        @rootfs.cleanup
+        @rootfs.teardown
 
         if img
           then img.tap(&:stop).delete({

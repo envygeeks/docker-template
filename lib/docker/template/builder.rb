@@ -136,11 +136,11 @@ module Docker
 
         push
       rescue SystemExit => exit_
-        cleanup :img => true
+        teardown :img => true
         raise exit_
       ensure
         if !rootfs?
-          cleanup else cleanup({
+          teardown else teardown({
             :img => false
           })
         end
@@ -152,7 +152,7 @@ module Docker
       # up some stuff before exiting, use it... please.
       # ----------------------------------------------------------------------
 
-      def cleanup(*_)
+      def teardown(*_)
         $stderr.puts Ansi.red(
           "#{__method__}: Not Implemented."
         )

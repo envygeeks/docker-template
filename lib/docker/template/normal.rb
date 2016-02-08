@@ -7,7 +7,7 @@
 module Docker
   module Template
     class Normal < Builder
-      def cleanup(img: false)
+      def teardown(img: false)
         @img.delete "force" => true if @img && img
         @context.rmtree if @context && \
             @context.directory?

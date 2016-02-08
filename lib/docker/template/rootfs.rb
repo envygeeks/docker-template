@@ -29,7 +29,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def cleanup(img: true)
+      def teardown(img: true)
         @context.rmtree if @context && @context.directory?
         @img.delete "force" => true if @img && img \
           rescue nil

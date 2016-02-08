@@ -121,7 +121,7 @@ describe Docker::Template::Normal do
       #
 
       after do
-        subject.cleanup
+        subject.teardown
         subject.repo.metadata.merge({
           "cache" => false
         })
@@ -131,10 +131,10 @@ describe Docker::Template::Normal do
 
   #
 
-  describe "#cleanup" do
+  describe "#teardown" do
     before do
       subject.send :setup_context
-      subject.cleanup
+      subject.teardown
     end
 
     #
@@ -165,7 +165,7 @@ describe Docker::Template::Normal do
       #
 
       after do
-        subject.cleanup(img: true)
+        subject.teardown(img: true)
         subject.remove_instance_variable(:@img)
       end
     end
@@ -191,7 +191,7 @@ describe Docker::Template::Normal do
     #
 
     after do
-      subject.cleanup
+      subject.teardown
     end
   end
 end

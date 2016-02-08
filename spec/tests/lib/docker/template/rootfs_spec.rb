@@ -53,7 +53,7 @@ RSpec.describe Docker::Template::Rootfs do
 
     after do
       subject.send :copy_rootfs
-      subject.cleanup
+      subject.teardown
     end
 
     #
@@ -77,7 +77,7 @@ RSpec.describe Docker::Template::Rootfs do
 
   #
 
-  describe "#cleanup" do
+  describe "#teardown" do
     before do
       silence_io do
         subject.build
@@ -105,7 +105,7 @@ RSpec.describe Docker::Template::Rootfs do
         #
 
         after do
-          subject.cleanup({
+          subject.teardown({
             :img => true
           })
         end
