@@ -9,7 +9,7 @@ require "thor"
 module Docker
   module Template
     class CLI < Thor
-      desc "build <REPOS>", "Build all (or some) of your repostories"
+      desc "build [REPOS] [OPTS]", "Build all (or some) of your repostories"
       option :sync_only,  :type => :boolean, :desc => "Only sync your repositiries, don't build."
       option :push_only,  :type => :boolean, :desc => "Only push your repositories, don't build."
       option :profile,    :type => :boolean, :desc => "Profile Memory."
@@ -29,7 +29,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      desc "list", "List all possible builds."
+      desc "list [OPTS]", "List all possible builds."
       option :grep, :type => :boolean, :desc => "Make --only a Regexp search."
       option :only, :type => :string,  :desc => "Only a specific repo."
 
