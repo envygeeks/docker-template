@@ -9,10 +9,27 @@
 # ----------------------------------------------------------------------------
 
 ARGV.shift
+require "pathutil"
 require "msgpack"
+
+# ----------------------------------------------------------------------------
+
 list = MessagePack.unpack(File.read(File.expand_path(
   "comp-list.pak", __dir__
 )))
+
+# ----------------------------------------------------------------------------
+
+if ARGV.first == "build"
+  dir = Pathutil.new("repos").expand_path
+
+  if dir.directory?
+    list["build"] ||= { "_reply" => [] }
+    list["build"]["_reply"].push(*dir.children.map(
+      &:basename
+    ))
+  end
+end
 
 # ----------------------------------------------------------------------------
 # @param obj [Hash] the hash you wish to pull the `_reply` from.
