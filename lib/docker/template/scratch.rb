@@ -79,7 +79,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def verify_context
-        if @tar_gz.zero?
+        if @repo.buildable? && @tar_gz.zero?
           raise Error::InvalidTargzFile, @tar_gz
         end
       end
@@ -88,6 +88,7 @@ module Docker
 
       private
       def build_context
+        return unless @repo.buildable?
         @rootfs.build; img = Container.create(create_args)
         img.start(start_args).attach(logger_opts, &Logger.new.method(logger_type))
         status = img.json["State"]["ExitCode"]

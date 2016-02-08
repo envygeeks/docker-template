@@ -17,20 +17,6 @@ module Docker
       extend Forwardable::Extended
 
       # ----------------------------------------------------------------------
-
-      rb_delegate :build, :to => :builder
-      rb_delegate :complex_alias?, :to => :metadata
-      rb_delegate :type, :to => :metadata, :type => :hash
-      rb_delegate :user, :to => :metadata, :type => :hash
-      rb_delegate :name, :to => :metadata, :type => :hash
-      rb_delegate :tag,  :to => :metadata, :type => :hash
-      rb_delegate :pushable?,  :to => :metadata, :key => :push,  :type => :hash, :bool => true
-      rb_delegate :syncable?,  :to => :metadata, :key => :sync,  :type => :hash, :bool => true
-      rb_delegate :to_h, :to => :@base_metadata
-      rb_delegate :alias?, :to => :metadata
-      rb_delegate :tags,   :to => :metadata
-
-      # ----------------------------------------------------------------------
       # @param [Hash] cli_opts pretty much anything you want, it's dynamic.
       # @param [Hash] base_metadata { "name" => name, "tag" => tag }
       # ----------------------------------------------------------------------
@@ -47,9 +33,25 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      def pushable?
+        metadata["push"] || metadata[
+          "push_only"
+        ]
+      end
+
+      # ----------------------------------------------------------------------
+
+      def syncable?
+        metadata["sync"] || metadata[
+          "sync_only"
+        ]
+      end
+
+      # ----------------------------------------------------------------------
+
       def buildable?
-        !metadata["only_push"] && !metadata[
-          "only_sync"
+        !metadata["push_only"] && !metadata[
+          "sync_only"
         ]
       end
 
@@ -210,6 +212,18 @@ module Docker
           "TAG" => tag
         })
       end
+
+      # ----------------------------------------------------------------------
+
+      rb_delegate :build, :to => :builder
+      rb_delegate :complex_alias?, :to => :metadata
+      rb_delegate :type, :to => :metadata, :type => :hash
+      rb_delegate :user, :to => :metadata, :type => :hash
+      rb_delegate :name, :to => :metadata, :type => :hash
+      rb_delegate :tag,  :to => :metadata, :type => :hash
+      rb_delegate :to_h, :to => :@base_metadata
+      rb_delegate :alias?, :to => :metadata
+      rb_delegate :tags,   :to => :metadata
     end
   end
 end
