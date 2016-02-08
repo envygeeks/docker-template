@@ -16,7 +16,7 @@ describe Docker::Template::Utils::Notify do
         )
       end
 
-      expect(Simple::Ansi.has?(capture[:stdout])).to eq(
+      expect(Simple::Ansi.has?(capture[:stderr])).to eq(
         true
       )
     end
@@ -33,7 +33,7 @@ describe Docker::Template::Utils::Notify do
       end
 
       expect(capture).to include({
-        :stdout => %r!building:[:a-z\s]+/default:latest!i
+        :stderr => %r!building:[:a-z\s]+/default:latest!i
       })
     end
 
@@ -50,7 +50,7 @@ describe Docker::Template::Utils::Notify do
         #
 
         expect(capture).to include({
-          :stdout => %r!building[:a-z\s]+/rootfs:default!i
+          :stderr => %r!building[:a-z\s]+/rootfs:default!i
         })
       end
     end

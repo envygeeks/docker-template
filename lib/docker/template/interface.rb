@@ -37,9 +37,9 @@ module Docker
         Parser.new([], {}).parse.each do |repo, repo_s = repo.to_s.gsub(/^[^\/]+\//, "")|
           next unless (only.is_a?(Regexp) && repo_s =~ only) || (only && repo_s == only) || !only
 
-          $stdout.print repo.to_s
-          $stdout.print " -> ", repo.aliased.to_s, "\n" if repo.alias?
-          $stdout.puts unless repo.alias?
+          $stderr.print repo.to_s
+          $stderr.print " -> ", repo.aliased.to_s, "\n" if repo.alias?
+          $stderr.puts unless repo.alias?
         end
       end
 

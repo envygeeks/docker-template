@@ -39,7 +39,7 @@ describe Docker::Template::Logger do
 
   describe "#progress_bar" do
     subject do
-      log :stdout, {
+      log :stderr, {
         "progress" => "world",
         "id"       => "hello"
       }

@@ -90,11 +90,11 @@ module Docker
 
         return unless id
         before, diff = progress_diff(id)
-        $stdout.print before if before
+        $stderr.print before if before
         str = stream["progress"] || stream["status"]
         str = "#{id}: #{str}\r"
 
-        $stdout.print(Object::Simple::Ansi.jump(
+        $stderr.print(Object::Simple::Ansi.jump(
           str, diff
         ))
       end

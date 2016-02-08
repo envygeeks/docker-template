@@ -16,7 +16,7 @@ module Docker
         # --------------------------------------------------------------------
 
         def push(builder)
-          $stdout.puts Simple::Ansi.green(
+          $stderr.puts Simple::Ansi.green(
             "Pushing: #{builder.repo}"
           )
         end
@@ -30,7 +30,7 @@ module Docker
           repo = builder.repo
           aliased_repo = builder.aliased_repo
           msg = Simple::Ansi.green("Aliasing #{repo} -> #{aliased_repo}")
-          $stdout.puts msg
+          $stderr.puts msg
         end
 
         # --------------------------------------------------------------------
@@ -42,7 +42,7 @@ module Docker
         def build(repo, **kwd)
           img = repo.to_s(**kwd)
           msg = Simple::Ansi.green("Building: #{img}")
-          $stdout.puts msg
+          $stderr.puts msg
         end
       end
     end

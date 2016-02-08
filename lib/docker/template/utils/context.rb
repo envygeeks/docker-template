@@ -20,7 +20,7 @@ module Docker
           return unless context
 
           builder.repo.cache_dir.rm_rf
-          $stdout.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
+          $stderr.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
           cache_dir = builder.repo.cache_dir
           cache_dir.parent.mkdir_p
 
