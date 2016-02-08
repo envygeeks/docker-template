@@ -6,10 +6,8 @@ $LOAD_PATH.unshift(File.expand_path(
   "../lib", __FILE__
 ))
 
-require "msgpack"
-require "docker/template"
-require "rspec/core/rake_task"
 require "simple/ansi"
+require "rspec/core/rake_task"
 require "open3"
 
 # ----------------------------------------------------------------------------
@@ -132,6 +130,8 @@ end
 
 namespace :update do
   task "comp-list" do
+    require "msgpack"
+    require "docker/template"
     CompList.update
   end
 end
