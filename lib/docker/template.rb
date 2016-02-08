@@ -20,11 +20,10 @@ module Docker
 
     # ------------------------------------------------------------------------
 
-    autoload :Alias, "docker/template/alias"
     autoload :Builder, "docker/template/builder"
+    autoload :CLI, "docker/template/cli"
     autoload :Config, "docker/template/config"
     autoload :Error, "docker/template/error"
-    autoload :Interface, "docker/template/interface"
     autoload :Logger, "docker/template/logger"
     autoload :Metadata, "docker/template/metadata"
     autoload :Normal, "docker/template/normal"

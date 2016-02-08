@@ -8,7 +8,7 @@ require "thor"
 
 module Docker
   module Template
-    class Interface < Thor
+    class CLI < Thor
       desc "build <REPOS>", "Build all (or some) of your repostories"
       option :sync_only,  :type => :boolean, :desc => "Only sync your repositiries, don't build."
       option :push_only,  :type => :boolean, :desc => "Only push your repositories, don't build."
@@ -34,8 +34,10 @@ module Docker
       option :only, :type => :string,  :desc => "Only a specific repo."
 
       def list
-        Parser.new([], {}).parse.each do |repo, repo_s = repo.to_s.gsub(/^[^\/]+\//, "")|
-          next unless (only.is_a?(Regexp) && repo_s =~ only) || (only && repo_s == only) || !only
+        Parser.new([], {}).parse.each do |repo|
+          repo_s = repo_s = repo.to_s.gsub(/^[^\/]+\//, "")
+          next unless (only.is_a?(Regexp) && repo_s =~ only) \
+            || (only && repo_s == only) || !only
 
           $stderr.print repo.to_s
           $stderr.print " -> ", repo.aliased.to_s, "\n" if repo.alias?
