@@ -17,7 +17,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      COPY = [:setup_context, :copy_global, :simple_copy, :copy_all,
+      SETUP = [:setup_context, :copy_global, :simple_copy, :copy_all,
         :copy_group, :copy_tag, :copy_cleanup, :build_context,
           :verify_context, :cache_context].freeze
 
@@ -124,7 +124,7 @@ module Docker
       def build
         Simple::Ansi.clear if @repo.buildable?
         return build_alias if alias?
-        copy_prebuild_and_verify
+        setup
 
         if @repo.buildable?
           Utils::Notify.build(@repo, {
@@ -184,12 +184,12 @@ module Docker
       # ----------------------------------------------------------------------
 
       private
-      def copy_prebuild_and_verify
+      def setup
         unless respond_to?(:setup_context, true)
           raise Error::NoSetupContext
         end
 
-        COPY.map do |val|
+        SETUP.map do |val|
           if respond_to?(val, true)
             send(val)
           end

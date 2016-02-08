@@ -12,7 +12,7 @@ describe Docker::Template::Utils::Context do
 
   describe "#context" do
     before do
-      subject.send :copy_prebuild_and_verify
+      subject.send :setup
       silence_io do
         described_class.cache(
           subject, subject.context
