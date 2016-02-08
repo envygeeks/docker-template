@@ -25,7 +25,6 @@ module Docker
       rb_delegate :name, :to => :metadata, :type => :hash
       rb_delegate :tag,  :to => :metadata, :type => :hash
       rb_delegate :pushable?,  :to => :metadata, :key => :push,  :type => :hash, :bool => true
-      rb_delegate :buildable?, :to => :metadata, :key => :build, :type => :hash, :bool => true
       rb_delegate :syncable?,  :to => :metadata, :key => :sync,  :type => :hash, :bool => true
       rb_delegate :to_h, :to => :@base_metadata
       rb_delegate :alias?, :to => :metadata
@@ -44,6 +43,14 @@ module Docker
         @base_metadata = base_metadata.freeze
         raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
         raise Error::RepoNotFound, name unless root.exist?
+      end
+
+      # ----------------------------------------------------------------------
+
+      def buildable?
+        !metadata["only_push"] && !metadata[
+          "only_sync"
+        ]
       end
 
       # ----------------------------------------------------------------------

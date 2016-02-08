@@ -36,7 +36,6 @@ module Docker
       # ----------------------------------------------------------------------
 
       DEFAULTS = {
-        "build" => true,
         "log_filters" => [],
         "push" => false,
         "sync" => false,

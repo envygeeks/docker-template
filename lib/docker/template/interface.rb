@@ -10,8 +10,8 @@ module Docker
   module Template
     class Interface < Thor
       desc "build <REPOS>", "Build all (or some) of your repostories"
-      option "only-sync", :type => :boolean, :desc => "Only sync your repositiries, don't build."
-      option "only-push", :type => :boolean, :desc => "Only push your repositories, don't build."
+      option :sync_only,  :type => :boolean, :desc => "Only sync your repositiries, don't build."
+      option :push_only,  :type => :boolean, :desc => "Only push your repositories, don't build."
       option :profile,    :type => :boolean, :desc => "Profile Memory."
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
       option :push,       :type => :boolean, :desc => "Push Repo After Building."
