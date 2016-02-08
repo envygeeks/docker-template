@@ -8,12 +8,10 @@ rvm:
   - &ruby3 2.1.8
   - &jruby-previous jruby-9.0.4.0
   - &jruby jruby-9.0.5.0
-  - &rubyh ruby-head
 matrix:
   allow_failures:
     - rvm: *jruby
     - rvm: *jruby-previous
-    - rvm: *rubyh
 notifications:
   email:
     - jordon@envygeeks.io
