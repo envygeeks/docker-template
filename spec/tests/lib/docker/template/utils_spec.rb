@@ -5,23 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe String do
-  describe "#to_a" do
-    it "splits by spaces and returns the result as an array" do
-      expect("hello world".to_a).to eq %W(
-        hello world
-      )
-    end
-  end
-end
-
-describe Hash do
-  subject do
-    hash
-  end
-
-  #
-
+describe Docker::Template::Utils do
   let :hash do
     {
       :hello => :world,
@@ -31,18 +15,29 @@ describe Hash do
 
   #
 
-  describe "#any_keys?" do
-    it "should be true if all keys exist" do
-      expect(subject.any_keys?(:hello, :world)).to eq(
-        true
-      )
+  let :array do
+    [
+      :hello,
+      :world
+    ]
+  end
+
+  #
+
+  describe "#hash_has_any_keys?" do
+    context "when given an array object" do
+      it "should be true if any keys exist" do
+        expect(subject.any_keys?(array, :hello, :world)).to eq(
+          true
+        )
+      end
     end
 
     #
 
-    context "with an invalid key" do
-      it "should still return true if one key exists" do
-        expect(hash.any_keys?(:invalid, :hello)).to eq(
+    context "when given a hash object" do
+      it "should be true if any keys exist" do
+        expect(subject.any_keys?(hash, :hello, :world)).to eq(
           true
         )
       end
@@ -58,7 +53,7 @@ describe Hash do
         :world2 => 2
       }}
 
-      result = hash1.deep_merge(hash2)
+      result = subject.deep_merge(hash1, hash2)
       expect(result[:hello]).to include({
         :world2 => 2
       })

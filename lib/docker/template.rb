@@ -7,7 +7,6 @@
 require "docker"
 require "erb/context"
 require "forwardable/extended"
-require "docker/template/patches"
 require "simple/ansi"
 require "pathutil"
 require "set"
@@ -18,6 +17,7 @@ module Docker
 
     # ------------------------------------------------------------------------
 
+    autoload :Utils, "docker/template/utils"
     autoload :Repo, "docker/template/repo"
     autoload :Error, "docker/template/error"
     autoload :Logger, "docker/template/logger"

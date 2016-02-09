@@ -119,7 +119,7 @@ module Docker
       private
       def setup
         self.class.excon_timeouts
-        @config = DEFAULTS.deep_merge(read_config_from)
+        @config = Utils.deep_merge(DEFAULTS, read_config_from)
         @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
           oval.nil? || oval.empty?? nval : oval
         end.freeze

@@ -326,9 +326,9 @@ module Docker
 
       def to_set
         Set.new \
-          .merge(for_all.to_a) \
-          .merge(by_group.to_a) \
-          .merge(by_tag .to_a)
+          .merge(for_all.split(/\s+/)) \
+          .merge(by_group.split(/\s+/)) \
+          .merge(by_tag .split(/\s+/))
       end
 
       # ----------------------------------------------------------------------
