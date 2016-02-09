@@ -24,6 +24,38 @@ describe Docker::Template::Utils do
 
   #
 
+  describe "#split" do
+    context "when given an array" do
+      it "should just return what it got" do
+        expect(subject.split([:hello])).to eq [
+          :hello
+        ]
+      end
+    end
+
+    #
+
+    context "when given a string" do
+      it "should split it by spaces" do
+        expect(subject.split("hello world")).to eq [
+          "hello", "world"
+        ]
+      end
+    end
+
+    #
+
+    context "when given nil" do
+      it "should return a blank array" do
+        expect(subject.split(nil)).to eq [
+
+        ]
+      end
+    end
+  end
+
+  #
+
   describe "#hash_has_any_keys?" do
     context "when given an array object" do
       it "should be true if any keys exist" do
