@@ -274,9 +274,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def to_a
-        for_all.to_a | \
-          by_group.to_a | \
-          by_tag.to_a
+        Utils.split(for_all) | Utils.split(by_group) | Utils.split(
+          by_tag
+        )
       end
 
       # ----------------------------------------------------------------------
@@ -326,9 +326,9 @@ module Docker
 
       def to_set
         Set.new \
-          .merge(for_all.split(/\s+/)) \
-          .merge(by_group.split(/\s+/)) \
-          .merge(by_tag .split(/\s+/))
+          .merge(Utils.split(for_all)) \
+          .merge(Utils.split(by_group)) \
+          .merge(Utils.split(by_tag))
       end
 
       # ----------------------------------------------------------------------
