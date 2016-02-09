@@ -56,9 +56,9 @@ describe Docker::Template::Normal do
       #
 
       context do
-        it "should not call utils to copy it" do
-          expect(Docker::Template::Utils::Context).not_to receive(
-            :cache
+        it "should not call cache to copy it" do
+          expect(Docker::Template::Cache).not_to receive(
+            :context
           )
         end
 
@@ -103,8 +103,8 @@ describe Docker::Template::Normal do
       #
 
       context do
-        it "call the utils to copy it" do
-          expect(Docker::Template::Utils::Context).to receive(:cache).and_return(
+        it "should call the cache to copy it" do
+          expect(Docker::Template::Cache).to receive(:context).and_return(
             nil
           )
         end

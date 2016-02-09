@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe Docker::Template::Utils::Context do
+describe Docker::Template::Cache do
   include_context :repos
 
   #
@@ -14,7 +14,7 @@ describe Docker::Template::Utils::Context do
     before do
       subject.send :setup
       silence_io do
-        described_class.cache(
+        described_class.context(
           subject, subject.context
         )
       end

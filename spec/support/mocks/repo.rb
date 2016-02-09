@@ -354,7 +354,7 @@ module Mocks
 
     private
     def stringify(hash)
-      Docker::Template::Utils::Stringify.hash(
+      Docker::Template::Stringify.hash(
         hash
       )
     end

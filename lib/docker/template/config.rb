@@ -93,7 +93,7 @@ module Docker
           )
         end
 
-        Utils::Stringify.hash(
+        Stringify.hash(
           data
         )
       end

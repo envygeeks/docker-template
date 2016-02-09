@@ -101,7 +101,7 @@ module Docker
 
       def push
         return if rootfs? || !@repo.pushable?
-        Utils::Notify.push self
+        Notify.push self
         unless testing?
           auth!
         end
@@ -127,7 +127,7 @@ module Docker
         setup
 
         if @repo.buildable?
-          Utils::Notify.build(@repo, {
+          Notify.build(@repo, {
             :rootfs => rootfs?
           })
 
@@ -165,7 +165,7 @@ module Docker
         if @repo.buildable?
           aliased = self.class.new(aliased_repo)
           aliased.build unless aliased_img
-          Utils::Notify.alias(
+          Notify.alias(
             self
           )
 

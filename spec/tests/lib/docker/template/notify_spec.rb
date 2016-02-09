@@ -3,7 +3,7 @@
 # Encoding: utf-8
 
 require "rspec/helper"
-describe Docker::Template::Utils::Notify do
+describe Docker::Template::Notify do
   include_context :repos
 
   #

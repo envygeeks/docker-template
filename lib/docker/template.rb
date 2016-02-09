@@ -5,14 +5,12 @@
 # ----------------------------------------------------------------------------
 
 require "docker"
+require "erb/context"
 require "forwardable/extended"
-require "docker/template/patches/string"
-require "docker/template/patches/hash"
-require "docker/template/version"
+require "docker/template/patches"
 require "simple/ansi"
 require "pathutil"
 require "set"
-require "erb"
 
 module Docker
   module Template
@@ -20,18 +18,20 @@ module Docker
 
     # ------------------------------------------------------------------------
 
-    autoload :Builder, "docker/template/builder"
-    autoload :CLI, "docker/template/cli"
-    autoload :Config, "docker/template/config"
+    autoload :Repo, "docker/template/repo"
     autoload :Error, "docker/template/error"
     autoload :Logger, "docker/template/logger"
-    autoload :Metadata, "docker/template/metadata"
     autoload :Normal, "docker/template/normal"
     autoload :Parser, "docker/template/parser"
-    autoload :Repo, "docker/template/repo"
-    autoload :Rootfs, "docker/template/rootfs"
+    autoload :Builder, "docker/template/builder"
+    autoload :Metadata, "docker/template/metadata"
+    autoload :Stringify, "docker/template/stringify"
     autoload :Scratch, "docker/template/scratch"
-    autoload :Utils, "docker/template/utils"
+    autoload :Notify, "docker/template/notify"
+    autoload :Config, "docker/template/config"
+    autoload :Rootfs, "docker/template/rootfs"
+    autoload :Cache, "docker/template/cache"
+    autoload :CLI, "docker/template/cli"
 
     # ------------------------------------------------------------------------
     # Checks to see if the repository is the actual root of everything.
@@ -102,7 +102,7 @@ module Docker
     # ------------------------------------------------------------------------
 
     def get(name, data = {})
-      data = Utils::Data.new(data)
+      data = ERB::Context.new(data)
       template = template_root.join("#{name}.erb").read
       template = ERB.new(template)
 
