@@ -25,6 +25,10 @@ module Docker
             &:build
           )
         end
+      rescue Docker::Template::Error::StandardError => e
+        $stderr.puts Simple::Ansi.red(e.message)
+        exit e.respond_to?(:status) \
+          ? e.status : 1
       end
 
       # ----------------------------------------------------------------------
@@ -43,6 +47,10 @@ module Docker
           $stderr.print " -> ", repo.aliased.to_s, "\n" if repo.alias?
           $stderr.puts unless repo.alias?
         end
+      rescue Docker::Template::Error::StandardError => e
+        $stderr.puts Simple::Ansi.red(e.message)
+        exit e.respond_to?(:status) \
+          ? e.status : 1
       end
 
       # ----------------------------------------------------------------------
