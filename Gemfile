@@ -3,6 +3,8 @@
 # Encoding: utf-8
 
 source "https://rubygems.org"
+gem "extras", :github => "envygeeks/extras", :require => false # TODO: Make a Gem depend.
+gem "pathutil", :github => "envygeeks/pathutil", :require => false # TODO: Make a Gem depend.
 gem "rake", :require => false
 gemspec
 
@@ -13,6 +15,7 @@ group :test do
   gem "codeclimate-test-reporter", :require => false
   gem "rubocop", :github => "bbatsov/rubocop", :branch => :master, :require => false
   gem "luna-rubocop-formatters", :require => false
+  gem "benchmark-ips", :require => false
   gem "rspec-helpers", :require => false
   gem "cucumber", :require => false
 end

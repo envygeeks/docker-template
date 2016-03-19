@@ -23,8 +23,6 @@ Gem::Specification.new do |spec|
 
   spec.add_runtime_dependency("thor", "~> 0.19")
   spec.add_runtime_dependency("docker-api", "~> 1.24")
-  spec.add_runtime_dependency("forwardable-extended", "~> 2.4")
   spec.add_runtime_dependency("simple-ansi", "~> 1.0")
   spec.add_runtime_dependency("json", "~> 1.8")
-  spec.add_runtime_dependency("pathutil")
 end
