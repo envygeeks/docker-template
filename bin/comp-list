@@ -1,12 +1,12 @@
 #!/usr/bin/env ruby
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
-# @see https://envygeeks.io/2016/02/02/on-bash-complete-in-ruby/
 # Copyright: 2016 Jordon Bedwell - MIT License
 # Encoding: utf-8
-
 # ----------------------------------------------------------------------------
 # rubocop:disable Style/ElseAlignment
 # ----------------------------------------------------------------------------
+
 
 ARGV.shift
 require "pathutil"
@@ -32,11 +32,6 @@ if ARGV.first == "build"
 end
 
 # ----------------------------------------------------------------------------
-# @param obj [Hash] the hash you wish to pull the `_reply` from.
-# @param key [Any_] the string you are checking inside of the list.
-# Check if a key is included inside of given reply object.
-# @return TrueClass|FalseClass true|false
-# ----------------------------------------------------------------------------
 
 def key?(obj, key)
   obj["_reply"].include?(
@@ -45,24 +40,15 @@ def key?(obj, key)
 end
 
 # ----------------------------------------------------------------------------
-# Checks to see if the key is partially within an array.
-# @param obj [Hash] the hash you wish to pull the `_reply` from.
-# @param key [Any_] the string grepping out of the list.
-# @return TrueClass|FalseClass true|false
-# ----------------------------------------------------------------------------
 
 def contains?(obj, key)
-  result = obj["_reply"].grep(
-    /#{Regexp.escape(key)}/
-  )
+  result = obj["_reply"].grep(/#{Regexp.escape(
+    key
+  )}/)
 
   !result.empty?
 end
 
-# ----------------------------------------------------------------------------
-# Check if a key is an opt (argument).
-# @return TrueClass|FalseClass true|false
-# @param key [Any_] the key.
 # ----------------------------------------------------------------------------
 
 def opt?(key)

@@ -22,7 +22,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # A simple TTY stream that just prints out the data given it.
+      # A simple TTY stream that just prints out the data that it is given.
+      # This is the logger that most will use for most of their building.
       # ----------------------------------------------------------------------
 
       def tty(stream)
@@ -38,8 +39,7 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # A more complex streamer designed for the actual output of Docker.
-      # @param [String<JSON:Hash>] part the JSON part given.
+      # A more complex streamer designed for the actual output of the Docker.
       # ----------------------------------------------------------------------
 
       def api(part, *_)
@@ -55,6 +55,7 @@ module Docker
           part
         )
 
+      # Addresses a Docker 1.9 bug.
       rescue JSON::ParserError => e
         if !retried
           retried = true

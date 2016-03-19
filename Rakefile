@@ -1,11 +1,14 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 $LOAD_PATH.unshift(File.expand_path(
   "../lib", __FILE__
 ))
 
+# ----------------------------------------------------------------------------
 require "simple/ansi"
 require "rspec/core/rake_task"
 require "open3"
@@ -23,11 +26,12 @@ task :rubocop do
     "-f", "Luna::RuboCop::Formatters::Checks"
 end
 
-# ----------------------------------------------------------------------------
-# ----------------------------------------------------------------------------
-
 module CompList
   module_function
+
+  # --------------------------------------------------------------------------
+  # Update the pak file to have all the completions.
+  # --------------------------------------------------------------------------
 
   def update(data = get_commands, msgp = data.to_msgpack)
     pak_file.binwrite(
@@ -63,8 +67,6 @@ module CompList
   end
 
   # --------------------------------------------------------------------------
-  # Searches for, normalizes and finally duplicates (boolean) and adds options.
-  # --------------------------------------------------------------------------
 
   def add_opts(out, const)
     const.all_commands.each do |key, val, command = normalize_command(key)|
@@ -95,7 +97,7 @@ module CompList
   end
 
   # --------------------------------------------------------------------------
-  # Recursively pulls out and set's up your commands and their options.
+  # Recursively pulls out and set's up your commands and opts.
   # --------------------------------------------------------------------------
 
   def get_commands(const = Docker::Template::Interface)
@@ -115,8 +117,6 @@ module CompList
     )
   end
 
-  # --------------------------------------------------------------------------
-  # Pulls out the pak file so that you can write the final data to it.
   # --------------------------------------------------------------------------
 
   def pak_file

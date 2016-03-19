@@ -10,7 +10,6 @@ module Docker
       module_function
 
       # ----------------------------------------------------------------------
-      # @param [Normal,Rootfs] builder the builder being used.
       # Notify the user of a push that is happening.
       # ----------------------------------------------------------------------
 
@@ -21,7 +20,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # @param [Normal,Rootfs] builder the builder being used.
       # Notify the user that we are tag aliasing.
       # ----------------------------------------------------------------------
 
@@ -33,8 +31,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # @param [Repo] repo the repository currently being built.
-      # @param [Hash] *kwd keywords are passed directly to `repo#to_s`
       # Notify the user that we are building their repository.
       # ----------------------------------------------------------------------
 

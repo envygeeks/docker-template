@@ -10,9 +10,7 @@ module Docker
       module_function
 
       # ----------------------------------------------------------------------
-      # Cache the context into the cache directory for backups or otherwise.
-      # @param [Pathutil,Pathname] context the context currently built.
-      # @param [Pathutil,Pathname] builder the builder.
+      # Cache the context into the cache directory.
       # ----------------------------------------------------------------------
 
       def context(builder, context)
@@ -30,7 +28,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Search for the README file and copy it over to the cache if exists.
+      # Note: We normally expect but do not require you to have a README.
+      # Search for and copy the readme if available.
       # ----------------------------------------------------------------------
 
       def readme(builder)

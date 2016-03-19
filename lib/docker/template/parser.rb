@@ -11,17 +11,15 @@ module Docker
       SPLIT_REGEXP = /:|\//
       COLON_REGEXP = /:/
 
-      # ----------------------------------------------------------------------
-
       def initialize(raw_repos = [], argv = {})
         @raw_repos = raw_repos
         @argv = argv
       end
 
       # ----------------------------------------------------------------------
-      # Return raw_repos if you send us a list of repos you wish to build,
-      # otherwise we get the children of the repo folder and ship that off
-      # so you can build *every* repo, I don't know if you want that.
+      # Return `raw_repos` if you send us a list of repos you wish to build,
+      # otherwise we get the children of the repo folder and ship that off so
+      # you can build *every* repo, I don't know if you want that.
       # ----------------------------------------------------------------------
 
       def all
@@ -30,12 +28,11 @@ module Docker
         Template.repos_root.children.map do |path|
           path.basename.to_s
         end
+
       rescue Errno::ENOENT
         then raise Error::RepoNotFound
       end
 
-      # ----------------------------------------------------------------------
-      # Parse the given (via ARGV) repositories.
       # ----------------------------------------------------------------------
 
       def parse
@@ -48,8 +45,6 @@ module Docker
         out
       end
 
-      # ----------------------------------------------------------------------
-      # Parses: "name", "user/name", "name:tag", "user/name:tag"
       # ----------------------------------------------------------------------
 
       private

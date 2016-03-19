@@ -109,10 +109,8 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # @example mocked_repo.valid_layout?(:scratch, :simple) # => true
     # Determines if a type and layout are valid to use, AKA within the list.
-    # @param type the root key in `FS_LAYOUTS`
-    # @param layout the subkey in `FS_LAYOUTS`
+    # Example: mocked_repo.valid_layout?(:scratch, :simple) #=> true
     # ------------------------------------------------------------------------
 
     def valid_layout?(type, layout)
@@ -122,10 +120,10 @@ module Mocks
     # ------------------------------------------------------------------------
     # Initialize and write all of the files for a given layout, making it
     # possible to run `to_repo` and get back a valid repository to test.
-    # @param type the type of layout you wish to use.
-    # @param layout the layout you are using.
+    # type - the type of layout you wish to use.
+    # lyout - the layout you are using.
     #
-    # @example
+    # Example:
     #   mocked_repo.init({
     #     :type   => :normal,
     #     :layout => :complex
@@ -153,7 +151,7 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # Options being passed to `Repo` as mocked command-line interface args.
+    # Options being passed to `Repo`.
     # ------------------------------------------------------------------------
 
     def with_cli_opts(args)
@@ -175,8 +173,8 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # Write the hash data (`opts`) into the repos `opts.yml` file to mock.
-    # @example mocked_repo.with_opts(:hello => :world)
+    # Example: mocked_repo.with_opts(:hello => :world)
+    # Write the hash data into the repos `opts.yml`
     # ------------------------------------------------------------------------
 
     def with_opts(opts)
@@ -186,8 +184,6 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
-    # Pull a Docker image from the system and return the object representation.
     # ------------------------------------------------------------------------
 
     def to_img
@@ -202,8 +198,6 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # Initialize a repository to run mocks and tests against it.
-    # ------------------------------------------------------------------------
 
     def to_repo
       repo_dir
@@ -214,37 +208,17 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # Initialize a scratch image to run mocks and tests against it.
+    # to_rootfs, to_normal, to_scratch
     # ------------------------------------------------------------------------
 
-    def to_scratch
-      Docker::Template::Scratch.new(
-        to_repo
-      )
+    %W(Scratch Normal Rootfs).each do |k|
+      define_method "to_#{k.downcase}" do
+        Docker::Template.const_get(k).new(
+          to_repo
+        )
+      end
     end
 
-    # ------------------------------------------------------------------------
-    # Initialize a normal image to run mocks and tests against it.
-    # ------------------------------------------------------------------------
-
-    def to_normal
-      Docker::Template::Normal.new(
-        to_repo
-      )
-    end
-
-    # ------------------------------------------------------------------------
-    # Initialize a rootfs wrapper to run mocks and tests against it.
-    # ------------------------------------------------------------------------
-
-    def to_rootfs
-      Docker::Template::Rootfs.new(
-        to_repo
-      )
-    end
-
-    # ------------------------------------------------------------------------
-    # Empty out the repo root directory, leaving nothing in it's wake.
     # ------------------------------------------------------------------------
 
     def empty
@@ -257,9 +231,8 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # @example mocked_repo.mkdir("hello")
-    # @param dir the name of the directory you wish to create.
-    # Make an empty directory.
+    # Example: mocked_repo.mkdir("hello")
+    # Make an empty directory!
     # ------------------------------------------------------------------------
 
     def mkdir(dir)
@@ -268,9 +241,7 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # @example mocked_report.write("hello", "world")
-    # @param data the data that will be push into the file you created.
-    # @param file the name of the file you wish to create
+    # Example: mocked_rep.write("hello", "world")
     # Make a file and write data to it.
     # ------------------------------------------------------------------------
 
@@ -285,8 +256,7 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
-    # @example mocked_repo.touch("my_file")
-    # @param file the name of the file you wish to create.
+    # Example: mocked_repo.touch("my_file")
     # Create an empty file of your choosing.
     # ------------------------------------------------------------------------
 
@@ -297,7 +267,7 @@ module Mocks
 
     # ------------------------------------------------------------------------
     # Symlink a file within the current repository directory.
-    # @example mocked_repo.symlink("/etc", "etc")
+    # Example: mocked_repo.symlink("/etc", "etc")
     # ------------------------------------------------------------------------
 
     def symlink(target, name)
@@ -310,8 +280,7 @@ module Mocks
 
     # ------------------------------------------------------------------------
     # Delete a file from the current repository directory.
-    # @param file the name of the file you wish to delete out of the root.
-    # @example mocked_repo.delete("hello")
+    # Example: mocked_repo.delete("hello")
     # ------------------------------------------------------------------------
 
     def delete(file)
@@ -321,7 +290,7 @@ module Mocks
 
     # ------------------------------------------------------------------------
     # Link to a file outside of any known and recognized root.
-    # @example mocked_repo.symlink("/etc", "etc")
+    # Example: mocked_repo.symlink("/etc", "etc")
     # ------------------------------------------------------------------------
 
     def external_symlink(target, name)

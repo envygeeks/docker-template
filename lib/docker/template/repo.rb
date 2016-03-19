@@ -6,19 +6,9 @@
 
 module Docker
   module Template
-
-    # ------------------------------------------------------------------------
-    # * A repo is not an image but a parent name w/ a tag.
-    # * An image is the final result of a build on a repo, and is associated.
-    # * Think of an image as the binary of the source in the repo.
-    # ------------------------------------------------------------------------
-
     class Repo
       extend Forwardable::Extended
 
-      # ----------------------------------------------------------------------
-      # @param [Hash] cli_opts pretty much anything you want, it's dynamic.
-      # @param [Hash] base_metadata { "name" => name, "tag" => tag }
       # ----------------------------------------------------------------------
 
       def initialize(base_metadata = {}, cli_opts = {})
@@ -32,6 +22,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # Determines whether or not we should (or you should) push the repo.
+      # ----------------------------------------------------------------------
 
       def pushable?
         metadata["push"] || metadata[
@@ -39,6 +31,8 @@ module Docker
         ]
       end
 
+      # ----------------------------------------------------------------------
+      # Determines whether or not we should (or you should) sync the repo.
       # ----------------------------------------------------------------------
 
       def syncable?
@@ -48,6 +42,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # Determines whether or not we should (or you should) build the repo.
+      # ----------------------------------------------------------------------
 
       def buildable?
         !metadata["push_only"] && !metadata[
@@ -55,6 +51,9 @@ module Docker
         ]
       end
 
+      # ----------------------------------------------------------------------
+      # Pulls out the repo this repo is aliasing it, this happens when you
+      # when you set the tag in the "alias" section of your `opts.yml`.
       # ----------------------------------------------------------------------
 
       def aliased
@@ -66,6 +65,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # Initializes and returns the builder so that you can build the repo.
+      # ----------------------------------------------------------------------
 
       def builder
         return @builder ||= begin
@@ -76,9 +77,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # There is a difference between how we name normal images and how we
-      # name rootfs images, this way you can easily point them out when doing
-      # something like `docker images` that is... if you save the image.
+      # Convert the repo into it's final image name, however if you tell, us
+      # this is a rootfs build we will convert it into the rootfs name.
       # ----------------------------------------------------------------------
 
       def to_s(rootfs: false)
@@ -98,14 +98,18 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # The directory you store your image data in (by default `copy/`)
+      # The directory you store your image data in (by default `copy/`.)
       # ----------------------------------------------------------------------
 
       def copy_dir(*path)
         dir = metadata["copy_dir"]
-        root.join(dir, *path)
+        root.join(dir,
+          *path
+        )
       end
 
+      # ----------------------------------------------------------------------
+      # Give the full path of the root folder to this image in the repo dir.
       # ----------------------------------------------------------------------
 
       def root
@@ -114,8 +118,6 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
-      # This hash is mostly used for upstream work, not locally.
       # ----------------------------------------------------------------------
 
       def to_tag_h
@@ -127,8 +129,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # This hash is mostly used for upstream work, not locally.
-      # ----------------------------------------------------------------------
 
       def to_rootfs_h
         {
@@ -139,8 +139,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Allows you to create a tempoary directory with a prefix if you wish.
-      # ----------------------------------------------------------------------
 
       def tmpdir(*args, root: nil)
         args.unshift(user, name, tag)
@@ -149,8 +147,6 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
-      # Allows you to create a temporary file with a prefix if you wish.
       # ----------------------------------------------------------------------
 
       def tmpfile(*args, root: nil)
@@ -161,9 +157,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # If a tag was given then it returns [self] and if a tag was not
-      # sent it then goes on to detect the type and split itself accordingly
-      # returning multiple AKA all repos to be built.
+      # If a tag was given then it returns [self] and if a tag was not sent
+      # it then goes on to detect the type and split itself accordingly
+      # returning multiple, AKA all repos that should be built.
       # ----------------------------------------------------------------------
 
       def to_repos

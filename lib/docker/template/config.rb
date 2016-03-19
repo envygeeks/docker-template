@@ -6,13 +6,6 @@
 
 module Docker
   module Template
-
-    # ------------------------------------------------------------------------
-    # Configuration is a global version of meatadata, where anything
-    # that can be set on configuration can be optimized and stored globally
-    # in a opts.{json,yml} file in the current working directory.
-    # ------------------------------------------------------------------------
-
     class Config
       extend Forwardable::Extended
 

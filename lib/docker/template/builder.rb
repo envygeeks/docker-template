@@ -28,8 +28,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Allows you to disable actions if you wish during testing or mocking.
-      # ----------------------------------------------------------------------
 
       def testing?
         @repo.metadata["mocking"] || @repo.metadata[
@@ -38,8 +36,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # A simple copy happens when a user doesn't group up and organize their
-      # copy folder because they don't need relative data.
+      # Checks to see if this build is doing simple copies. A simple copy
+      # happens when a user doesn't group up and organize their copy folder
+      # because they don't need or want any relative data.
       # ----------------------------------------------------------------------
 
       def simple_copy?
@@ -50,7 +49,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # An alias happens when the user creates a tag via aliases in opts.
+      # Checks to see if this repository is an alias. This happens when the
+      # user has alised data inside of their configuration file.  At this point
+      # we will not only copy the parent's data but the aliased data.
       # ----------------------------------------------------------------------
 
       def alias?
@@ -80,8 +81,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Pull out the image that this repository is aliasing if it's an alias.
-      # ----------------------------------------------------------------------
 
       def aliased_img
         return unless alias?
@@ -95,8 +94,6 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
-      # Push an image up to Dockerhub or another provider after building.
       # ----------------------------------------------------------------------
 
       def push
@@ -117,8 +114,6 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
-      # Copy, prebuild, verify and then finally build and push the image.
       # ----------------------------------------------------------------------
 
       def build
@@ -147,9 +142,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # This method is a default reference.  It is called when when the
-      # image is done building or when there is an error and we need to clean
-      # up some stuff before exiting, use it... please.
+      # This method is a default reference.  It is called when the image is
+      # done building or when there is an error and we need to clean up some
+      # stuff before exiting, use it... please.
       # ----------------------------------------------------------------------
 
       def teardown(*_)
@@ -178,9 +173,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # The prebuild happens when a user has "build_context", which
-      # typically only happens with scratch, which will prebuild it's rootfs
-      # image so it can get to building it's actual image.
+      # The prebuild happens when a user has "setup_context", which typically
+      # only happens with scratch, which will prebuild it's rootfs image so
+      # it can get to building it's actual image.
       # ----------------------------------------------------------------------
 
       private
@@ -197,8 +192,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Chdir to the context directory and build the image (or context.)
-      # ----------------------------------------------------------------------
 
       private
       def chdir_build
@@ -210,21 +203,19 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # A default method that disables caching and informs the user as such.
-      # This method is a default reference: DO NOT REFERENCE SUPER.
-      # ----------------------------------------------------------------------
 
       private
       def cache_context
         if repo.syncable?
-          $stderr.puts Simple::Ansi.red("Context syncing not supported")
+          $stderr.puts Simple::Ansi.red(
+            "Context syncing not supported"
+          )
         end
       end
 
       # ----------------------------------------------------------------------
-      # The root can have it's own global copy directory shared across
-      # all repositories in your repo container directory so this encapsulates
-      # those. <root>/copy
+      # The root can have it's own global copy directory shared across all
+      # repos in your repo container dir so this encapsulates those.
       # ----------------------------------------------------------------------
 
       private
@@ -242,10 +233,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # When you have no tag, group, all, this is called a simple
-      # copy, and we will skip caring about the other types of copies and
-      # just do a direct copy of the copy root.
-      # <root>/<repo>/copy
+      # When you have no tag, group, all, this is called a simple copy, and
+      # we will skip caring about the other types of copies and just do a
+      # direct copy of the copy root. <root>/<repo>/copy.
       # ----------------------------------------------------------------------
 
       private
@@ -261,11 +251,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # <root>/<repo>/copy/tag/<tag> where tag is the container for
-      # holding data for specific tags, so that if a specific tag needs
-      # specific data it doesn't need to share it globally.
-      # *Not used with simple copy*
-      # ----------------------------------------------------------------------
 
       private
       def copy_tag
@@ -279,11 +264,6 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
-      # <root>/<repo>/copy/group/<group> where group is defined as
-      # the value in the tags key of your opts.yml, groups are like a
-      # set of tags that share common data.
-      # *Not used with simple copy*
       # ----------------------------------------------------------------------
 
       private
@@ -300,10 +280,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # <root>/<repo>/copy/all where it is shared local-globally in the
-      # current repo, but not across all the other repos.
-      # *Not used with simple copy*
-      # ----------------------------------------------------------------------
 
       private
       def copy_all
@@ -317,8 +293,6 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
-      # Read the credentials file for Docker and authenticate to push images.
       # ----------------------------------------------------------------------
 
       private

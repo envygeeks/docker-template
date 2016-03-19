@@ -14,8 +14,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Copy all the necessary files into the current context.
-      # ----------------------------------------------------------------------
 
       def setup_context
         @context = @repo.tmpdir
@@ -24,8 +22,6 @@ module Docker
         @copy.mkdir
       end
 
-      # ----------------------------------------------------------------------
-      # Copy the Dockerfile, first parsing it with ERB with the given data.
       # ----------------------------------------------------------------------
 
       private
@@ -37,8 +33,6 @@ module Docker
         context.write(data)
       end
 
-      # ----------------------------------------------------------------------
-      # Save the context into the `cache/` folder you designate.
       # ----------------------------------------------------------------------
 
       private

@@ -9,6 +9,8 @@ module Docker
     class Rootfs < Builder
       extend Forwardable::Extended
 
+      # ----------------------------------------------------------------------
+
       def data
         Template.get(:rootfs, {
           :rootfs_base_img => @repo.metadata["rootfs_base_img"]
@@ -16,7 +18,7 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # During a simple copy you store all the data (includin rootfs) data
+      # During a simple copy you store all the data (including rootfs) data
       # as a single unit, this helps us clean up data that is known to be for
       # just the rootfs image and remove it so it doesn't impact.
       # ----------------------------------------------------------------------
@@ -57,8 +59,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # When the user is doing a simple layout we detect inline mkimg.
-      # ----------------------------------------------------------------------
 
       private
       def simple_rootfs_copy
@@ -71,8 +71,6 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
-      # Check to see if the user has the mkimg at all and it's in context.
       # ----------------------------------------------------------------------
 
       private

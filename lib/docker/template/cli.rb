@@ -9,6 +9,11 @@ require "thor"
 module Docker
   module Template
     class CLI < Thor
+
+      # ----------------------------------------------------------------------
+      # docker-template build [repos [opts]]
+      # ----------------------------------------------------------------------
+
       desc "build [REPOS [OPTS]]", "Build all (or some) of your repostories"
       option :sync_only,  :type => :boolean, :desc => "Only sync your repositiries, don't build."
       option :push_only,  :type => :boolean, :desc => "Only push your repositories, don't build."
@@ -19,23 +24,30 @@ module Docker
       option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
       option :clean,      :type => :boolean, :desc => "Cleanup images after."
 
+      # ----------------------------------------------------------------------
+
       def build(*args)
-        repos = nil; with_profiling do
+        repos = nil
+
+        with_profiling do
           Parser.new(args, options).parse.map(
             &:build
           )
         end
       rescue Docker::Template::Error::StandardError => e
         $stderr.puts Simple::Ansi.red(e.message)
-        exit e.respond_to?(:status) \
-          ? e.status : 1
+        exit e.respond_to?(:status) ? e.status : 1
       end
 
+      # ----------------------------------------------------------------------
+      # docker-template list [options]
       # ----------------------------------------------------------------------
 
       desc "list [OPTS]", "List all possible builds."
       option :grep, :type => :boolean, :desc => "Make --only a Regexp search."
       option :only, :type => :string,  :desc => "Only a specific repo."
+
+      # ----------------------------------------------------------------------
 
       def list
         Parser.new([], {}).parse.each do |repo|
@@ -72,6 +84,7 @@ module Docker
         end
 
         # --------------------------------------------------------------------
+        # When a user wishes to profile their builds to see memory being used.
         # rubocop:disable Lint/RescueException
         # --------------------------------------------------------------------
 
@@ -86,7 +99,9 @@ module Docker
             yield
           end
         rescue LoadError
-          abort "Gem 'memory_profiler' not found."
+          $stderr.puts "The gem 'memory_profiler' wasn't found."
+          $stderr.puts "You can install it with `gem install memory_profiler'"
+          abort "Hope you install it so you can report back."
 
         rescue Exception
           raise unless $ERROR_POSITION

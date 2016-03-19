@@ -18,8 +18,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Pull and parse with ERB the Rootfs Docker template.
-      # ----------------------------------------------------------------------
 
       def data
         Template.get(:scratch, {
@@ -56,8 +54,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Copy the Dockerfile into the current context.
-      # ----------------------------------------------------------------------
 
       private
       def copy_dockerfile
@@ -66,8 +62,6 @@ module Docker
         dockerfile.write(data)
       end
 
-      # ----------------------------------------------------------------------
-      # This taps into the Rootfs image to ask it to cleanup it's stuff.
       # ----------------------------------------------------------------------
 
       def copy_cleanup
@@ -123,10 +117,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Create args are the arguments we use on Docker::Container.create.
-      # You'll notice that we have a volumes key, this key is only part of the
-      # shit that Docker puts us through, @see `#start_args`.
-      # ----------------------------------------------------------------------
 
       private
       def create_args
@@ -146,9 +136,6 @@ module Docker
         }
       end
 
-      # ----------------------------------------------------------------------
-      # Arguments used when doing Docker::Container#start.  This completes
-      # the volumes by binding them to the Docker instance.
       # ----------------------------------------------------------------------
 
       private

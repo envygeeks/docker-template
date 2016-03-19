@@ -34,16 +34,11 @@ module Docker
     autoload :CLI, "docker/template/cli"
 
     # ------------------------------------------------------------------------
-    # Checks to see if the repository is the actual root of everything.
-    # @note This happens when you do not have a repos folder.
-    # ------------------------------------------------------------------------
 
     def repo_is_root?
       root.join("copy").exist? && !root.join(config["repos_dir"]).exist?
     end
 
-    # ------------------------------------------------------------------------
-    # The configuration pulled from `opts.yml`
     # ------------------------------------------------------------------------
 
     def config
@@ -68,9 +63,6 @@ module Docker
       ])
     end
 
-    # ------------------------------------------------------------------------
-    # Pulls the repository root depending on the type of root folder.
-    # @param [String,Symbol] the name of the repo.
     # ------------------------------------------------------------------------
 
     def repo_root_for(name)
@@ -97,8 +89,6 @@ module Docker
 
     # ------------------------------------------------------------------------
     # Pull a `template` from the `template_root` to parse it's data.
-    # @param [String,Symbol] name the name of the template from templates/*
-    # @param data any data you wish to be encapsulated into it.
     # ------------------------------------------------------------------------
 
     def get(name, data = {})
