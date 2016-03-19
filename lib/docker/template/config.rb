@@ -11,17 +11,6 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      rb_delegate :has_default?, :to => :@config, :alias_of => :key?
-      rb_delegate :merge,        :to => :@config
-      rb_delegate :keys,         :to => :@config
-      rb_delegate :to_enum,      :to => :@config
-      rb_delegate :to_h,         :to => :@config
-      rb_delegate :key?,         :to => :@config
-      rb_delegate :each,         :to => :@config
-      rb_delegate :[],           :to => :@config
-
-      # ----------------------------------------------------------------------
-
       YAML_OPTS = {
         :whitelist_classes => [Regexp]
       }.freeze
@@ -43,32 +32,12 @@ module Docker
         "copy_dir" => "copy",
         "tag" => "latest",
         "clean" => true,
-        "tty" => false,
-
-        "env"      => { "tag" => {}, "group" => {}, "all" => nil },
-        "pkgs"     => { "tag" => {}, "group" => {}, "all" => nil },
-        "entries"  => { "tag" => {}, "group" => {}, "all" => nil },
-        "releases" => { "tag" => {}, "group" => {}, "all" => nil },
-        "versions" => { "tag" => {}, "group" => {}, "all" => nil },
-        "aliases"  => {},
-        "tags"     => {}
-      }.freeze
-
-      # ----------------------------------------------------------------------
-
-      EMPTY_DEFAULTS = {
-        "tags" => { "latest" => "normal" }.freeze
+        "tty" => false
       }.freeze
 
       # ----------------------------------------------------------------------
 
       def initialize
-        setup
-      end
-
-      # ----------------------------------------------------------------------
-
-      def reload
         setup
       end
 
@@ -86,14 +55,12 @@ module Docker
           )
         end
 
-        Stringify.hash(
-          data
-        )
+        data.stringify
       end
 
       # ----------------------------------------------------------------------
       # Set sane Excon defaults because Docker can sometimes be slow since
-      # 1.8 was released.  We don't want it to get in your way.
+      # 1.8 was released.  We don't want it to get in your way and block.
       # ----------------------------------------------------------------------
 
       def self.excon_timeouts(config = {}, default = 1440)
@@ -112,11 +79,24 @@ module Docker
       private
       def setup
         self.class.excon_timeouts
-        @config = Utils.deep_merge(DEFAULTS, read_config_from)
-        @config = @config.merge(EMPTY_DEFAULTS) do |_, oval, nval|
-          oval.nil? || oval.empty?? nval : oval
-        end.freeze
+        @config = DEFAULTS.deep_merge(
+          read_config_from
+        )
       end
+
+      # ----------------------------------------------------------------------
+
+      rb_delegate :merge,        :to => :@config
+      rb_delegate :keys,         :to => :@config
+      rb_delegate :to_enum,      :to => :@config
+      rb_delegate :deep_merge,   :to => :@config
+      rb_delegate :values,       :to => :@config
+      rb_delegate :to_h,         :to => :@config
+      rb_delegate :key?,         :to => :@config
+      rb_delegate :each,         :to => :@config
+      rb_delegate :[],           :to => :@config
+      rb_delegate :has_default?, :to => :@config, \
+        :alias_of => :key?
     end
   end
 end

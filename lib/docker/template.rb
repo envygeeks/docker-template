@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "docker"
+require "extras/all"
 require "erb/context"
 require "forwardable/extended"
 require "simple/ansi"
@@ -25,7 +26,6 @@ module Docker
     autoload :Parser, "docker/template/parser"
     autoload :Builder, "docker/template/builder"
     autoload :Metadata, "docker/template/metadata"
-    autoload :Stringify, "docker/template/stringify"
     autoload :Scratch, "docker/template/scratch"
     autoload :Notify, "docker/template/notify"
     autoload :Config, "docker/template/config"

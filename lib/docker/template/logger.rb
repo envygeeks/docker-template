@@ -46,11 +46,11 @@ module Docker
         stream = JSON.parse(part)
         retried ||= false
 
-        return progress_bar(stream) if Utils.any_keys?(stream, "progress", "progressDetail")
-        return output(stream["status"] || stream["stream"]) if Utils.any_keys?(stream, "status", "stream")
-        return progress_error(stream) if Utils.any_keys?(stream, "errorDetail", "error")
+        return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
+        return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
+        return progress_error(stream) if stream.any_key?("errorDetail", "error")
 
-        warn Object::Simple::Ansi.red("Unhandled Stream.")
+        warn Simple::Ansi.red("Unhandled Stream.")
         $stdout.puts(
           part
         )

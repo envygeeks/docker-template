@@ -65,8 +65,6 @@ module Mocks
     attr_reader :root
 
     # ------------------------------------------------------------------------
-    # @param context the context you are in.  Ship `:cucumber` if in Cucumber.
-    # ------------------------------------------------------------------------
 
     def initialize(context)
       @original_pwd = Dir.pwd
@@ -155,9 +153,9 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def with_cli_opts(args)
-      @hashes[:cli].deep_merge!(stringify(
-        args
-      ))
+      @hashes[:cli] = @hashes[:cli].deep_merge(
+        args.stringify
+      )
 
       self
     end
@@ -165,9 +163,9 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def with_repo_init(hash)
-      @hashes[:init] = Docker::Template::Utils.deep_merge(@hashes[:init], stringify(
-        hash
-      ))
+      @hashes[:init] = @hashes[:init].deep_merge(
+        hash.stringify
+      )
 
       self
     end
@@ -179,7 +177,7 @@ module Mocks
 
     def with_opts(opts)
       @hashes[:opts] ||= Docker::Template.config.read_config_from(repo_dir)
-      @hashes[:opts]   = Docker::Template::Utils.deep_merge(@hashes[:opts], stringify(opts))
+      @hashes[:opts]   = @hashes[:opts].deep_merge(opts.stringify)
       repo_dir.join("opts.yml").write(@hashes[:opts].to_yaml)
       self
     end
@@ -314,15 +312,6 @@ module Mocks
 
     def teardown
       @root.rm_rf
-    end
-
-    # ------------------------------------------------------------------------
-
-    private
-    def stringify(hash)
-      Docker::Template::Stringify.hash(
-        hash
-      )
     end
 
     # ------------------------------------------------------------------------
