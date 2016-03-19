@@ -9,8 +9,10 @@ $LOAD_PATH.unshift(File.expand_path(
 ))
 
 # ----------------------------------------------------------------------------
+
 require "simple/ansi"
 require "rspec/core/rake_task"
+require "luna/rubocop/rake/task"
 require "open3"
 
 # ----------------------------------------------------------------------------
@@ -20,11 +22,6 @@ RSpec::Core::RakeTask.new :spec
 task :test => :spec
 
 # ----------------------------------------------------------------------------
-
-task :rubocop do
-  sh "bundle", "exec", "rubocop", "-DE", "-r", "luna/rubocop/formatters/checks", \
-    "-f", "Luna::RuboCop::Formatters::Checks"
-end
 
 module CompList
   module_function
