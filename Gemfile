@@ -1,6 +1,8 @@
+# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+# ----------------------------------------------------------------------------
 
 source "https://rubygems.org"
 gem "extras", :github => "envygeeks/extras", :require => false # TODO: Make a Gem depend.
