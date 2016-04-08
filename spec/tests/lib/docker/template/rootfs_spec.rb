@@ -55,24 +55,6 @@ RSpec.describe Docker::Template::Rootfs do
       subject.send :copy_rootfs
       subject.teardown
     end
-
-    #
-
-    context "when simple_copy?" do
-      before do
-        allow(subject).to receive(:simple_copy?).and_return(
-          true
-        )
-      end
-
-      #
-
-      it "should do a simple copy" do
-        expect(subject).to receive(:simple_rootfs_copy).and_return(
-          nil
-        )
-      end
-    end
   end
 
   #
@@ -110,24 +92,6 @@ RSpec.describe Docker::Template::Rootfs do
           })
         end
       end
-    end
-  end
-
-  #
-
-  context "when no mkimg exists", :layout => :simple, :type => :scratch do
-    before do
-      mocked_repo.delete(
-        "copy/usr/local/bin/mkimg"
-      )
-    end
-
-    #
-
-    it "should raise an error" do
-      expect { silence_io { subject.build }}.to raise_error(
-        Docker::Template::Error::NoRootfsMkimg
-      )
     end
   end
 end

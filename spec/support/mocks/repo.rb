@@ -11,54 +11,39 @@ module Mocks
     extend Forwardable::Extended
 
     FS_LAYOUTS = {
-      :normal => {
-        :simple => [
-          [:mkdir, "copy"],
-          [:write, "copy/usr/local/bin/hello", "world"],
-          [:touch, "Dockerfile"],
-          [:with_opts, {}]
-        ],
+      :normal => [
+        [:mkdir, "../../copy"],
+        [:mkdir, "copy"],
+        [:mkdir, "copy/all"],
+        [:mkdir, "copy/tag/latest"],
+        [:mkdir, "copy/group/normal"],
+        [:write, "copy/all/usr/local/bin/hello", "world"],
+        [:touch, "Dockerfile"],
+        [:with_opts, {}]
+      ],
 
-        :complex => [
-          [:mkdir, "../../copy"],
-          [:mkdir, "copy"],
-          [:mkdir, "copy/all"],
-          [:mkdir, "copy/tag/latest"],
-          [:mkdir, "copy/group/normal"],
-          [:write, "copy/all/usr/local/bin/hello", "world"],
-          [:touch, "Dockerfile"],
-          [:with_opts, {}]
-        ]
-      },
-
-      :scratch => {
-        :simple => [
-          [:mkdir, "copy"],
-          [:write, "copy/usr/local/bin/hello", "world"],
-          [:write, "copy/usr/local/bin/mkimg", "hello"],
-          [:with_opts, {}]
-        ],
-
-        :complex => [
-          [:mkdir, "../../copy"],
-          [:mkdir, "copy"],
-          [:mkdir, "copy/all"],
-          [:mkdir, "copy/tag/latest"],
-          [:mkdir, "copy/group/normal"],
-          [:write, "copy/all/usr/local/bin/hello", "world"],
-          [:write, "copy/rootfs/usr/local/bin/mkimg", "hello"],
-          [:with_opts, {}]
-        ]
-      }
+      :scratch => [
+        [:mkdir, "../../copy"],
+        [:mkdir, "copy"],
+        [:mkdir, "copy/all"],
+        [:mkdir, "copy/tag/latest"],
+        [:mkdir, "copy/group/normal"],
+        [:write, "copy/all/usr/local/bin/hello", "world"],
+        [:write, "rootfs.erb", "hello"],
+        [:mkdir, "copy/rootfs/"],
+        [:with_opts, {}]
+      ]
     }
 
     # ------------------------------------------------------------------------
 
-    FS_LAYOUTS[:rootfs] = FS_LAYOUTS[:scratch]
-    FS_LAYOUTS.freeze
+    FS_LAYOUTS[:rootfs] = FS_LAYOUTS[
+      :scratch
+    ]
 
     # ------------------------------------------------------------------------
 
+    FS_LAYOUTS.freeze
     attr_reader :hashes
     attr_reader :original_pwd
     attr_reader :context
@@ -71,12 +56,12 @@ module Mocks
       @root = Pathutil.new(Dir.mktmpdir)
       @context = context
 
-      @hashes = {
+      @hashes = HashWithIndifferentAccess.new({
         :cli  => {},
         :init => {
-          "name" => "default"
+          :name => "default"
         }
-      }
+      })
 
     rescue
       if @root && @root.exist?
@@ -91,7 +76,7 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def add_tag(name, group: :normal)
-      return with_opts("tags" => {
+      return with_opts(:tags => {
         name => group
       })
     end
@@ -101,7 +86,7 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def add_alias(name, tag: :default)
-      return with_opts("aliases" => {
+      return with_opts(:aliases => {
         name => tag
       })
     end
@@ -111,8 +96,10 @@ module Mocks
     # Example: mocked_repo.valid_layout?(:scratch, :simple) #=> true
     # ------------------------------------------------------------------------
 
-    def valid_layout?(type, layout)
-      return FS_LAYOUTS.key?(type) && FS_LAYOUTS[type].key?(layout)
+    def valid_layout?(type)
+      return FS_LAYOUTS.key?(
+        type
+      )
     end
 
     # ------------------------------------------------------------------------
@@ -133,15 +120,15 @@ module Mocks
     #   File: /tmp/*/repos/*/opts.yml
     # ------------------------------------------------------------------------
 
-    def init(type: :normal, layout: :complex)
-      if !valid_layout?(type, layout)
-        raise ArgumentError, "Unknown type (#{type}) or " \
-          "layout (#{layout})"
+    def init(type: :normal)
+      if !valid_layout?(type)
+        raise ArgumentError, "Unknown layout type (#{
+          type
+        })"
 
       else
-        @simple = true if layout == :simple
-        FS_LAYOUTS[type][layout].each do |(method, *args)|
-          send method, *args
+        FS_LAYOUTS[type].each do |(m, *a)|
+          send m, *a
         end
 
         self
@@ -176,9 +163,12 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def with_opts(opts)
-      @hashes[:opts] ||= Docker::Template.config.read_config_from(repo_dir)
-      @hashes[:opts]   = @hashes[:opts].deep_merge(opts.stringify)
-      repo_dir.join("opts.yml").write(@hashes[:opts].to_yaml)
+      @hashes[:opts] ||= repo_dir.join(Docker::Template::Metadata::OPTS_FILE).read_yaml
+      @hashes[:opts] = @hashes[:opts].deep_merge(opts.stringify)
+      repo_dir.join("opts.yml").write(
+        @hashes[:opts].to_yaml
+      )
+
       self
     end
 
@@ -199,7 +189,6 @@ module Mocks
 
     def to_repo
       repo_dir
-
       Docker::Template::Repo.new(
         @hashes[:init].dup, @hashes[:cli].dup
       )
@@ -326,8 +315,7 @@ module Mocks
 
     private
     def repo_dir
-      rtn = @root if simple?
-      rtn = @root.join(Docker::Template.config["repos_dir"]).join(@hashes[:init]["name"]) if complex?
+      rtn = @root.join(Docker::Template::Metadata::DEFAULTS[:repos_dir], @hashes[:init][:name])
       rtn.mkdir_p unless rtn.exist? || emptied?
       rtn
     end
@@ -336,8 +324,6 @@ module Mocks
 
     alias clear empty
     rb_delegate :emptied?, :to => :@emptied, :type => :ivar, :bool => true
-    rb_delegate :complex?, :to => :@simple,  :type => :ivar, :bool => :reverse
-    rb_delegate :simple?,  :to => :@simple,  :type => :ivar, :bool => true
     rb_delegate :join,     :to => :@root
   end
 end

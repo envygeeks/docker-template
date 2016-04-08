@@ -36,11 +36,13 @@ describe Docker::Template::Builder do
   #
 
   describe "#alias?" do
-    it "should return false" do
+    it "should return false if the repository is not an alias" do
       expect(mocked_repo.to_normal.alias?).to eq(
         false
       )
     end
+
+    #
 
     context "when a simple alias" do
       before do
@@ -49,6 +51,8 @@ describe Docker::Template::Builder do
         )
       end
 
+      #
+
       it "should return true" do
         expect(mocked_repo.with_repo_init("tag" => "hello").to_normal.alias?).to eq(
           true
@@ -56,8 +60,11 @@ describe Docker::Template::Builder do
       end
     end
 
+    #
+
     context "when a complex alias" do
       before do
+        mocked_repo.with_repo_init "tag" => "hello"
         mocked_repo.add_alias "hello"
         mocked_repo.with_opts({
           "env" => {
@@ -70,8 +77,10 @@ describe Docker::Template::Builder do
         })
       end
 
+      #
+
       it "should return false" do
-        expect(mocked_repo.with_repo_init("tag" => "hello").to_normal.alias?).to eq(
+        expect(mocked_repo.to_normal.alias?).to eq(
           false
         )
       end
@@ -80,9 +89,113 @@ describe Docker::Template::Builder do
 
   #
 
+  describe "#rootfs?" do
+    it "should return true if it's a rootfs" do
+      expect(mocked_repo.to_rootfs.rootfs?).to eq(
+        true
+      )
+    end
+
+    #
+
+    context "when it's not a rootfs" do
+      it "should return false" do
+        expect(mocked_repo.to_normal.rootfs?).to eq(
+          false
+        )
+      end
+    end
+  end
+
+  #
+
+  describe "#normal?" do
+    it "should return true if it's a normal" do
+      expect(mocked_repo.to_normal.normal?).to eq(
+        true
+      )
+    end
+
+    #
+
+    context "when it's not normal" do
+      it "should return false" do
+        expect(mocked_repo.to_rootfs.normal?).to eq(
+          false
+        )
+      end
+    end
+  end
+
+  #
+
+  describe "#scratch?" do
+    context do
+      before do
+        mocked_repo.with_opts({
+          :type => :scratch
+        })
+      end
+
+      #
+
+      it "should return true if it's a scratch" do
+        expect(mocked_repo.to_scratch.scratch?).to eq(
+          true
+        )
+      end
+    end
+
+    context "when it's not a scratch" do
+      it "should return false" do
+        expect(mocked_repo.to_normal.scratch?).to eq(
+          false
+        )
+      end
+    end
+  end
+
+  #
+
+  describe "#aliased_img" do
+    context "when there is no alias" do
+      it "should return nothing" do
+        expect(mocked_repo.to_normal.aliased_img).to eq(
+          nil
+        )
+      end
+    end
+
+    #
+
+    context "when the image is an alias of another image" do
+      before do
+        mocked_repo.add_alias "world"
+        mocked_repo.with_repo_init({
+          "tag" => "world"
+        })
+      end
+
+      it "should try and pull the image" do
+        expect(Docker::Image).to receive(:get).and_return(
+          nil
+        )
+      end
+
+      #
+
+      after do
+        mocked_repo.to_normal \
+          .aliased_img
+      end
+    end
+  end
+
+  #
+
   describe "#push" do
     before do
-      subject.repo.metadata.merge({
+      subject.repo.metadata.merge!({
         "push" => true
       })
     end
@@ -91,7 +204,7 @@ describe Docker::Template::Builder do
 
     after do
       silence_io { subject.build }
-      subject.repo.metadata.merge({
+      subject.repo.metadata.merge!({
         "push" => false
       })
     end
@@ -126,7 +239,7 @@ describe Docker::Template::Builder do
 
     context "when push == false" do
       before do
-        subject.repo.metadata.merge({
+        subject.repo.metadata.merge!({
           "push" => false
         })
       end
@@ -175,8 +288,8 @@ describe Docker::Template::Builder do
 
       context "when it's a rootfs image" do
         it "should not copy", :type => :rootfs do
-          expect_any_instance_of(Pathutil).not_to receive(:safe_copy).and_return(
-            nil
+          expect_any_instance_of(Pathutil).not_to receive(
+            :safe_copy
           )
         end
       end
@@ -192,50 +305,12 @@ describe Docker::Template::Builder do
 
     #
 
-    describe "#simple_copy" do
-      it "should copy", :layout => :simple do
-        expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
-          nil
-        )
-      end
-
-      #
-
-      context "when !simple_copy?" do
-        it "should not copy", :layout => :complex do
-          expect_any_instance_of(Pathutil).not_to receive(
-            :safe_copy
-          )
-        end
-      end
-
-      #
-
-      after do
-        subject.send(
-          :simple_copy
-        )
-      end
-    end
-
-    #
-
     shared_examples :copy do
       context "when it's scratch" do
         it "should copy", :type => :scratch do
           expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
             nil
           )
-        end
-
-        #
-
-        context "when simple_copy?" do
-          it "should not copy", :layout => :simple, :type => :scratch do
-            expect_any_instance_of(Pathutil).not_to receive(
-              :safe_copy
-            )
-          end
         end
       end
 
@@ -246,16 +321,6 @@ describe Docker::Template::Builder do
           expect_any_instance_of(Pathutil).to receive(:safe_copy).and_return(
             nil
           )
-        end
-
-        #
-
-        context "when simple_copy?" do
-          it "should not copy", :type => :normal, :layout => :simple do
-            expect_any_instance_of(Pathutil).not_to receive(
-              :safe_copy
-            )
-          end
         end
       end
 
@@ -296,21 +361,25 @@ describe Docker::Template::Builder do
       end
     end
 
-    #
-
     describe "#copy_group" do
+      before do
+        subject.repo.metadata["tags"] = {
+          "latest" => "normal"
+        }
+      end
+
       after do
         subject.send(
           :copy_group
         )
       end
 
+      #
+
       it_behaves_like(
         :copy
       )
     end
-
-    #
 
     describe "#copy_all" do
       after do

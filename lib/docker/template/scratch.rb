@@ -21,8 +21,8 @@ module Docker
 
       def data
         Template.get(:scratch, {
-          :maintainer => @repo.metadata["maintainer"],
-          :entrypoint => @repo.metadata["entry"].fallback,
+          :entrypoint => @repo.metadata.entry,
+          :maintainer => @repo.metadata.maintainer,
           :tar_gz => @tar_gz.basename
         })
       end
@@ -83,7 +83,9 @@ module Docker
       private
       def build_context
         return unless @repo.buildable?
-        @rootfs.build; img = Container.create(create_args)
+        @rootfs.build
+
+        img = Container.create(create_args)
         img.start(start_args).attach(logger_opts, &Logger.new.method(logger_type))
         status = img.json["State"]["ExitCode"]
 
@@ -122,16 +124,29 @@ module Docker
       def create_args
         name = ["rootfs", @repo.name, @repo.tag, "image"].join("-")
         env  = @repo.to_env(:tar_gz => @tar_gz, :copy_dir => @copy)
-        env  = Metadata.new(env, :root => true).to_env_ary
 
         return {
+          "Env"     => env.to_a,
           "Tty"     => @repo.metadata["tty"],
           "Image"   => @rootfs.img.id,
           "Name"    => name,
-          "Env"     => env,
+
+          "HostConfig" => {
+            "Binds" => [
+              "#{@copy}:#{@copy}", "#{@tar_gz}:#{@tar_gz}"
+            ]
+          },
+
           "Volumes" => {
-            @copy.to_s   => {},
-            @tar_gz.to_s => {}
+            @copy.to_s   => {
+              "source" => @copy.to_s,
+              "destination" => @copy.to_s
+            },
+
+            @tar_gz.to_s => {
+              "source" => @tar_gz.to_s,
+              "destination" => @tar_gz.to_s
+            }
           }
         }
       end
@@ -141,9 +156,9 @@ module Docker
       private
       def start_args
         {
-          "Binds" => [
-            "#{@copy}:#{@copy}:ro", "#{@tar_gz}:#{@tar_gz}"
-          ]
+          # "Binds" => [
+          #   "#{@copy}:#{@copy}", "#{@tar_gz}:#{@tar_gz}"
+          # ]
         }
       end
     end

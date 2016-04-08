@@ -90,18 +90,25 @@ module Docker
 
         def with_profiling
           if options.profile?
-            require "memory_profiler"
-            MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
-              :to_file => "mem.txt"
-            })
+            begin
+              require "memory_profiler"
+              MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
+                :to_file => "mem.txt"
+              })
+            rescue LoadError
+              $stderr.puts "The gem 'memory_profiler' wasn't found."
+              $stderr.puts "You can install it with `gem install memory_profiler'"
+              abort "Hope you install it so you can report back."
+            end
 
           else
             yield
           end
-        rescue LoadError
-          $stderr.puts "The gem 'memory_profiler' wasn't found."
-          $stderr.puts "You can install it with `gem install memory_profiler'"
-          abort "Hope you install it so you can report back."
+
+        rescue Excon::Errors::SocketError
+          $stderr.puts "Unable to connect to your Docker Instance."
+          $stderr.puts "Are you absolutely sure that you have the Docker installed?"
+          abort "Unable to build your images."
 
         rescue Exception
           raise unless $ERROR_POSITION

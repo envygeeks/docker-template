@@ -13,6 +13,16 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      class PlaceHolderError < StandardError
+        def initialize(error)
+          super "PLACEHOLDER ERROR: %s" % (
+            error
+          )
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
       class BadExitStatus < StandardError
         attr_reader :status
 
@@ -84,7 +94,7 @@ module Docker
 
       class NoRootfsMkimg < StandardError
         def initialize
-          super "Unable to find a mkimg in your rootfs folder."
+          super "Unable to find rootfs.rb in your repo folder."
         end
       end
 

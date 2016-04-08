@@ -12,12 +12,20 @@ require "simple/ansi"
 require "pathutil"
 require "set"
 
+# ----------------------------------------------------------------------------
+
+Excon.defaults[ :read_timeout] = 1440
+Excon.defaults[:write_timeout] = 1440
+
+# ----------------------------------------------------------------------------
+
 module Docker
   module Template
     module_function
 
     # ------------------------------------------------------------------------
 
+    autoload :Notify, "docker/template/notify"
     autoload :Utils, "docker/template/utils"
     autoload :Repo, "docker/template/repo"
     autoload :Error, "docker/template/error"
@@ -27,25 +35,10 @@ module Docker
     autoload :Builder, "docker/template/builder"
     autoload :Metadata, "docker/template/metadata"
     autoload :Scratch, "docker/template/scratch"
-    autoload :Notify, "docker/template/notify"
-    autoload :Config, "docker/template/config"
     autoload :Rootfs, "docker/template/rootfs"
     autoload :Cache, "docker/template/cache"
+    autoload :Alias, "docker/template/alias"
     autoload :CLI, "docker/template/cli"
-
-    # ------------------------------------------------------------------------
-
-    def repo_is_root?
-      root.join("copy").exist? && !root.join(config["repos_dir"]).exist?
-    end
-
-    # ------------------------------------------------------------------------
-
-    def config
-      @config ||= begin
-        Config.new
-      end
-    end
 
     # ------------------------------------------------------------------------
 
@@ -53,20 +46,6 @@ module Docker
       @root ||= begin
         Pathutil.new(Dir.pwd)
       end
-    end
-
-    # ------------------------------------------------------------------------
-
-    def repos_root
-      root.join(config[
-        "repos_dir"
-      ])
-    end
-
-    # ------------------------------------------------------------------------
-
-    def repo_root_for(name)
-      repo_is_root?? root : repos_root.join(name)
     end
 
     # ------------------------------------------------------------------------
@@ -89,11 +68,13 @@ module Docker
 
     # ------------------------------------------------------------------------
     # Pull a `template` from the `template_root` to parse it's data.
+    # TODO: Rename this get template!
     # ------------------------------------------------------------------------
 
     def get(name, data = {})
       data = ERB::Context.new(data)
-      template = template_root.join("#{name}.erb").read
+      template = template_root.join("#{name}.erb").read unless name.is_a?(Pathutil)
+      template = name.read if name.is_a?(Pathutil)
       template = ERB.new(template)
 
       return template.result(

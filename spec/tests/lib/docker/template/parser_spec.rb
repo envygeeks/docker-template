@@ -127,10 +127,20 @@ describe Docker::Template::Parser do
 
       #
 
-      it "should output Templates" do
-        expect(subject.new(%w(default)).parse.first).to be_a(
-          Docker::Template::Repo
-        )
+      context do
+        before do
+          mocked_repo.with_opts({
+            :tags => {
+              "latest" => "normal"
+            }
+          })
+        end
+
+        it "should output Templates" do
+          expect(subject.new(%w(default)).parse.first).to be_a(
+            Docker::Template::Repo
+          )
+        end
       end
     end
   end

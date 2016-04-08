@@ -5,8 +5,6 @@
 # ----------------------------------------------------------------------------
 
 source "https://rubygems.org"
-gem "extras", :github => "envygeeks/extras", :require => false # TODO: Make a Gem depend.
-gem "pathutil", :github => "envygeeks/pathutil", :require => false # TODO: Make a Gem depend.
 gem "rake", :require => false
 gemspec
 

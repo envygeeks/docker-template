@@ -1,0 +1,76 @@
+#!/bin/sh
+[ "$DEBUG" ] && set -x
+set -e
+
+arch=$(uname -i)
+rootfs=$(mktemp -d)
+partner_url="https://partner-images.canonical.com/core"
+dpkg_arch=$(dpkg --print-architecture)
+tmp=$(mktemp -d)
+
+cd $tmp
+gpg  --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
+sudo apt-get update && sudo apt-get install --no-install-recommends -y wget
+wget -nv $partner_url/<%= @metadata.release %>/current/SHA256SUMS.gpg
+wget -nv $partner_url/<%= @metadata.release %>/current/SHA256SUMS
+gpg --verify SHA256SUMS.gpg SHA256SUMS
+
+img=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
+sha=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $1 }')
+
+wget -nv "$partner_url/<%= @metadata.release %>/current/$img"
+if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
+	echo "Bailing, the SHA256sum did not match."
+fi
+
+tar xzf $img -C $rootfs
+cd -> /dev/null
+
+rm -rf $rootfs/etc/hosts
+rm -rf $rootfs/etc/resolv.conf
+cp /etc/resolv.conf $rootfs/etc/resolv.conf
+cp /etc/hosts $rootfs/etc/hosts
+
+chroot "$rootfs" sh -ec "{
+	dpkg-divert --local --rename --add /sbin/initctl
+	dpkg-divert --local --rename --add /usr/sbin/update-rc.d
+	ln -s /bin/true /usr/sbin/update-rc.d
+	ln -s /bin/true /sbin/initctl
+}"
+
+chroot "$rootfs" sh -ec "{
+	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
+	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
+	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/local
+	echo \"exit 101\" > /usr/sbin/policy-rc.d policy-rc.d
+	sed -ri '/^(deb-src\s+|$|#)/d' /etc/apt/sources.list
+	chmod uog+x /usr/sbin/policy-rc.d
+
+	apt-get update
+	apt-get dist-upgrade -yf
+	apt-get install --no-install-recommends -yf \
+		locales deborphan
+
+  apt-get autoremove --purge $REMOVE -yf
+  apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
+  <% if @metadata.pkgs?  %>apt-get install --no-install-recommends -y <%= @metadata.pkgs %><% end %>
+  <% if @metadata.packages?  %>apt-get install --no-install-recommends -y <%= @metadata.packages %><% end %>
+  <% if @metadata.package_cleanup?  %>apt-get autoremove --purge -y <%= @metadata.package_cleanup %><% end %>
+  <% if @metadata.pkg_cleanup?  %>apt-get autoremove --purge -y <%= @metadata.pkg_cleanup %><% end %>
+  apt-get autoremove --purge
+	apt-get autoclean
+	apt-get clean
+
+	rm -rf /tmp/remove
+}"
+
+cp -R $COPY_DIR/* $rootfs
+mkdir -p $rootfs/etc/startup1.d
+mkdir -p $rootfs/etc/startup2.d
+mkdir -p $rootfs/etc/startup3.d
+mkdir -p $rootfs/etc/shutdown.d
+
+rm -rf $rootfs/etc/hosts
+rm -rf $rootfs/etc/resolv.conf
+docker-helper cleanup $rootfs
+tar -zf $TAR_GZ --numeric-owner -C $rootfs -c .

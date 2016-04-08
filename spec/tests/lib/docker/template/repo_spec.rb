@@ -25,38 +25,10 @@ describe Docker::Template::Repo do
   #
 
   describe "#initialize" do
-    context "when given an invalid type" do
-      before do
-        mocked_repo.with_opts({
-          "type" => "invalid"
-        })
-      end
-
-      #
-
-      it "should throw" do
-        expect { mocked_repo.to_repo }.to raise_error(
-          Docker::Template::Error::InvalidRepoType
-        )
-      end
-    end
-
-    #
-
     context "when repo does not exist" do
       it "should throw" do
         expect { mocked_repo.empty.to_repo }.to raise_error(
           Docker::Template::Error::RepoNotFound
-        )
-      end
-    end
-
-    #
-
-    context "when not a hash" do
-      it "should throw" do
-        expect { described_class.new("hello") }.to raise_error(
-          ArgumentError
         )
       end
     end
@@ -121,7 +93,7 @@ describe Docker::Template::Repo do
 
     context "when rootfs: true" do
       it "should use the repo name as the tag" do
-        prefix = Docker::Template.config["local_prefix"]
+        prefix = Docker::Template::Metadata::DEFAULTS["local_prefix"]
         expect(mocked_repo.to_repo.to_s(rootfs: true)).to eq(
           "#{prefix}/rootfs:default"
         )
@@ -191,7 +163,7 @@ describe Docker::Template::Repo do
     #
 
     it "should include prefix/rootfs" do
-      prefix = Docker::Template.config["local_prefix"]
+      prefix = Docker::Template::Metadata::DEFAULTS["local_prefix"]
       expect(mocked_repo.to_repo.to_rootfs_h).to include({
         "repo" => match(%r!\A#{Regexp.escape(prefix)}/rootfs!)
       })
@@ -337,29 +309,39 @@ describe Docker::Template::Repo do
   describe "#to_env" do
     it "should return a hash to you" do
       expect(mocked_repo.to_repo.to_env).to be_a(
-        Hash
+        Docker::Template::Metadata
       )
     end
 
     #
 
     context "(tar_gz: val)" do
+      let :result do
+        mocked_repo.to_repo.to_env({
+          :tar_gz => "val"
+        })
+      end
+
       it "should include the tar_gz" do
-        expect(mocked_repo.to_repo.to_env(tar_gz: "val")).to \
-          include({
-            "TAR_GZ" => "val"
-          })
+        expect(result[:all]).to include({
+          "TAR_GZ" => "val"
+        })
       end
     end
 
     #
 
     context "copy_dir: val" do
+      let :result do
+        mocked_repo.to_repo.to_env({
+          :copy_dir => "val"
+        })
+      end
+
       it "should include the copy_dir" do
-        expect(mocked_repo.to_repo.to_env(copy_dir: "val")).to \
-          include({
-            "COPY" => "val"
-          })
+        expect(result[:all]).to include({
+          "COPY_DIR" => "val"
+        })
       end
     end
   end

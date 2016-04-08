@@ -18,15 +18,30 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+
+      def builder_data
+        tpl = "rootfs/#{@repo.metadata.rootfs_template}"
+        erb = @repo.root.join("rootfs.erb")
+
+        Template.get(
+          erb.file?? erb : tpl, {
+            :metadata => @repo.metadata
+          }
+        )
+      end
+
+      # ----------------------------------------------------------------------
       # During a simple copy you store all the data (including rootfs) data
       # as a single unit, this helps us clean up data that is known to be for
       # just the rootfs image and remove it so it doesn't impact.
       # ----------------------------------------------------------------------
 
       def simple_cleanup(dir)
-        return unless simple_copy?
         file = dir.join("usr/local/bin/mkimg")
-        file.delete if file.exist?
+
+        if file.exist?
+          then file.delete
+        end
       end
 
       # ----------------------------------------------------------------------
@@ -42,9 +57,12 @@ module Docker
       private
       def setup_context
         @context = @repo.tmpdir("rootfs")
-        @context.join("Dockerfile").write(data)
         @copy = @context.join(@repo.metadata["copy_dir"])
-        @copy.mkdir
+        @context.join("Dockerfile").write(data)
+
+        @copy.join("usr/local/bin").mkdir_p
+        @copy.join("usr/local/bin/mkimg").write(builder_data)
+        @copy.join("usr/local/bin/mkimg").chmod(0755)
         copy_rootfs
       end
 
@@ -52,31 +70,14 @@ module Docker
 
       private
       def copy_rootfs
-        return simple_rootfs_copy if simple_copy?
-        @repo.copy_dir("rootfs").safe_copy(@copy, {
-          :root => Template.root
-        })
-      end
+        dir = @repo.copy_dir(
+          "rootfs"
+        )
 
-      # ----------------------------------------------------------------------
-
-      private
-      def simple_rootfs_copy
-        file = @repo.copy_dir.join("usr/local/bin/mkimg")
-
-        if file.file?
-          then file.safe_copy(@copy, {
+        if dir.exist?
+          @repo.copy_dir("rootfs").safe_copy(@copy, {
             :root => Template.root
           })
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      private
-      def verify_context
-        unless @copy.join("usr/local/bin/mkimg").file?
-          raise Error::NoRootfsMkimg
         end
       end
     end

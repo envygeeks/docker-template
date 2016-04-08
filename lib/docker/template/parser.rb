@@ -24,8 +24,7 @@ module Docker
 
       def all
         return @raw_repos unless @raw_repos.empty?
-        return Repo.new.name.to_a if Template.repo_is_root?
-        Template.repos_root.children.map do |path|
+        Template.root.join(Metadata.new({}).repos_dir).children.map do |path|
           path.basename.to_s
         end
 
@@ -36,13 +35,14 @@ module Docker
       # ----------------------------------------------------------------------
 
       def parse
-        out = Set.new
-        all.each do |val|
-          hash = to_repo_hash(val)
-          raise Docker::Template::Error::BadRepoName, val if hash.empty?
-          out |= Repo.new(hash, @argv).to_repos
+        repos = Set.new
+        all.each do |v|
+          hash = to_repo_hash(v)
+          raise Docker::Template::Error::BadRepoName, v if hash.empty?
+          repos |= Repo.new(hash, @argv).to_repos
         end
-        out
+
+        repos
       end
 
       # ----------------------------------------------------------------------

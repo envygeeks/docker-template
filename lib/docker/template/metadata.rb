@@ -4,99 +4,326 @@
 # Encoding: utf-8
 # ----------------------------------------------------------------------------
 
+require "active_support/inflector"
+require "active_support/core_ext/hash/indifferent_access"
+require "yaml"
+
 module Docker
   module Template
     class Metadata
-      attr_reader :root_metadata
+      attr_reader :data
       extend Forwardable::Extended
-      attr_reader :metadata
 
       # ----------------------------------------------------------------------
-      # Provides aliases for the root element so you can do something like:
-      #   * data["release"].fallback or data.release.fallback if available.
+      # rubocop:disable Style/MultilineBlockLayout
       # ----------------------------------------------------------------------
 
-      ALIASES = {
-        "entry" => "entries",
-        "release" => "releases",
-        "version" => "versions",
-        "script" => "scripts",
-        "image" => "images"
-      }.freeze
+      OPTS_FILE = "opts.yml"
+      [Pathutil.allowed[:yaml][:classes], Array.allowed[:keys], \
+          Hash.allowed[:vals]].each do |v| v.push(
+            self, HashWithIndifferentAccess, Regexp
+          )
+      end
 
       # ----------------------------------------------------------------------
-      # @example self.class.new({ :hello => :world }, root: true)
-      # @param root [true,false] whether or not this is the root metadata.
-      # @param root_metadata [Hash] if this is not root, this is the root metadata.
-      # @param metadata [Hash] the metadata you are wrapping.
+      # rubocop:enable Style/MultilineBlockLayout
+      # ----------------------------------------------------------------------
+
+      DEFAULTS = HashWithIndifferentAccess.new({
+        "log_filters" => [],
+        "push" => false,
+        "sync" => false,
+        "type" => "normal",
+        "user" => "envygeeks",
+        "local_prefix" => "local",
+        "rootfs_base_img" => "envygeeks/ubuntu",
+        "maintainer" => "Jordon Bedwell <jordon@envygeeks.io>",
+        "name" => Template.root.basename.to_s,
+        "rootfs_template" => "alpine",
+        "cache_dir" => "cache",
+        "repos_dir" => "repos",
+        "copy_dir" => "copy",
+        "tag" => "latest",
+        "clean" => true,
+        "tty" => false,
+        "tags" => {}
+      }).freeze
+
+      # ----------------------------------------------------------------------
+      # @param data [Hash, self.class] - the main data.
+      # @param root [Hash, self.class] - the root data.
+      # Create a new instance of `self.class`.
       #
-      # Allows you to wrap a Hash with a bunch of helpers so that users can
-      # do fancy stuff with the metadata they receive, including falling back
-      # to the default configuration, the passed CLI options and so forth.
+      # @example ```
+      #   self.class.new({
+      #     :hello => :world
+      #   })
+      # ```
       # ----------------------------------------------------------------------
 
-      def initialize(metadata, root: false, root_metadata: nil)
-        @base = Template.config if root
-        @root_metadata = root_metadata.freeze unless root
-        @root_metadata = metadata.freeze if root
-        @metadata = metadata.freeze
-        @root = root
+      def initialize(overrides, root: nil)
+        if root.is_a?(self.class)
+          then root = root.to_h({
+            :raw => true
+          })
+        end
 
-        if !root? && !root_metadata
-          raise Docker::Template::Error::NoRootMetadata
+        if overrides.is_a?(self.class)
+          then overrides = overrides.to_h({
+            :raw => true
+          })
+        end
+
+        if root.nil?
+          overrides = overrides.stringify
+          gdata = Template.root.join(OPTS_FILE).read_yaml
+          @data = DEFAULTS.deep_merge(gdata.stringify).deep_merge(overrides)
+          tdata = Template.root.join(@data[:repos_dir], @data[:name], OPTS_FILE).read_yaml
+          @data = @data.deep_merge(tdata.stringify).deep_merge(overrides)
+          @data = @data.stringify.with_indifferent_access
+
+        else
+          @data = overrides.stringify.with_indifferent_access
+          @root_data = root.stringify \
+            .with_indifferent_access
         end
       end
 
       # ----------------------------------------------------------------------
 
-      def is_a?(obj)
-        return true if obj == self.class
-        @metadata.is_a?(
-          obj
+      def _shas
+        return @_shas ||= begin
+          self.class.new(Template.gem_root.join("shas.yml").read_yaml, {
+            :root => root_data
+          })
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def root_data
+        return @root_data || @data
+      end
+
+      # ----------------------------------------------------------------------
+
+      def root
+        Template.root.join(
+          root_data[:repos_dir], root_data[:name]
         )
       end
 
       # ----------------------------------------------------------------------
-      # A complex alias happens when the user has an alias but also tries
-      # to add extra data, this allows them to use data from all parties. This
-      # allows them to reap the benefits of having shared data but sometimes
-      # independent data that diverges into it's own single template.
-      #
-      # @example
-      #   aliases:
-      #     world: hello
-      #
-      #   pkgs:
-      #     tag:
-      #       hello:
-      #         - my_package1
-      #         - my_package2
-      #       world:
-      #         - my_package3
-      #         - my_package4
-      #
-      #   tags:
-      #     hello: normal
-      #     you:   normal
-      #
-      # As you can see from the example above that when we provide the tag
-      # `world` as an alias and then have data for "world" we have created an
-      # complex alias, this alias will inherit from both `hello` & `world`.
-      # @note This only happens when you use by_tag or a method uses it.
+      # Check if a part of the hash or a value is inside.
+      # @param val [Anytning(), Hash] - The key or key => val you wish check.
+      # @example metadata.include?(:key => :val) => true|false
+      # @example metadata.include?(:key) => true|false
       # ----------------------------------------------------------------------
 
-      def complex_alias?
-        return false unless alias?
-        data = @root_metadata.select do |_, val|
-          val.is_a?(Hash) && val.key?(
-            "tag"
+      def include?(val)
+        if val.is_a?(Hash)
+          then val.stringify.each do |k, v|
+            unless @data.key?(k) && @data[k] == v
+              return false
+            end
+          end
+
+          true
+        else
+          @data.include?(
+            val
           )
         end
+      end
 
-        data.any? do |_, val|
-          val["tag"].key?(from_root(
-            "tag"
-          ))
+      # ----------------------------------------------------------------------
+      # @param key [Anything()] the key you wish to pull.
+      # @note we make the getter slightly more indifferent because of tags.
+      # Pull an indifferent key from the hash.
+      # ----------------------------------------------------------------------
+
+      def [](key)
+        val = begin
+          if key =~ /^\d+\.\d+$/
+            @data[key] || @data[
+              key.to_f
+            ]
+
+          elsif key =~ /^\d+$/
+            @data[key] || @data[
+              key.to_i
+            ]
+
+          else
+            @data[key]
+          end
+        end
+
+        if val.is_a?(Hash)
+          return self.class.new(val, {
+            :root => root_data
+          })
+        end
+
+        val
+      end
+
+      # ----------------------------------------------------------------------
+
+      def []=(key, val)
+        hash = { key => val }.stringify
+        @data.update(
+          hash
+        )
+      end
+
+      # ----------------------------------------------------------------------
+
+      def update(hash)
+        @data.update(
+          hash.stringify
+        )
+      end
+
+      # ----------------------------------------------------------------------
+
+      def to_enum
+        @data.each_with_object({}) do |(k, v), h|
+          if v.is_a?(Hash)
+            then v = self.class.new(v, {
+              :root => root_data
+            })
+          end
+
+          h[k] = v
+        end.to_enum
+      end
+
+      # ----------------------------------------------------------------------
+      # Merge a hash into the metadata.  If you merge non-queryable data
+      # it will then get merged into the queryable data.
+      # ----------------------------------------------------------------------
+
+      def merge(new_)
+        if !queryable?(:query_data => new_) && queryable?
+          new_ = {
+            :all => new_
+          }
+        end
+
+        new_ = new_.stringify
+        self.class.new(@data.deep_merge(new_), {
+          :root => root_data
+        })
+      end
+
+      # ----------------------------------------------------------------------
+      # Destructive merging (@see self#merge)
+      # ----------------------------------------------------------------------
+
+      def merge!(new_)
+        if !queryable?(:query_data => new_) && queryable?
+          new_ = {
+            :all => new_
+          }
+        end
+
+        @data = @data.deep_merge(
+          new_.stringify
+        )
+
+        self
+      end
+
+      # --------------------------------------------------------------------
+      # Check if a hash is queryable. AKA has "all", "group", "tag".
+      # --------------------------------------------------------------------
+
+      def queryable?(query_data: @data)
+        if query_data.is_a?(self.class)
+          then query_data \
+            .queryable?
+
+        elsif !query_data || !query_data.is_a?(Hash) || query_data.empty?
+          return false
+
+        else
+          (query_data.keys - %w(
+            group tag all
+          )).empty?
+        end
+      end
+
+      # --------------------------------------------------------------------
+      # Fallback, determining which route is the best.  Tag > Group > All.
+      # --------------------------------------------------------------------
+
+      def fallback(group: current_group, tag: current_tag, query_data: @data)
+        if query_data.is_a?(self.class)
+          then query_data.fallback({
+            :group => group, :tag => tag
+          })
+
+        elsif !query_data || !query_data.is_a?(Hash) || query_data.empty?
+          return nil
+
+        else
+          by_tag(:tag => tag, :query_data => query_data) || \
+            by_group(:group => group, :query_data => query_data) || \
+            for_all(:query_data => query_data)
+        end
+      end
+
+      # --------------------------------------------------------------------
+
+      def for_all(query_data: @data)
+        if query_data.is_a?(self.class)
+          then query_data \
+            .for_all
+
+        elsif !query_data || !query_data.is_a?(Hash)
+          return nil
+
+        else
+          query_data.fetch(
+            "all", nil
+          )
+        end
+      end
+
+      # --------------------------------------------------------------------
+
+      def by_tag(tag: current_tag, query_data: @data)
+        if query_data.is_a?(self.class)
+          then query_data.by_tag({
+            :tag => tag
+          })
+
+        elsif !query_data || !query_data.is_a?(Hash)
+          return nil
+
+        else
+          query_data.fetch("tag", {}).fetch(
+            tag, nil
+          )
+        end
+      end
+
+      # --------------------------------------------------------------------
+
+      def by_group(group: current_group, query_data: @data)
+        if query_data.is_a?(self.class)
+          then query_data.by_group({
+            :group => group
+          })
+
+        elsif !query_data || !query_data.is_a?(Hash)
+          return nil
+
+        else
+          query_data.fetch("group", {}).fetch(
+            group, nil
+          )
         end
       end
 
@@ -106,312 +333,194 @@ module Docker
       # ----------------------------------------------------------------------
 
       def alias?
-        return @alias ||= begin
-          aliased != from_root(
-            "tag"
+        !!(aliased_tag && aliased_tag != tag)
+      end
+
+      # ----------------------------------------------------------------------
+      # A complex alias happens when the user has an alias but also tries to
+      # add extra data, this allows them to use data from all parties. This
+      # allows them to reap the benefits of having shared data but sometimes
+      # independent data that diverges into it's own.
+      # ----------------------------------------------------------------------
+
+      def complex_alias?
+        if !alias?
+          return false
+
+        else
+          !!root_data.find do |_, v|
+            (v.is_a?(self.class) || v.is_a?(Hash)) && queryable?(:query_data => v) \
+              && by_tag(:query_data => v)
+          end
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def aliased_tag
+        tag, aliases = root_data.values_at(:tag, :aliases)
+        if aliases.nil? || !aliases.key?(tag)
+          tag
+
+        else
+          aliases[
+            tag
+          ]
+        end
+      end
+
+      # ----------------------------------------------------------------------
+      # Converts the current meta into a string.
+      # ----------------------------------------------------------------------
+
+      def to_s(raw: false, shell: false)
+        if !raw && (mergeable_hash? || mergeable_array?)
+          to_a(:shell => shell).join(" #{
+            "\n" if shell
+          }")
+
+        elsif !raw && queryable?
+          then fallback \
+            .to_s
+
+        else
+          @data.to_s
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def to_a(raw: false, shell: false)
+        if raw
+          return to_h({
+            :raw => true
+          }).to_a
+
+        elsif !mergeable_array?
+          to_h.each_with_object([]) do |(k, v), a|
+            a << "#{k}=#{
+              shell ? v.to_s.shellescape : v
+            }"
+          end
+        else
+          (for_all || []) | (by_group || []) | (by_tag || [])
+        end
+      end
+
+      # ----------------------------------------------------------------------
+      # Convert a `Metadata' into a normal hash. If `self' is queryable then
+      # we go and start merging values smartly.  This means that we will merge
+      # all the arrays into one another and we will merge hashes into hashes.
+      # ----------------------------------------------------------------------
+
+      def to_h(raw: false)
+        return @data.to_h if raw || !queryable? || !mergeable_hash?
+        keys = [for_all, by_group, by_tag].compact.map(&:keys)
+
+        keys.reduce(:+).each_with_object({}) do |k, h|
+          vals = [for_all, by_group, by_tag].compact
+
+          h[k] = \
+            if mergeable_array?(k)
+              vals.map { |v| v[k].to_a } \
+                .compact.reduce(
+                  :+
+                )
+
+            elsif mergeable_hash?(k)
+              vals.map { |v| v[k].to_h } \
+                .compact.reduce(
+                  :deep_merge
+                )
+
+            else
+              vals.find do |v|
+                v[k]
+              end \
+              [k]
+            end
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def mergeable_hash?(key = nil)
+        return false unless queryable?
+        vals = [by_tag, for_all, \
+          by_group].compact
+
+        if key
+          vals = vals.map do |val|
+            val[key]
+          end
+        end
+
+        !vals.empty? && !vals.any? do |val|
+          !val.is_a?(Hash) && !val.is_a?(
+            self.class
           )
         end
       end
 
       # ----------------------------------------------------------------------
-      # Outputs the version info as "gem@version".
-      # ----------------------------------------------------------------------
 
-      def to_gem_version
-        "#{from_root("name")}@#{self["version"].fallback}"
+      def mergeable_array?(key = nil)
+        return false unless queryable?
+        vals = [by_tag, for_all, \
+          by_group].compact
+
+        if key
+          vals = vals.map do |val|
+            val[key]
+          end
+        end
+
+        !vals.empty? && !vals.any? do |val|
+          !val.is_a?(
+            Array
+          )
+        end
       end
 
       # ----------------------------------------------------------------------
-      # Pulls out the tag or the tag that the current tag is an alias of.
+      # HELPER: Output the current tag.
       # ----------------------------------------------------------------------
 
-      def aliased
-        tag = from_root("tag")
-        aliases = from_root("aliases")
-        return aliases[tag] if aliases.key?(tag)
-        tag
+      def current_group
+        root_data[:tags][current_tag] ||
+          "normal"
       end
 
       # ----------------------------------------------------------------------
-      # Queries providing a default value if on the root repo hash otherwise
-      # returning the returned value, as a `self.class` if it's a Hash.
-      # ----------------------------------------------------------------------
 
-      def [](key)
-        key = determine_key(key.to_s)
-        val = @metadata[
-          key
+      def tag
+        return root_data[
+          "tag"
         ]
-
-        if !key?(key) && root?
-          return try_default(
-            key
-          )
-
-        elsif val.is_a?(Hash)
-          return self.class.new(val, {
-            :root_metadata => @root_metadata
-          })
-        end
-
-        val
       end
 
       # ----------------------------------------------------------------------
-      # Provides a list of tags and aliases, without their respective group.
+
+      def group
+        return root_data[:tags][
+          tag
+        ]
+      end
+
+      # ----------------------------------------------------------------------
+      # HELPER: Get a list of all the tags.
       # ----------------------------------------------------------------------
 
       def tags
-        from_root("tags").keys | from_root("aliases").keys
+        (root_data[:tags] || {}).keys | (root_data[:aliases] || {}).keys
       end
 
       # ----------------------------------------------------------------------
-      # Proviedes a list of groups, without their respective tag.
+      # HELPER: Get a list of all the groups.
       # ----------------------------------------------------------------------
 
       def groups
-        from_root("tags").values
-      end
-
-      # ----------------------------------------------------------------------
-      # Merges data into the metadata, and into the root metadata if root.
-      # ----------------------------------------------------------------------
-
-      def merge(new_)
-        @metadata = @metadata.merge(Stringify.hash(new_))
-        @root_metadata = @metadata if root?
-        self
-      end
-
-      # ----------------------------------------------------------------------
-      # UPCASES the keys of a hash so they can be transformed further later.
-      # ----------------------------------------------------------------------
-
-      def to_env(storage: :default, object: self)
-        storage_ = storage == :default ? {} : storage
-        out = object.each_with_object(storage_) do |(key, val), hsh|
-          if val.is_a?(Array)
-            hsh.update({
-              key.upcase => val.join(
-                " "
-              )
-            })
-
-          elsif val.is_a?(Hash)
-            to_env({
-              :storage => hsh,
-              :object  => val
-            })
-
-          else
-            hsh.update({
-              key.upcase => val.to_s
-            })
-          end
-        end
-
-        if storage == :default
-          self.class.new(out, {
-            :root_metadata => @root_metadata
-          })
-        else
-          out
-        end
-      end
-
-      # ----------------------------------------------------------------------
-      # Takes a hash (self) and converts it into an array of keys and values.
-      # ----------------------------------------------------------------------
-
-      def to_env_ary
-        to_env.each_with_object([]) do |(key, val), ary|
-          ary << "#{key}=#{val}"
-        end
-      end
-
-      # ----------------------------------------------------------------------
-      # Takes hash (self) and converts it into a list of key=val envvars.
-      # ----------------------------------------------------------------------
-
-      def to_env_str(multiline: false)
-        if multiline
-          env = to_env_ary
-          str = ""
-
-          env[1..-1].each_with_index do |val, index|
-            if env.size == 2
-              str+= " \\"
-            end
-
-            str += "\n  #{
-              val
-            }"
-
-            unless index == env.size - 2
-              str += " \\"
-            end
-          end
-
-          env.first + \
-            str
-        else
-          to_env_ary.join(
-            " "
-          )
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      def to_s
-        return to_env_str if mergeable_hash?
-        return to_a.join(" ") if mergeable_array?
-        return fallback.to_s if fallback?
-
-        ""
-      end
-
-      # ----------------------------------------------------------------------
-
-      def to_a
-        Utils.split(for_all) | Utils.split(by_group) | Utils.split(
-          by_tag
-        )
-      end
-
-      # ----------------------------------------------------------------------
-      # rb_delegate :to_h, :to => :@metadata
-      # ----------------------------------------------------------------------
-
-      def to_h(raw: !fallback?)
-        return @metadata.to_h if raw
-
-        {} \
-          .merge(for_all.to_h) \
-          .merge(by_group.to_h) \
-          .merge(by_tag. to_h)
-      end
-
-      # ----------------------------------------------------------------------
-      # Generically detect if there can be a fallback.
-      # ----------------------------------------------------------------------
-
-      def fallback?
-        return false if @metadata.empty?
-
-        (@metadata.keys - %w(
-          group tag all
-        )).empty?
-      end
-
-      # ----------------------------------------------------------------------
-
-      def mergeable_hash?
-        fallback? && (by_tag.is_a?(Hash) || for_all.is_a?(Hash) || \
-        by_group.is_a?(
-          Hash
-        ))
-      end
-
-      # ----------------------------------------------------------------------
-
-      def mergeable_array?
-        fallback? && (by_tag.is_a?(Array) || for_all.is_a?(Array) || \
-        by_group.is_a?(
-          Array
-        ))
-      end
-
-      # ----------------------------------------------------------------------
-
-      def to_set
-        Set.new \
-          .merge(Utils.split(for_all)) \
-          .merge(Utils.split(by_group)) \
-          .merge(Utils.split(by_tag))
-      end
-
-      # ----------------------------------------------------------------------
-      # Pulls data from the root metadata if this is a sub-metadata instance.
-      # ----------------------------------------------------------------------
-
-      def from_root(key)
-        return self[key] if root?
-        root = self.class.new(@root_metadata, root: true)
-        root[key]
-      end
-
-      # ----------------------------------------------------------------------
-
-      def fallback
-        by_tag || by_group || for_all
-      end
-
-      # ----------------------------------------------------------------------
-      # Pulls data based on the given tag through anything that provides a
-      # "tag" key with the given tags. ("tags" is a `Hash`)
-      # ----------------------------------------------------------------------
-
-      def by_tag
-        alias_ = aliased
-        tag = from_root("tag")
-        return unless key?("tag")
-        hash = self["tag"]
-
-        return hash[tag] if alias_ == tag
-        merge_or_override(hash[tag],
-          hash[alias_]
-        )
-      end
-
-      # ----------------------------------------------------------------------
-      # Pull data based on the group given in { "tags" => { tag => group }}
-      # through anything that provides a "group" key with the group as a
-      # sub-key and the values.
-      # ----------------------------------------------------------------------
-
-      def by_group
-        tag = aliased
-        group = from_root("tags")[tag]
-        return unless key?("group")
-        return unless group
-        self["group"][
-          group
-        ]
-      end
-
-      # ----------------------------------------------------------------------
-      # Checks to see if the key is an alias and returns that master key.
-      # ----------------------------------------------------------------------
-
-      private
-      def determine_key(key)
-        if root? && !key?(key) && ALIASES.key?(key)
-          key = ALIASES[
-            key
-          ]
-        end
-
-        key
-      end
-
-      # ----------------------------------------------------------------------
-      # Tries to pull a value from the base configuration.
-      # ----------------------------------------------------------------------
-
-      private
-      def try_default(key)
-        val = @base[
-          key
-        ]
-
-        if val.is_a?(Hash)
-          return self.class.new(val, {
-            :root_metadata => @root_metadata
-          })
-        end
-
-        val
+        root_data["tags"].values.uniq
       end
 
       # ----------------------------------------------------------------------
@@ -427,59 +536,63 @@ module Docker
       # ----------------------------------------------------------------------
 
       private
-      def string_wrapper(obj)
-        obj.to_s
+      def string_wrapper(obj, shell: false)
+        return obj if obj == true  ||  obj == false  ||  obj.nil?
+        return obj.to_s(:shell => shell) if obj.is_a?(self.class)
+        !obj.is_a?(Array) ? obj.to_s : obj.join(
+          "\s"
+        )
       end
 
       # ----------------------------------------------------------------------
-      # Allows you to check if a value exists and is true, if you wish to.
-      # ----------------------------------------------------------------------
 
       private
-      def method_missing(method, *args, &block)
-        if !args.empty? || block_given? || (method !~ /\?$/ && !key?(method.to_s))
+      def method_missing(method, *args, shell: false, &block)
+        key = method.to_s.gsub(/\?$/, "")
+        val = self[key] || self[key.singularize] \
+           || self[key.pluralize]
+
+        if !args.empty? || block_given?
           super
 
         elsif method !~ /\?$/
-          self[method] \
-            .to_s
+          string_wrapper(
+            val, :shell => shell
+          )
 
         else
-          val = self[method.to_s.gsub(/\?$/, "")]
           val != false && !val.nil? && \
             !val.empty?
         end
       end
 
       # ----------------------------------------------------------------------
-      # Alias methods that act like one another, but can have different names.
-      # ----------------------------------------------------------------------
 
-      rb_delegate :gems,              :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :release,           :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :entry,             :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :version,           :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :dev_pkgs,          :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :pkgs,              :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :env,               :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :tag,               :to => :self,  :type => :hash, :wrap => :string_wrapper
-      rb_delegate :for_all,           :to => :self,  :type => :hash, :key  => :all
-      rb_delegate :root,              :to => :@root, :type => :ivar, :bool => true
-      rb_delegate :keys,              :to => :@metadata
-      rb_delegate :size,              :to => :@metadata
-      rb_delegate :values_at,         :to => :@metadata
-      rb_delegate :each_with_object,  :to => :@metadata
-      rb_delegate :to_enum,           :to => :@metadata
-      rb_delegate :key?,              :to => :@metadata
-      rb_delegate :each,              :to => :@metadata
-      rb_delegate :dig,               :to => :@metadata
-      rb_delegate :empty?,            :to => :@metadata
+      alias deep_merge merge
+      rb_delegate :for_all, :to => :self, :type => :hash, :key => :all
+      rb_delegate :current_tag, :to => :root_data, :key => :tag, :type => :hash
+      rb_delegate :root, :to => :@root, :type => :ivar, :bool => true
 
       # ----------------------------------------------------------------------
 
-      alias kind_of? is_a?
-      alias mergeable? \
-        fallback?
+      rb_delegate :fetch,     :to => :@data
+      rb_delegate :delete,    :to => :@data
+      rb_delegate :empty?,    :to => :@data
+      rb_delegate :inspect,   :to => :@data
+      rb_delegate :values_at, :to => :@data
+      rb_delegate :values,    :to => :@data
+      rb_delegate :keys,      :to => :@data
+      rb_delegate :key?,      :to => :@data
+      rb_delegate :==,        :to => :@data
+
+      # ----------------------------------------------------------------------
+
+      rb_delegate :inject,            :to => :to_enum
+      rb_delegate :select,            :to => :to_enum
+      rb_delegate :each_with_object,  :to => :to_enum
+      rb_delegate :collect,           :to => :to_enum
+      rb_delegate :find,              :to => :to_enum
+      rb_delegate :each,              :to => :to_enum
     end
   end
 end

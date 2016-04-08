@@ -11,13 +11,8 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def initialize(base_metadata = {}, cli_opts = {})
-        raise ArgumentError, "Metadata not a hash" unless base_metadata.is_a?(Hash)
-        raise ArgumentError, "CLI Opts not a hash" unless cli_opts.is_a?(Hash)
-
-        @cli_opts = cli_opts.freeze
-        @base_metadata = base_metadata.freeze
-        raise Error::InvalidRepoType, type unless Template.config.build_types.include?(type)
+      def initialize(*hashes)
+        @base_meta = hashes.compact.reduce(:deep_merge).freeze
         raise Error::RepoNotFound, name unless root.exist?
       end
 
@@ -59,7 +54,7 @@ module Docker
       def aliased
         if alias?
           self.class.new(to_h.merge({
-            "tag" => metadata.aliased
+            "tag" => metadata.aliased_tag
           }))
         end
       end
@@ -109,16 +104,6 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Give the full path of the root folder to this image in the repo dir.
-      # ----------------------------------------------------------------------
-
-      def root
-        @root ||= begin
-          Template.repo_root_for(name)
-        end
-      end
-
-      # ----------------------------------------------------------------------
 
       def to_tag_h
         {
@@ -143,7 +128,7 @@ module Docker
       def tmpdir(*args, root: nil)
         args.unshift(user, name, tag)
         Pathutil.tmpdir(args,
-          "docker-template", root
+          nil, root
         )
       end
 
@@ -152,7 +137,7 @@ module Docker
       def tmpfile(*args, root: nil)
         args.unshift(user, name, tag)
         Pathutil.tmpfile(args,
-          "docker-template", root
+          nil, root
         )
       end
 
@@ -164,7 +149,7 @@ module Docker
 
       def to_repos
         set = Set.new
-        if @base_metadata.key?("tag")
+        if @base_meta.key?("tag")
           set << self
         else
           tags.each do |tag|
@@ -181,30 +166,22 @@ module Docker
 
       def metadata
         return @metadata ||= begin
-          root = Template.repo_root_for(@base_metadata["name"])
-
-          metadata = Template.config.read_config_from(root)
-          metadata = Metadata.new(metadata, root: true).merge(@base_metadata)
-          metadata = metadata.merge(@cli_opts)
-          Config.excon_timeouts(metadata)
-          metadata
+          Metadata.new(
+            @base_meta
+          )
         end
       end
 
       # ----------------------------------------------------------------------
 
       def to_env(tar_gz: nil, copy_dir: nil)
-        metadata["env"].to_h.merge({
+        hash = metadata["env"] || { "all" => {}}
+        Metadata.new(hash, :root => metadata).merge({
           "REPO" => name,
-          "NAME" => name,
           "TAR_GZ" => tar_gz,
-          "PKGS" => metadata.pkgs,
-          "VERSION" => metadata.version,
-          "RELEASE" => metadata.release,
-          "TYPE" => metadata.tag,
+          "GROUP" => metadata.group,
+          "COPY_DIR" => copy_dir,
           "BUILD_TYPE" => type,
-          "COPY" => copy_dir,
-          "TAR" => tar_gz,
           "TAG" => tag
         })
       end
@@ -212,14 +189,15 @@ module Docker
       # ----------------------------------------------------------------------
 
       rb_delegate :build, :to => :builder
+      rb_delegate :alias?, :to => :metadata
       rb_delegate :complex_alias?, :to => :metadata
       rb_delegate :type, :to => :metadata, :type => :hash
       rb_delegate :user, :to => :metadata, :type => :hash
       rb_delegate :name, :to => :metadata, :type => :hash
       rb_delegate :tag,  :to => :metadata, :type => :hash
-      rb_delegate :to_h, :to => :@base_metadata
-      rb_delegate :alias?, :to => :metadata
-      rb_delegate :tags,   :to => :metadata
+      rb_delegate :to_h, :to => :@base_meta
+      rb_delegate :root, :to => :metadata
+      rb_delegate :tags, :to => :metadata
     end
   end
 end

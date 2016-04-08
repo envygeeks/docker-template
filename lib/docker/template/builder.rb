@@ -17,7 +17,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      SETUP = [:setup_context, :copy_global, :simple_copy, :copy_all,
+      SETUP = [:setup_context, :copy_global, :copy_all,
         :copy_group, :copy_tag, :copy_cleanup, :build_context,
           :verify_context, :cache_context].freeze
 
@@ -25,27 +25,6 @@ module Docker
 
       def initialize(repo)
         @repo = repo
-      end
-
-      # ----------------------------------------------------------------------
-
-      def testing?
-        @repo.metadata["mocking"] || @repo.metadata[
-          "testing"
-        ]
-      end
-
-      # ----------------------------------------------------------------------
-      # Checks to see if this build is doing simple copies. A simple copy
-      # happens when a user doesn't group up and organize their copy folder
-      # because they don't need or want any relative data.
-      # ----------------------------------------------------------------------
-
-      def simple_copy?
-        @repo.copy_dir.exist? && \
-          !@repo.copy_dir.join("tag").exist? && \
-          !@repo.copy_dir.join("group").exist? && \
-          !@repo.copy_dir.join("all").exist?
       end
 
       # ----------------------------------------------------------------------
@@ -99,9 +78,7 @@ module Docker
       def push
         return if rootfs? || !@repo.pushable?
         Notify.push self
-        unless testing?
-          auth!
-        end
+        auth!
 
         img = @img || Docker::Image.get(@repo.to_s)
         img.push(&Logger.new.method(
@@ -221,33 +198,16 @@ module Docker
 
       private
       def copy_global
-        return if rootfs? || Template.repo_is_root?
-        dir = Template.root.join(
-          @repo.metadata["copy_dir"]
-        )
-
-        if dir.exist?
-          then dir.safe_copy(
-            @copy, :root => Template.root
+        unless rootfs?
+          dir = Template.root.join(
+            @repo.metadata["copy_dir"]
           )
-        end
-      end
 
-      # ----------------------------------------------------------------------
-      # When you have no tag, group, all, this is called a simple copy, and
-      # we will skip caring about the other types of copies and just do a
-      # direct copy of the copy root. <root>/<repo>/copy.
-      # ----------------------------------------------------------------------
-
-      private
-      def simple_copy
-        return unless simple_copy?
-        dir = @repo.copy_dir
-
-        if dir.exist?
-          then dir.safe_copy(
-            @copy, :root => Template.root
-          )
+          if dir.exist?
+            then dir.safe_copy(
+              @copy, :root => Template.root
+            )
+          end
         end
       end
 
@@ -255,13 +215,14 @@ module Docker
 
       private
       def copy_tag
-        return if rootfs? || simple_copy?
-        dir = @repo.copy_dir("tag", @repo.tag)
+        unless rootfs?
+          dir = @repo.copy_dir("tag", @repo.tag)
 
-        if dir.exist?
-          then dir.safe_copy(
-            @copy, :root => Template.root
-          )
+          if dir.exist?
+            then dir.safe_copy(
+              @copy, :root => Template.root
+            )
+          end
         end
       end
 
@@ -269,14 +230,24 @@ module Docker
 
       private
       def copy_group
-        build_group = @repo.metadata["tags"][@repo.tag]
-        return if rootfs? || simple_copy? || !build_group
-        dir = @repo.copy_dir("group", build_group)
+        build_group = @repo.metadata["tags"][
+          @repo.tag
+        ]
 
-        if dir.exist?
-          then dir.safe_copy(
-            @copy, :root => Template.root
-          )
+        if ENV["enable-pry"]
+          require "pry"
+          Pry.output = STDOUT
+          binding.pry
+        end
+
+        unless rootfs? || !build_group
+          dir = @repo.copy_dir("group", build_group)
+
+          if dir.exist?
+            then dir.safe_copy(
+              @copy, :root => Template.root
+            )
+          end
         end
       end
 
@@ -284,13 +255,14 @@ module Docker
 
       private
       def copy_all
-        return if rootfs? || simple_copy?
-        dir = @repo.copy_dir("all")
+        unless rootfs?
+          dir = @repo.copy_dir("all")
 
-        if dir.exist?
-          then dir.safe_copy(
-            @copy, :root => Template.root
-          )
+          if dir.exist?
+            then dir.safe_copy(
+              @copy, :root => Template.root
+            )
+          end
         end
       end
 

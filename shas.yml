@@ -1,0 +1,11 @@
+alpine:
+  apk_tools:
+    3.3: { package: apk-tools-static-2.6.5-r1.apk, sha: 03162d70e6d42eea77624a8da76d69e665ca19aa834361c3652414f111884636 }
+    3.2: { package: apk-tools-static-2.6.3-r0.apk, sha: ee5f42e06731c7447ce8fae99116a637f261e24f67826ca81dbe60ffbdb5c40e }
+
+  apk_keys:
+    3.3: { package: alpine-keys-1.1-r0.apk, sha: bd1f365f1dbda97e02fceb86fe4ff7e220f31ecc9debfd2a0c43764b45d31d0e }
+    3.2: { package: alpine-keys-1.1-r0.apk, sha: 26e9296d789fd4cae7392a067bed480b502d4302bcb7289d699af42c100622eb }
+
+ubuntu:
+  signing_key_sha: ""
