@@ -269,7 +269,9 @@ module Docker
 
         else
           by_tag(:tag => tag, :query_data => query_data) || \
+            by_parent_tag(:tag => tag, :query_data => query_data) || \
             by_group(:group => group, :query_data => query_data) || \
+            by_parent_group(:tag => tag, :query_data => query_data) || \
             for_all(:query_data => query_data)
         end
       end
@@ -309,6 +311,22 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
+
+      def by_parent_tag(tag: current_tag, query_data: @data)
+        if aliased_tag == current_tag || !complex_alias?
+          return nil
+
+        else
+          by_tag({
+            :query_data => query_data,
+            :tag => aliased_tag({
+              :tag => tag
+            })
+          })
+        end
+      end
+
       # --------------------------------------------------------------------
 
       def by_group(group: current_group, query_data: @data)
@@ -324,6 +342,22 @@ module Docker
           query_data.fetch("group", {}).fetch(
             group, nil
           )
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def by_parent_group(tag: current_tag, query_data: @data)
+        if aliased_tag == current_tag || !complex_alias?
+          return nil
+
+        else
+          by_group({
+            :query_data => query_data,
+            :group => aliased_group({
+              :tag => tag
+            })
+          })
         end
       end
 
@@ -357,8 +391,8 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def aliased_tag
-        tag, aliases = root_data.values_at(:tag, :aliases)
+      def aliased_tag(tag: current_tag)
+        aliases = root_data[:aliases]
         if aliases.nil? || !aliases.key?(tag)
           tag
 
@@ -367,6 +401,14 @@ module Docker
             tag
           ]
         end
+      end
+
+      # ----------------------------------------------------------------------
+
+      def aliased_group(tag: current_tag)
+        root_data[:tags][aliased_tag({
+          :tag => tag
+        })]
       end
 
       # ----------------------------------------------------------------------
@@ -403,7 +445,8 @@ module Docker
             }"
           end
         else
-          (for_all || []) | (by_group || []) | (by_tag || [])
+          (for_all || []) | (by_parent_group || []) | (by_group || []) | \
+            (by_parent_tag || []) | (by_tag || [])
         end
       end
 
@@ -415,10 +458,12 @@ module Docker
 
       def to_h(raw: false)
         return @data.to_h if raw || !queryable? || !mergeable_hash?
-        keys = [for_all, by_group, by_tag].compact.map(&:keys)
+        keys = [for_all, by_group, by_parent_group, by_tag, \
+          by_parent_tag].compact.map(&:keys)
 
         keys.reduce(:+).each_with_object({}) do |k, h|
-          vals = [for_all, by_group, by_tag].compact
+          vals = [for_all, by_group, by_parent_group, by_tag, \
+            by_parent_tag].compact
 
           h[k] = \
             if mergeable_array?(k)
@@ -446,8 +491,8 @@ module Docker
 
       def mergeable_hash?(key = nil)
         return false unless queryable?
-        vals = [by_tag, for_all, \
-          by_group].compact
+        vals = [by_parent_tag, by_parent_group, \
+          by_tag, for_all, by_group].compact
 
         if key
           vals = vals.map do |val|
@@ -466,8 +511,8 @@ module Docker
 
       def mergeable_array?(key = nil)
         return false unless queryable?
-        vals = [by_tag, for_all, \
-          by_group].compact
+        vals = [by_parent_tag, by_parent_group, \
+          by_tag, for_all, by_group].compact
 
         if key
           vals = vals.map do |val|
@@ -483,28 +528,10 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # HELPER: Output the current tag.
-      # ----------------------------------------------------------------------
 
       def current_group
         root_data[:tags][current_tag] ||
           "normal"
-      end
-
-      # ----------------------------------------------------------------------
-
-      def tag
-        return root_data[
-          "tag"
-        ]
-      end
-
-      # ----------------------------------------------------------------------
-
-      def group
-        return root_data[:tags][
-          tag
-        ]
       end
 
       # ----------------------------------------------------------------------
@@ -569,8 +596,10 @@ module Docker
       # ----------------------------------------------------------------------
 
       alias deep_merge merge
+      alias group current_group
       rb_delegate :for_all, :to => :self, :type => :hash, :key => :all
       rb_delegate :current_tag, :to => :root_data, :key => :tag, :type => :hash
+      rb_delegate :tag, :to => :root_data, :type => :hash, :key => :tag
       rb_delegate :root, :to => :@root, :type => :ivar, :bool => true
 
       # ----------------------------------------------------------------------
