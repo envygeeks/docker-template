@@ -80,10 +80,9 @@ module Docker
         Notify.push self
         auth!
 
-        img = @img || Docker::Image.get(@repo.to_s)
-        img.push(&Logger.new.method(
-          :api
-        ))
+        img = @img || Image.get(@repo.to_s)
+        img.push nil, :repo_tag => \
+          @repo.to_s, &Logger.new.method(:api)
 
       rescue Docker::Error::NotFoundError
         $stderr.puts Simple::Ansi.red(
