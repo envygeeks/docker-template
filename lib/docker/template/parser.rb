@@ -35,14 +35,28 @@ module Docker
       # ----------------------------------------------------------------------
 
       def parse
-        repos = Set.new
+        repos = {
+          :scratch => [],
+          :simple  => [],
+          :aliases => []
+        }
+
         all.each do |v|
           hash = to_repo_hash(v)
-          raise Docker::Template::Error::BadRepoName, v if hash.empty?
-          repos |= Repo.new(hash, @argv).to_repos
+          if hash.empty?
+            raise Docker::Template::Error::BadRepoName, v
+
+          else
+            Repo.new(hash, @argv).to_repos.each do |r|
+              r.alias?? repos[:aliases] << r : r.builder.scratch?? \
+                repos[:scratch] << r : repos[:simple] << r
+            end
+          end
         end
 
-        repos
+        repos.values.reduce(
+          :|
+        )
       end
 
       # ----------------------------------------------------------------------

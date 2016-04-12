@@ -27,7 +27,7 @@ describe Docker::Template::Parser do
   describe "#parse" do
     it "should output a set" do
       expect(subject.new.parse).to be_a(
-        Set
+        Array
       )
     end
 
