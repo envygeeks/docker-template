@@ -85,7 +85,7 @@ describe Docker::Template::Repo do
 
         it "should use the default tag" do
           expect(mocked_repo.to_repo.to_s).to match(
-            %r!\A[a-z]+/[a-z]+:hello!
+            %r!\A[a-z\-_]+/[a-z]+:hello!
           )
         end
       end
@@ -137,7 +137,7 @@ describe Docker::Template::Repo do
     it "should include user/repo" do
       expect(mocked_repo.to_repo.to_tag_h).to \
         include({
-          "repo" => match(%r!\A[a-z]+/default!)
+          "repo" => match(%r!\A[a-z\-_]+/default!)
         })
     end
 

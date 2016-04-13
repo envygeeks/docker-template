@@ -35,7 +35,7 @@ describe Docker::Template::Notify do
       end
 
       expect(capture).to include({
-        :stderr => %r!building:[:a-z\s]+/default:latest!i
+        :stderr => %r!building:[:a-z\-_\s]+/default:latest!i
       })
     end
 

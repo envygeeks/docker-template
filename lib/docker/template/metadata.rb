@@ -34,7 +34,7 @@ module Docker
         "push" => false,
         "sync" => false,
         "type" => "normal",
-        "user" => "envygeeks",
+        "user" => "random_user",
         "local_prefix" => "local",
         "rootfs_base_img" => "envygeeks/ubuntu",
         "maintainer" => "Random User <random.user@example.com>",
