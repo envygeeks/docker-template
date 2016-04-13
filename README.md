@@ -60,13 +60,15 @@ Usage:
   docker-template build [REPOS [OPTS]]
 
 Options:
-  [--sync-only], [--no-sync-only]  # Only sync your repositiries, don't build.
-  [--push-only], [--no-push-only]  # Only push your repositories, don't build.
-  [--profile], [--no-profile]      # Profile Memory.
-  [--tty], [--no-tty]              # Enable TTY Output.
-  [--push], [--no-push]            # Push Repo After Building.
-  [--sync], [--no-sync]            # Sync your repositories to cache.
-  [--mocking], [--no-mocking]      # Disable Certain Actions.
+  [--sync-only], [--no-sync-only]    # Only sync your repositiries, don't build.
+  [--clean-only], [--no-clean-only]  # Only clean your repositories, don't build.
+  [--push-only], [--no-push-only]    # Only push your repositories, don't build.
+  [--profile], [--no-profile]        # Profile Memory.
+  [--tty], [--no-tty]                # Enable TTY Output.
+  [--push], [--no-push]              # Push Repo After Building.
+  [--sync], [--no-sync]              # Sync your repositories to cache.
+  [--mocking], [--no-mocking]        # Disable Certain Actions.
+  [--clean], [--no-clean]            # Cleanup your caches.
 
 Build all (or some) of your repostories
 ```

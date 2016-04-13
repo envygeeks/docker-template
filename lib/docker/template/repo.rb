@@ -41,8 +41,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def buildable?
-        !metadata["push_only"] && !metadata[
-          "sync_only"
+        !metadata["push_only"] && !metadata["sync_only"] && !metadata[
+          "clean_only"
         ]
       end
 
@@ -198,6 +198,11 @@ module Docker
       rb_delegate :to_h, :to => :@base_meta
       rb_delegate :root, :to => :metadata
       rb_delegate :tags, :to => :metadata
+      rb_delegate :clean, {
+        :to => Cache, :alias_of => :cleanup, :args => %w(
+          self
+        )
+      }
     end
   end
 end

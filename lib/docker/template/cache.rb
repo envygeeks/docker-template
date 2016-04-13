@@ -28,6 +28,22 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # Cleanup the context caches, removing the caches we no longer need.
+      # ----------------------------------------------------------------------
+
+      def cleanup(repo)
+        repo.cache_dir.parent.children.each do |file|
+          unless repo.metadata.tags.include?(file.basename)
+            $stdout.puts Simple::Ansi.yellow("Removing %s." % [
+              file.relative_path_from(Template.root)
+            ])
+
+            file.rm_rf
+          end
+        end
+      end
+
+      # ----------------------------------------------------------------------
       # Note: We normally expect but do not require you to have a README.
       # Search for and copy the readme if available.
       # ----------------------------------------------------------------------

@@ -16,24 +16,23 @@ module Docker
 
       desc "build [REPOS [OPTS]]", "Build all (or some) of your repostories"
       option :sync_only,  :type => :boolean, :desc => "Only sync your repositiries, don't build."
+      option :clean_only, :type => :boolean, :desc => "Only clean your repositories, don't build."
       option :push_only,  :type => :boolean, :desc => "Only push your repositories, don't build."
       option :profile,    :type => :boolean, :desc => "Profile Memory."
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
       option :push,       :type => :boolean, :desc => "Push Repo After Building."
       option :sync,       :type => :boolean, :desc => "Sync your repositories to cache."
       option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
-      option :clean,      :type => :boolean, :desc => "Cleanup images after."
+      option :clean,      :type => :boolean, :desc => "Cleanup your caches."
 
       # ----------------------------------------------------------------------
 
       def build(*args)
-        repos = nil
-
-        with_profiling do
-          Parser.new(args, options).parse.map(
-            &:build
-          )
+        repos = nil; with_profiling do
+          repos = Parser.new(args, options).parse.tap { |o| o.map( \
+            &:build) }.uniq(&:name).map(&:clean)
         end
+
       rescue Docker::Template::Error::StandardError => e
         $stderr.puts Simple::Ansi.red(e.message)
         exit e.respond_to?(:status) ? e.status : 1
