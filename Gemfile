@@ -28,3 +28,8 @@ group :development do
     }
   end
 end
+
+group :site, :optional => true do
+  gem "jekyll-assets", :github => "jekyll/jekyll-assets"
+  gem "jekyll", :github => "jekyll/jekyll"
+end
