@@ -21,6 +21,9 @@ Docker Template is an organization and templating system for Docker images. A wa
 	- [[Normal](https://github.com/envygeeks/docker-template/tree/master/docs/templates/normal.md)](#normalhttpsgithubcomenvygeeksdocker-templatetreemasterdocstemplatesnormalmd)
 	- [[Scratch](https://github.com/envygeeks/docker-template/tree/master/docs/templates/scratch.md)](#scratchhttpsgithubcomenvygeeksdocker-templatetreemasterdocstemplatesscratchmd)
 	- [[Copy/](https://github.com/envygeeks/docker-template/tree/master/docs/copy.md)](#copyhttpsgithubcomenvygeeksdocker-templatetreemasterdocscopymd)
+	- [Commands](#commands)
+		- [Build](#build)
+		- [List](#list)
 
 <!-- /TOC -->
 
@@ -45,3 +48,36 @@ gem "docker-template", {
 ## [Scratch](https://github.com/envygeeks/docker-template/tree/master/docs/templates/scratch.md)
 ## [Copy/](https://github.com/envygeeks/docker-template/tree/master/docs/copy.md)
 -->
+
+## Commands
+
+### Build
+
+You can build a template by sending either `image`, `user/image`, `image:tag` or `user/image:tag`: `docker-template build image`.  Build supports the following arguments:
+
+```
+Usage:
+  docker-template build [REPOS [OPTS]]
+
+Options:
+  [--sync-only], [--no-sync-only]  # Only sync your repositiries, don't build.
+  [--push-only], [--no-push-only]  # Only push your repositories, don't build.
+  [--profile], [--no-profile]      # Profile Memory.
+  [--tty], [--no-tty]              # Enable TTY Output.
+  [--push], [--no-push]            # Push Repo After Building.
+  [--sync], [--no-sync]            # Sync your repositories to cache.
+  [--mocking], [--no-mocking]      # Disable Certain Actions.
+
+Build all (or some) of your repostories
+```
+
+***You can send as many repos/images as you like, or you can send none, the lack of any repos/images will result in all of the possible images being built from your repos/ folder.  This is good for automated building. NOTE: When building images we sort them, in that scratch images are built first, normal images are built second and aliases are done last, so that if you have dependencies within your dependencies hopefully they will get built first, however this is not always likely if your images rely on another normal image.  In that case you might want to send a manual list for us.***
+
+### List
+
+You can get a list of the possible images that can be built, an example:
+
+```
+envygeeks/alpine:3.3
+envygeeks/alpine:latest -> envygeeks/alpine:3.3
+```
