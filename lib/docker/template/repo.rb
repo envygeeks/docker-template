@@ -87,9 +87,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cache_dir
-        dir = metadata["cache_dir"]
-        return root.join(dir, tag) unless tags.one?
-        return root.join(dir) if tags.one?
+        return root.join(
+          metadata["cache_dir"], tag
+        )
       end
 
       # ----------------------------------------------------------------------
