@@ -17,7 +17,9 @@ A normal template is for the most part exactly like any other Docker template ex
 		- [The Dockerfile](#the-dockerfile)
 			- [The final Dockerfile output as tag: alpine](#the-final-dockerfile-output-as-tag-alpine)
 			- [The final Dockerfile output as tag: ubuntu](#the-final-dockerfile-output-as-tag-ubuntu)
+		- [`/repos/prosody/copy/etc/startup3.d/prosody/run`](#reposprosodycopyetcstartup3dprosodyrun)
 		- [Building](#building)
+		- [Running](#running)
 
 <!-- /TOC -->
 
@@ -28,18 +30,16 @@ Just like any Docker image, you have a `Dockerfile`, it can be transformed using
 ### Variables
 
 * `@metadata`: A Metadata class holding all of the opts.yml data.
+* You have full access to Ruby and it's context from within ERB as well.
 
+<!--
 ## [Copy](https://github.com/envygeeks/docker-template/tree/master/docs/copy.md)
-
-Please see: https://github.com/envygeeks/docker-template/tree/master/docs/copy.md for more inforamtion on the `copy/` directory. It should provide all that you need to know about `copy/` data in every kind of template.  Thanks!
-
 ## [Metadata](https://github.com/envygeeks/docker-template/tree/master/docs/metadata.md)
-
-Please see: https://github.com/envygeeks/docker-template/tree/master/docs/metadata.md for more information on `Metadata` and `opts.yml`.  It should provide all that you need to know about `Metadata` in every kind of template.  Thanks!
+-->
 
 ## Example
 
-Lets build an image that installs prosody on both Alpine and Ubuntu with each tag respectively having base packages shared across them and one having it's own unique package.
+Lets build an image that installs `prosody` on both Alpine and Ubuntu with each tag respectively having base packages shared across them and one having it's own unique package (bash) because Alpine is an embedded OS driven at simplicity, it has no `bash`.
 
 ### The Layout
 
@@ -56,6 +56,7 @@ repos/prosody
 
 ```yml
 maintainer: Your Name <name@example.com>
+user: random
 ```
 
 #### `/repos/prosody/opts.yml`
@@ -64,6 +65,9 @@ maintainer: Your Name <name@example.com>
 tags:
   ubuntu: ubuntu
   alpine: alpine
+
+aliases:
+	latest: alpine
 
 images:
   tag:
@@ -112,10 +116,51 @@ RUN apt-get update && apt-get install --no-install-recommends -y prosody
 COPY copy /
 ```
 
+### `/repos/prosody/copy/etc/startup3.d/prosody/run`
+
+```bash
+sed -ri "s/__HOSTNAME__/$HOSTNAME/" \
+  /etc/prosody/prosody.cfg.lua
+
+ssl_lines() {
+  grep -nE '\s+-{2}\s+enable:ssl$' /etc/prosody/prosody.cfg.lua | awk -F: '{
+    print $1
+  }'
+}
+
+if [ "$ENABLE_SSL" ]; then
+  for v in $(ssl_lines); do
+    sed -ri "${v}s/(\s*)-{2}\s+/\1/" /etc/prosody/prosody.cfg.lua
+    sed -ri "${v}s/\s+-{2}\s+enable:ssl\$//" \
+      /etc/prosody/prosody.cfg.lua
+  done
+else
+  while { l=$(ssl_lines | head -n1); test -n "$l"; } do sed -i "${l}d" /etc/prosody/prosody.cfg.lua; done
+  for v in $(grep -nE '\s+-{2}\s+disable:ssl$' /etc/prosody/prosody.cfg.lua | awk -F: '{ print $1 }'); do
+    sed -ri "${v}s/(\s*)-{2}\s+/\1/" /etc/prosody/prosody.cfg.lua
+    sed -ri "${v}s/\s+-{2}\s+disable:ssl\$//" \
+      /etc/prosody/prosody.cfg.lua
+  done
+fi
+
+exec chpst -u prosody:prosody \
+  prosody
+```
+
 ### Building
+
+Upon building, you will get three images, `random/prosody:ubuntu`, `random/prosody:latest`, and `random/prosody:alpine` and `random/prosody:latest` will point to the image id of `random/prosody:alpine`.
 
 ```bash
 docker-template build prosody
 docker-template build prosody:ubuntu
 docker-template build prosody:alpine
+```
+
+### Running
+
+```bash
+docker-template run --rm -it random/prosody:alpine
+docker-template run --rm -it random/prosody:ubuntu
+docker-template run --rm -it random/prosody:latest
 ```
