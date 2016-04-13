@@ -233,12 +233,6 @@ module Docker
           @repo.tag
         ]
 
-        if ENV["enable-pry"]
-          require "pry"
-          Pry.output = STDOUT
-          binding.pry
-        end
-
         unless rootfs? || !build_group
           dir = @repo.copy_dir("group", build_group)
 
