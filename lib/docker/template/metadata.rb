@@ -37,7 +37,7 @@ module Docker
         "user" => "envygeeks",
         "local_prefix" => "local",
         "rootfs_base_img" => "envygeeks/ubuntu",
-        "maintainer" => "Jordon Bedwell <jordon@envygeeks.io>",
+        "maintainer" => "Random User <random.user@example.com>",
         "name" => Template.root.basename.to_s,
         "rootfs_template" => "alpine",
         "cache_dir" => "cache",
