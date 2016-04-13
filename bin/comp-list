@@ -10,6 +10,7 @@
 
 ARGV.shift
 require "pathutil"
+require "bundler/setup"
 require "msgpack"
 
 # ----------------------------------------------------------------------------

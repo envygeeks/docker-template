@@ -97,7 +97,7 @@ module CompList
   # Recursively pulls out and set's up your commands and opts.
   # --------------------------------------------------------------------------
 
-  def get_commands(const = Docker::Template::Interface)
+  def get_commands(const = Docker::Template::CLI)
     out = base(
       const
     )
