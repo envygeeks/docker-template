@@ -39,7 +39,7 @@ Just like any Docker image, you have a `Dockerfile`, it can be transformed using
 
 ## Example
 
-Lets build an image that installs `prosody` on both Alpine and Ubuntu with each tag respectively having base packages shared across them and one having it's own unique package (bash) because Alpine is an embedded OS driven at simplicity, it has no `bash`.
+Lets build an image that installs `prosody` on both Alpine and Ubuntu with each tag respectively having base packages shared across them and one having it's own unique package (bash) because Alpine is an embedded OS driven at simplicity, it has no `bash`.  This image uses the default base image of `envygeeks/ubuntu:latest` which provides `runit` in place of other run systems and provides extra stuff, you can read more about this image here: https://github.com/envygeeks/docker/tree/master/repos/ubuntu
 
 ### The Layout
 
@@ -67,7 +67,7 @@ tags:
   alpine: alpine
 
 aliases:
-	latest: alpine
+  latest: alpine
 
 images:
   tag:
