@@ -1,11 +1,14 @@
-# Copy
+# Template Data: Copy
 
-Copy is a set of data that will be copied into the final image.  We do not copy this on your behalf, we simply setup the context and create a `copy/` directory that you copy yourself via your Dockerfile (or in the case of a scratch image from the `$COPY_DIR`.)
+Template Data (herin after refered to as copy or `copy/`) is a set of data that will be copied into the final image.  We do not copy this on your behalf, we simply setup the context and create a `copy/` directory that you copy yourself via your Dockerfile (or in the case of a scratch image from the `$COPY_DIR`.)
+
+Each template can have shared and even master data.  Master data sits below the "repos" folder and is shared across all repositories and shared data sits inside of the repo.  Master data is simple and repo data is queryable (in that it's sorted by tag, group and all,) so that you can have data for specific scenarios.
 
 <!-- TOC depthFrom:1 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
 
-- [Copy](#copy)
+- [Template Data: Copy](#template-data-copy)
 	- [Organization](#organization)
+		- [Master Data](#master-data)
 		- [Layout](#layout)
 	- [Access](#access)
 	- [Symlinks](#symlinks)
@@ -18,6 +21,9 @@ The `copy/` directory is queryable.  Data is organized for all, by tag, and by g
 
 ```
 copy/
+	usr/local/bin
+	  people
+repos/repo/copy/
   all/
     usr/local/bin
       hello
@@ -25,6 +31,16 @@ copy/
     latest/
       usr/local/bin
         world
+```
+
+### Master Data
+
+Master data is stored in the root of your folder, along with the master `opts.yml` file.  This data is copied first and must always use a simple layout as it's simply master data.  Given we are looking at the root of the Git repository holding all our respositories this is where you would place master data.
+
+```
+opts.yml
+copy/usr/local/share/my-image/
+  master-file.txt
 ```
 
 ### Layout

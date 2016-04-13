@@ -6,6 +6,10 @@ In Docker Template metadata is nothing more than a bunch of data that is overrid
 
 - [Metadata](#metadata)
 	- [Default Metadata](#default-metadata)
+	- [Master/Repository Metadata](#masterrepository-metadata)
+		- [Repository](#repository)
+		- [Master](#master)
+	- [Queryable Metadata](#queryable-metadata)
 	- [Accessing Metadata within the Dockerfile and rootfs.erb](#accessing-metadata-within-the-dockerfile-and-rootfserb)
 		- [Indifferent access](#indifferent-access)
 		- [Stringify Methods](#stringify-methods)
@@ -41,6 +45,48 @@ clean: true
 tty: false
 tags: {}
 ```
+
+## Master/Repository Metadata
+
+All repos have master (parent metadata) and repo metadata that is merged in as the most important metadata.  Anything set globally can be overridden locally because at the end of the day, it all sits in the same spot and is merged in on an importance basis.
+
+### Repository
+
+`repos/repo/opts.yml`
+```yml
+tags:
+  hello: world
+env:
+  all:
+    HELLO: world
+```
+
+### Master
+`opts.yml`
+
+```yml
+tty: false
+maintainer: "Thug <person@thug.lyfe>"
+push: false
+```
+
+**Any metadata found in the global `opts.yml` file can be overridden within the repositories `opts.yml`.  So any data can be both local and globally set on a per respository basis... however you see fit.**
+
+## Queryable Metadata
+
+Queryable metadata is the idea that you can query `by_tag`, `by_group` and `for_all` within your template by setting up your metadata to be queryable.  To do this, you add "group", "tag" and "all" keys with all your data grouped under these keys.  A basic example of this:
+
+```yml
+pkgs:
+  group:
+    my-group:
+      key: val
+
+  all:
+    key: val
+```
+
+***USAGE NOTE: You do not need to provide all three keys ("tag", "group", and "all".) You can provide one or all of them as the lack of other keys is what decides whether or not an attribute is queryable.  So if you provide "tag" and "other_key" then data will not be queryable at all, however.. if you provide "tag" only, the data will be queryable.***
 
 ## Accessing Metadata within the Dockerfile and rootfs.erb
 
