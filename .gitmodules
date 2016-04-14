@@ -2,7 +2,3 @@
 	path = examples/envygeeks
 	url = git@github.com:envygeeks/docker.git
 	branch = master
-[submodule "examples/jekyll"]
-	path = examples/jekyll
-	url = git@github.com:jekyll/docker.git
-	branch = master
