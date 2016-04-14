@@ -17,6 +17,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      ALIAS_SETUP = [:cache_context]
       SETUP = [:setup_context, :copy_global, :copy_all,
         :copy_group, :copy_tag, :copy_cleanup, :build_context,
           :verify_context, :cache_context].freeze
@@ -133,12 +134,12 @@ module Docker
 
       private
       def build_alias
+        alias_setup
+
         if @repo.buildable?
           aliased = self.class.new(aliased_repo)
           aliased.build unless aliased_img
-          Notify.alias(
-            self
-          )
+          Notify.alias(self)
 
           aliased_img.tag(
             @repo.to_tag_h
@@ -163,6 +164,17 @@ module Docker
         SETUP.map do |val|
           if respond_to?(val, true)
             send(val)
+          end
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      private
+      def alias_setup
+        ALIAS_SETUP.map do |m|
+          if respond_to?(m, true)
+            send(m)
           end
         end
       end
