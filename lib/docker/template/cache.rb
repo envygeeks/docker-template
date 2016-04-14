@@ -15,7 +15,7 @@ module Docker
 
       def context(builder, context)
         builder.repo.cache_dir.rm_rf
-        $stderr.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")
+        $stderr.puts Simple::Ansi.yellow(format("Copying context for %s", builder.repo))
         cache_dir = builder.repo.cache_dir
         cache_dir.parent.mkdir_p
 
@@ -26,10 +26,12 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rubocop:disable Metrics/LineLength
+      # ----------------------------------------------------------------------
 
       def aliased_context(builder)
         if builder.aliased_repo.cache_dir.exist?
-          $stderr.puts Simple::Ansi.yellow("Copying #{builder.aliased_repo} context to #{builder.repo}")
+          $stderr.puts Simple::Ansi.yellow(format("Copying %s context to %s", builder.aliased_repo, builder.repo))
           builder.aliased_repo.cache_dir.cp_r(builder.repo.cache_dir.tap(
             &:rm_rf
           ))
@@ -39,19 +41,20 @@ module Docker
       # ----------------------------------------------------------------------
       # Cleanup the context caches, removing the caches we no longer need.
       # ----------------------------------------------------------------------
+      # rubocop:enable Metrics/LineLength
+      # ----------------------------------------------------------------------
 
       def cleanup(repo)
         cache_dir = repo.cache_dir.parent
 
         if repo.cacheable? && cache_dir.exist?
           then cache_dir.children.each do |file|
-            unless repo.metadata.tags.include?(file.basename)
-              $stdout.puts Simple::Ansi.yellow("Removing %s." % [
-                file.relative_path_from(Template.root)
-              ])
+            next unless repo.metadata.tags.include?(file.basename)
+            $stdout.puts Simple::Ansi.yellow(format("Removing %s.",
+              file.relative_path_from(Template.root)
+            ))
 
-              file.rm_rf
-            end
+            file.rm_rf
           end
         end
       end

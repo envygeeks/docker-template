@@ -60,6 +60,8 @@ module Docker
       #   })
       # ```
       # ----------------------------------------------------------------------
+      # rubocop:disable Metrics/AbcSize
+      # ----------------------------------------------------------------------
 
       def initialize(overrides, root: nil)
         if root.is_a?(self.class)
@@ -89,6 +91,8 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
+      # rubocop:enable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       def _shas
@@ -128,12 +132,13 @@ module Docker
             end
           end
 
-          true
         else
-          @data.include?(
+          return @data.include?(
             val
           )
         end
+
+        true
       end
 
       # ----------------------------------------------------------------------
@@ -257,6 +262,9 @@ module Docker
       # --------------------------------------------------------------------
       # Fallback, determining which route is the best.  Tag > Group > All.
       # --------------------------------------------------------------------
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
+      # ----------------------------------------------------------------------
 
       def fallback(group: current_group, tag: current_tag, query_data: @data)
         if query_data.is_a?(self.class)
@@ -277,6 +285,9 @@ module Docker
       end
 
       # --------------------------------------------------------------------
+      # rubocop:enable Metrics/CyclomaticComplexity
+      # rubocop:enable Metrics/PerceivedComplexity
+      # ----------------------------------------------------------------------
 
       def for_all(query_data: @data)
         if query_data.is_a?(self.class)
@@ -431,6 +442,9 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rubocop:disable Metrics/CyclomaticComplexity
+      # rubocop:disable Metrics/PerceivedComplexity
+      # ----------------------------------------------------------------------
 
       def to_a(raw: false, shell: false)
         if raw
@@ -451,9 +465,14 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rubocop:eanble Metrics/CyclomaticComplexity
+      # rubocop:eanble Metrics/PerceivedComplexity
+      # ----------------------------------------------------------------------
       # Convert a `Metadata' into a normal hash. If `self' is queryable then
       # we go and start merging values smartly.  This means that we will merge
       # all the arrays into one another and we will merge hashes into hashes.
+      # ----------------------------------------------------------------------
+      # rubocop:disable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       def to_h(raw: false)
@@ -487,6 +506,8 @@ module Docker
         end
       end
 
+      # ----------------------------------------------------------------------
+      # rubocop:enable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       def mergeable_hash?(key = nil)
@@ -564,7 +585,7 @@ module Docker
 
       private
       def string_wrapper(obj, shell: false)
-        return obj if obj == true  ||  obj == false  ||  obj.nil?
+        return obj if obj == true || obj == false || obj.nil?
         return obj.to_s(:shell => shell) if obj.is_a?(self.class)
         !obj.is_a?(Array) ? obj.to_s : obj.join(
           "\s"

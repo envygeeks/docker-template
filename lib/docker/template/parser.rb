@@ -33,6 +33,8 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rubocop:disable Metrics/AbcSize
+      # ----------------------------------------------------------------------
 
       def parse
         repos = {
@@ -47,12 +49,16 @@ module Docker
           )
 
           if hash.empty?
-            raise Docker::Template::Error::BadRepoName, v
+            raise(Docker::Template::Error::BadRepoName,
+              v
+            )
 
           else
             Repo.new(hash, @argv).to_repos.each do |r|
-              r.alias?? repos[:aliases] << r : r.builder.scratch?? \
-                repos[:scratch] << r : repos[:simple] << r
+              r.alias?? repos[:aliases] << r : \
+                if r.builder.scratch?
+                  repos[:scratch] << r else repos[:simple] << r
+                end
             end
           end
         end
@@ -62,6 +68,8 @@ module Docker
         )
       end
 
+      # ----------------------------------------------------------------------
+      # rubocop:enable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       def self.to_repo_hash(val)

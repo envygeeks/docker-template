@@ -228,7 +228,7 @@ describe Docker::Template::Metadata do
     context "when merging into a queryable array" do
       context "and given non-queryable" do
         before do
-          subject.merge!(:hello => { :all => {}})
+          subject[:hello] = { :all => {}}
           subject.merge!({
             :hello => :world
           })

@@ -15,8 +15,8 @@ module Docker
 
       class PlaceHolderError < StandardError
         def initialize(error)
-          super "PLACEHOLDER ERROR: %s" % (
-            error
+          super format(
+            "PLACEHOLDER ERROR: %s", error
           )
         end
       end

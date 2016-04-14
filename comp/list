@@ -7,7 +7,6 @@
 # rubocop:disable Style/ElseAlignment
 # ----------------------------------------------------------------------------
 
-
 ARGV.shift
 require "pathutil"
 require "msgpack"

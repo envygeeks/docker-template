@@ -28,9 +28,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def build(*args)
-        repos = nil; with_profiling do
-          repos = Parser.new(args, options).parse.tap { |o| o.map( \
-            &:build) }.uniq(&:name).map(&:clean)
+        with_profiling do
+          Parser.new(args, options).parse.tap { |o| o.map(&:build) } \
+            .uniq(&:name).map(&:clean)
         end
 
       rescue Docker::Template::Error::StandardError => e
@@ -47,10 +47,12 @@ module Docker
       option :only, :type => :string,  :desc => "Only a specific repo."
 
       # ----------------------------------------------------------------------
+      # rubocop:disable Metrics/AbcSize
+      # ----------------------------------------------------------------------
 
       def list
         Parser.new([], {}).parse.each do |repo|
-          repo_s = repo_s = repo.to_s.gsub(/^[^\/]+\//, "")
+          repo_s = repo.to_s.gsub(/^[^\/]+\//, "")
           next unless (only.is_a?(Regexp) && repo_s =~ only) \
             || (only && repo_s == only) || !only
 
@@ -58,12 +60,10 @@ module Docker
           $stderr.print " -> ", repo.aliased.to_s, "\n" if repo.alias?
           $stderr.puts unless repo.alias?
         end
-      rescue Docker::Template::Error::StandardError => e
-        $stderr.puts Simple::Ansi.red(e.message)
-        exit e.respond_to?(:status) \
-          ? e.status : 1
       end
 
+      # ----------------------------------------------------------------------
+      # rubocop:enable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       no_tasks do
@@ -94,6 +94,7 @@ module Docker
               MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
                 :to_file => "mem.txt"
               })
+
             rescue LoadError
               $stderr.puts "The gem 'memory_profiler' wasn't found."
               $stderr.puts "You can install it with `gem install memory_profiler'"

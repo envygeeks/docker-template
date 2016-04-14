@@ -41,13 +41,13 @@ module CompList
   def normalize_command(command)
     if command.is_a?(Array)
       then command.map do |key|
-        key.gsub(
-          /_/, "-"
+        key.tr(
+          "_", "-"
         )
       end
     else
-      command.gsub(
-        /_/, "-"
+      command.tr(
+        "_", "-"
       )
     end
   end
@@ -85,8 +85,7 @@ module CompList
           )}"
         end
 
-        ary |= \
-        opt.aliases
+        ary | opt.aliases
       end
     end
 

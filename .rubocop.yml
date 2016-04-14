@@ -60,3 +60,6 @@ Style/MutableConstant:                { Enabled: false }
 
 AllCops:
   TargetRubyVersion: 2.0
+  Exclude:
+    - examples/**/*
+    - vendor/**/*
