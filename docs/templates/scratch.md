@@ -12,7 +12,7 @@ Scratch templates are a new take on the complicated way that some people build t
 		- [The Layout](#the-layout)
 		- [Opts.yml (Metadata)](#optsyml-metadata)
 			- [`/opts.yml`](#optsyml)
-			- [`/repos/prosody/opts.yml`](#reposprosodyoptsyml)
+			- [`/repos/ubuntu/opts.yml`](#reposprosodyoptsyml)
 		- [rootfs.erb](#rootfserb)
 		- [Building](#building)
 		- [Running](#running)
@@ -61,7 +61,7 @@ maintainer: Your Name <name@example.com>
 user: random
 ```
 
-#### `/repos/prosody/opts.yml`
+#### `/repos/ubuntu/opts.yml`
 
 ```yml
 tags:
