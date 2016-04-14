@@ -1,4 +1,0 @@
-[submodule "examples/envygeeks"]
-	path = examples/envygeeks
-	url = git@github.com:envygeeks/docker.git
-	branch = master
