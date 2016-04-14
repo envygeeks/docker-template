@@ -52,10 +52,10 @@ describe Docker::Template::Parser do
 
   #
 
-  describe "#to_repo_hash" do
+  describe ".to_repo_hash" do
     context "when given a valid identifier" do
       specify do
-        expect(subject.new.send(:to_repo_hash, "repo:tag")).to \
+        expect(subject.send(:to_repo_hash, "repo:tag")).to \
           include({
             "name" => "repo"
           })
@@ -64,7 +64,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new.send(:to_repo_hash, "repo:tag")).to \
+        expect(subject.send(:to_repo_hash, "repo:tag")).to \
           include({
             "tag" => "tag"
           })
@@ -74,7 +74,7 @@ describe Docker::Template::Parser do
 
       specify do
         # user/repo:tag
-        expect(subject.new.send(:to_repo_hash, "user/repo:tag")).to \
+        expect(subject.send(:to_repo_hash, "user/repo:tag")).to \
           include({
             "user" => "user"
           })
@@ -83,7 +83,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new.send(:to_repo_hash, "user/repo:tag")).to \
+        expect(subject.send(:to_repo_hash, "user/repo:tag")).to \
           include({
             "name" => "repo"
           })
@@ -92,7 +92,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new.send(:to_repo_hash, "user/repo:tag")).to \
+        expect(subject.send(:to_repo_hash, "user/repo:tag")).to \
           include({
             "tag" => "tag"
           })
@@ -101,7 +101,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new.send(:to_repo_hash, "user/repo")).to \
+        expect(subject.send(:to_repo_hash, "user/repo")).to \
           include({
             "user" => "user"
           })
@@ -110,7 +110,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new.send(:to_repo_hash, "user/repo")).to \
+        expect(subject.send(:to_repo_hash, "user/repo")).to \
           include({
             "name" => "repo"
           })
@@ -119,7 +119,7 @@ describe Docker::Template::Parser do
       #
 
       specify do
-        expect(subject.new.send(:to_repo_hash, "repo")).to \
+        expect(subject.send(:to_repo_hash, "repo")).to \
           include({
             "name" => "repo"
           })
@@ -136,11 +136,55 @@ describe Docker::Template::Parser do
           })
         end
 
+        #
+
         it "should output Templates" do
           expect(subject.new(%w(default)).parse.first).to be_a(
             Docker::Template::Repo
           )
         end
+      end
+    end
+  end
+
+  #
+
+  describe ".full_name?" do
+    context "when given repo/image:tag" do
+      it "should return true" do
+        expect(subject.full_name?("repo/image:tag")).to eq(
+          true
+        )
+      end
+    end
+
+    #
+
+    context "when given repo/image" do
+      it "should return true" do
+        expect(subject.full_name?("repo/image")).to eq(
+          true
+        )
+      end
+    end
+
+    #
+
+    context "when given repo:tag" do
+      it "should return true" do
+        expect(subject.full_name?("repo:tag")).to eq(
+          true
+        )
+      end
+    end
+
+    #
+
+    context "when given just a user/repo" do
+      it "should return false" do
+        expect(subject.full_name?("nothing")).to eq(
+          false
+        )
       end
     end
   end

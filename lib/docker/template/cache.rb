@@ -14,14 +14,14 @@ module Docker
       # ----------------------------------------------------------------------
 
       def context(builder, context)
-        if builder.alias? && builder.aliased_repo.cache_dir.exist?
-          parent_cache_dir = builder.aliased_repo.cache_dir
-          $stderr.puts Simple::Ansi.yellow("Copying #{builder.aliased_repo} context to #{builder.repo}")
-          cache_dir = builder.repo.cache_dir
+        if builder.alias? && builder.aliased_repo && builder.aliased_repo.cache_dir.exist?
+        # ^ aliased_repo might not always exist, if we do a full_name alias.
 
-          parent_cache_dir.cp_r(cache_dir.tap(
+          $stderr.puts Simple::Ansi.yellow("Copying #{builder.aliased_repo} context to #{builder.repo}")
+          builder.aliased_repo.cache_dir.cp_r(builder.repo.cache_dir.tap(
             &:rm_rf
           ))
+
         elsif context
           builder.repo.cache_dir.rm_rf
           $stderr.puts Simple::Ansi.yellow("Copying context for #{builder.repo}")

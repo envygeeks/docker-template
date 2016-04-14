@@ -25,7 +25,7 @@ module Docker
 
       def alias(builder)
         repo = builder.repo
-        aliased_repo = builder.aliased_repo
+        aliased_repo = builder.aliased_repo || builder.aliased_tag
         msg = Simple::Ansi.green("Aliasing #{repo} -> #{aliased_repo}")
         $stderr.puts msg
       end

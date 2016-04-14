@@ -74,16 +74,6 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      class NoHookExists < StandardError
-        def initialize(base, point)
-          super "Unknown hook base '#{base}' or hook point '#{
-            point
-          }'"
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
       class NoRootMetadata < StandardError
         def initialize
           super "Metadata without the root flag must provide the root_metadata."
@@ -121,6 +111,16 @@ module Docker
           ending = repo ? "the repo '#{repo}'" : "your repo folder"
           super "Unable to find #{
             ending
+          }"
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      class ImageNotFound < StandardError
+        def initialize(image)
+          super "Unable to find the image #{
+            image
           }"
         end
       end

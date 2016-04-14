@@ -63,10 +63,13 @@ module Docker
       # ----------------------------------------------------------------------
 
       def aliased_img
-        return unless alias?
-        @aliased_img ||= Docker::Image.get(
-          aliased_repo.to_s
-        )
+        if alias?
+          then @aliased_img ||= begin
+            Docker::Image.get(
+              aliased_repo ? aliased_repo.to_s : aliased_tag
+            )
+          end
+        end
 
       rescue Docker::Error::NotFoundError
         if alias?
@@ -137,10 +140,19 @@ module Docker
         alias_setup
 
         if @repo.buildable?
-          aliased = self.class.new(aliased_repo)
-          aliased.build unless aliased_img
-          Notify.alias(self)
+          if (repo = aliased_repo)
+            aliased = self.class.new(repo)
+            unless aliased_img
+              aliased.build
+            end
 
+          elsif !aliased_img
+            raise(
+              Error::ImageNotFound, aliased_tag
+            )
+          end
+
+          Notify.alias(self)
           aliased_img.tag(
             @repo.to_tag_h
           )
@@ -294,6 +306,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
+      rb_delegate :aliased_tag, :to => "repo.metadata"
       rb_delegate :aliased_repo, {
         :to => :repo, :alias_of => :aliased
       }

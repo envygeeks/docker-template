@@ -13,7 +13,12 @@ module Docker
 
       def initialize(*hashes)
         @base_meta = hashes.compact.reduce(:deep_merge).freeze
-        raise Error::RepoNotFound, name unless root.exist?
+
+        unless root.exist?
+          raise(
+            Error::RepoNotFound, name
+          )
+        end
       end
 
       # ----------------------------------------------------------------------
@@ -21,8 +26,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def pushable?
-        (metadata["push"] || metadata["push_only"]) && !metadata[
-          "cache_only"
+        (metadata["push"] || metadata["push_only"]) &&
+        !metadata["cache_only"] && !metadata[
+          "clean_only"
         ]
       end
 
@@ -31,7 +37,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cacheable?
-        (metadata["cache"] || metadata["cache_only"]) && !metadata[
+        (metadata["cache"] || metadata["cache_only"]) &&
+        !metadata[
           "push_only"
         ]
       end
@@ -41,7 +48,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def buildable?
-        !metadata["push_only"] && !metadata["cache_only"] && !metadata[
+        !metadata["push_only"] && !metadata["cache_only"] &&
+        !metadata[
           "clean_only"
         ]
       end
@@ -52,10 +60,24 @@ module Docker
       # ----------------------------------------------------------------------
 
       def aliased
-        if alias?
+        full = Parser.full_name?(
+          metadata.aliased_tag
+        )
+
+        if alias? && full
+          self.class.new(to_h.merge(Parser.to_repo_hash(
+            metadata.aliased_tag
+          )))
+
+        elsif alias?
           self.class.new(to_h.merge({
             "tag" => metadata.aliased_tag
           }))
+        end
+
+      rescue Error::RepoNotFound => e
+        unless full
+          raise e
         end
       end
 

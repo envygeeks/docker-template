@@ -42,7 +42,10 @@ module Docker
         }
 
         all.each do |v|
-          hash = to_repo_hash(v)
+          hash = self.class.to_repo_hash(
+            v
+          )
+
           if hash.empty?
             raise Docker::Template::Error::BadRepoName, v
 
@@ -61,8 +64,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      private
-      def to_repo_hash(val)
+      def self.to_repo_hash(val)
         data = val.split(SPLIT_REGEXP)
 
         return "name" => data[0] if data.one?
@@ -71,6 +73,15 @@ module Docker
         return "user" => data[0], "name" => data[1], "tag" => data[2] if data.size == 3
 
         {}
+      end
+
+      # ----------------------------------------------------------------------
+
+      def self.full_name?(val)
+        parsed = to_repo_hash(val)
+        parsed.key?("name") && (parsed.key?("user") || parsed.key?(
+          "tag"
+        ))
       end
     end
   end

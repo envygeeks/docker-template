@@ -39,6 +39,8 @@ describe Docker::Template::Repo do
   describe "#aliased" do
     before do
       mocked_repo.add_alias :world, :tag => :hello
+      mocked_repo.add_alias :person, :tag => "randon/image:name"
+      mocked_repo.add_alias :local, :tag => "default:tag"
       mocked_repo.add_tag :hello, :group => :world
       mocked_repo.with_repo_init({
         :tag => :world
@@ -49,6 +51,42 @@ describe Docker::Template::Repo do
       expect(mocked_repo.to_repo.aliased.tag).to eq(
         "hello"
       )
+    end
+
+    #
+
+    context "when given a non-local full name alias" do
+      before do
+        mocked_repo.with_repo_init({
+          :tag => :person
+        })
+      end
+
+      #
+
+      it "should not throw" do
+        expect { mocked_repo.to_repo.aliased }.not_to(
+          raise_error
+        )
+      end
+    end
+
+    #
+
+    context "when given a local full name alias" do
+      before do
+        mocked_repo.with_repo_init({
+          :tag => :local
+        })
+      end
+
+      #
+
+      it "should return the local repo" do
+        expect(mocked_repo.to_repo.aliased).to be_a(
+          Docker::Template::Repo
+        )
+      end
     end
   end
 
