@@ -2,19 +2,18 @@ sudo: false
 cache: bundler
 os: linux
 rvm:
-  - 2.3.0
-  - 2.2.4
-  - 2.1.8
-  - jruby-9.0.4.0
-  - jruby-9.0.5.0
+- 2.3.0
+- 2.2.4
+- 2.1.8
+- jruby-9.0.4.0
+- jruby-9.0.5.0
 matrix:
   allow_failures:
-    - rvm: jruby-9.0.5.0
-    - rvm: jruby-9.0.4.0
+  - rvm: jruby-9.0.5.0
+  - rvm: jruby-9.0.4.0
 notifications:
   email:
-    - jordon@envygeeks.io
-
+  - jordon@envygeeks.io
   slack:
     secure: "\
       v6u2DxGc/UP/lL+8OMqHTKLCnavqXMYEtKMF6HO+1NYkoFhXvuZwi00VVSvztkpqTm8PLyUZ\
@@ -30,8 +29,7 @@ notifications:
     "
 branches:
   only:
-    - master
-
+  - master
 addons:
   code_climate:
     repo_token:
@@ -47,3 +45,22 @@ addons:
         PNwjdv8B95AXuE6ujflug/9LjUyevnGWPFmoRtgxj5CqzsyFRIthYMpZwFV6p0ff5Tq2Z6\
         HgRmvWpZ8AVc/n2EiobOZ1zEAt+gzykmO8+1BuT/xDsFdAa/+NO0w=\
       "
+deploy:
+  gemspec: Gem.gemspec
+  provider: rubygems
+  on:
+    tags: true
+
+  api_key:
+    secure: "\
+      h0NUosilAgCNLALOxqwBICTL+xb1LihIZbEyyEqoe/uBbKvvpfh7xowEgyfKCPfsW3H/FMGn\
+      tyQcJZPuBbj6yeM/Ip49AEBdWQxvszCXnj4n5zkqYvKLD+hIbWf2SQ1xcC9nwMbZXvc3SAig\
+      OxtZDqGfyaczv6FQd2gVWbByRi/Zut3Eohr/H3BTgytSkG6zLLbqKZWOevVFlEng4gvR+s9d\
+      GHfvaoEkRZ63M3yAP1nGGY+HIg1NF5cLgAe674ILoLTTPUvHVKBWzcI996ekBSGpm2Dswm8w\
+      DIrAtLN+N8lrydBk6NfEYrHAPGdvhFC0Sa88izS/yvmMJAH1iz3LDyrHecTSwnOIj7YnFEKb\
+      A2XMN2ew9CqpnArQSJTKuDOVCeYflAFqllIw1J5XOX4r5dSlr2WbP9+2sKL9lrMWUPHSjle+\
+      I2618es/13yfmh2jVpgQkkTKSUF+VKQPDdVZirVWjCn5V7v4S8MvPM/ikZ/AjZYLH5t2mWrH\
+      MyGjUtno2VaEcDovmY/qdJNUQ0hD6sEiI+YDoorXnpEEaf7KCRsfAfn93mWtmQswGThJb2Us\
+      gVkf/th8xns9IfzAkbRuuxljVvNhgRNvaoINKquYtfmO4xLhfLzzBLPD+RnxuWwz4aRDExY1\
+      HV4ihy7X2sDCwP8MC1XFO+Mtx8LWCZ0Frno=\
+    "
