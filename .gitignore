@@ -4,6 +4,7 @@
 /coverage
 /objects.txt
 /Gemfile.lock
+/*.gem
 /features
 /.analysis
 /opts.yml
