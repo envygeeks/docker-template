@@ -6,8 +6,7 @@ arch=$(uname -i)
 rootfs=$(mktemp -d)
 tmp=$(mktemp -d)
 
-mirrors="\nhttp://dl-1.alpinelinux.org/alpine/v<%= @metadata.release %>/main"
-mirrors=$mirrors"\nhttp://dl-2.alpinelinux.org/alpine/v<%= @metadata.release %>/main"
+mirrors="\nhttp://dl-2.alpinelinux.org/alpine/v<%= @metadata.release %>/main"
 mirrors=$mirrors"\n@testing http://dl-3.alpinelinux.org/alpine/edge/testing"
 mirrors=$mirrors"\n@testing http://dl-4.alpinelinux.org/alpine/edge/testing"
 release_url="http://nl.alpinelinux.org/alpine/v<%= @metadata.release %>/main"
