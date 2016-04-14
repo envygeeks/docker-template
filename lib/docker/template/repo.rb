@@ -21,8 +21,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def pushable?
-        metadata["push"] || metadata[
-          "push_only"
+        (metadata["push"] || metadata["push_only"]) && !metadata[
+          "cache_only"
         ]
       end
 
@@ -31,8 +31,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cacheable?
-        metadata["cache"] || metadata[
-          "cache_only"
+        (metadata["cache"] || metadata["cache_only"]) && !metadata[
+          "push_only"
         ]
       end
 
