@@ -58,8 +58,8 @@ describe Docker::Template::Cache do
 
         silence_io do
           subject.aliased_repo.builder.send :setup
-          described_class.context(
-            subject, subject.context
+          described_class.aliased_context(
+            subject
           )
         end
       end

@@ -37,9 +37,9 @@ module Docker
 
       private
       def cache_context
-        if @repo.cacheable?
-          Cache.context self, @context
-        end
+        return unless @repo.cacheable?
+        return Cache.aliased_context(self) if alias?
+        Cache.context(self, @context)
       end
     end
   end
