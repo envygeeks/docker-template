@@ -26,7 +26,7 @@ describe Docker::Template::Normal do
   #
 
   describe "#cache_context" do
-    context "when sync = false" do
+    context "when cache = false" do
       before do
         subject.repo.metadata.merge!({
           "cache" => false
@@ -74,10 +74,10 @@ describe Docker::Template::Normal do
 
     #
 
-    context "when sync = true" do
+    context "when cache = true" do
       before do
         subject.repo.metadata.merge!({
-          "sync" => true
+          "cache" => true
         })
       end
 

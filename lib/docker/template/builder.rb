@@ -195,9 +195,9 @@ module Docker
 
       private
       def cache_context
-        if repo.syncable?
+        if repo.cacheable?
           $stderr.puts Simple::Ansi.red(
-            "Context syncing not supported"
+            "Context caching not supported"
           )
         end
       end

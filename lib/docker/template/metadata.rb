@@ -32,7 +32,7 @@ module Docker
       DEFAULTS = HashWithIndifferentAccess.new({
         "log_filters" => [],
         "push" => false,
-        "sync" => false,
+        "cache" => false,
         "type" => "normal",
         "user" => "random_user",
         "local_prefix" => "local",

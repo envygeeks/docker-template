@@ -60,17 +60,17 @@ Usage:
   docker-template build [REPOS [OPTS]]
 
 Options:
-  [--sync-only], [--no-sync-only]    # Only sync your repositiries, don't build.
+  [--cache-only], [--no-cache-only]  # Only cache your repositories, don't build.
   [--clean-only], [--no-clean-only]  # Only clean your repositories, don't build.
-  [--push-only], [--no-push-only]    # Only push your repositories, don't build.
+  [--push-only], [--no-push-only]    # Only push  your repositories, don't build.
   [--profile], [--no-profile]        # Profile Memory.
   [--tty], [--no-tty]                # Enable TTY Output.
   [--push], [--no-push]              # Push Repo After Building.
-  [--sync], [--no-sync]              # Sync your repositories to cache.
+  [--cache], [--no-cache]            # Cache your repositories to cache.
   [--mocking], [--no-mocking]        # Disable Certain Actions.
   [--clean], [--no-clean]            # Cleanup your caches.
 
-Build all (or some) of your repostories
+Build all (or some) of your repositories
 ```
 
 ***You can send as many repos/images as you like, or you can send none, the lack of any repos/images will result in all of the possible images being built from your repos/ folder.  This is good for automated building. NOTE: When building images we sort them, in that scratch images are built first, normal images are built second and aliases are done last, so that if you have dependencies within your dependencies hopefully they will get built first, however this is not always likely if your images rely on another normal image.  In that case you might want to send a manual list for us.***

@@ -37,7 +37,7 @@ module Docker
 
       private
       def cache_context
-        if @repo.syncable?
+        if @repo.cacheable?
           Cache.context self, @context
         end
       end

@@ -29,7 +29,7 @@ In Docker Template metadata is nothing more than a bunch of data that is overrid
 ```yml
 log_filters: []
 push: false
-sync: false
+cache: false
 type: normal
 user: envygeeks
 local_prefix: local

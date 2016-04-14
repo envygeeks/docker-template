@@ -29,6 +29,10 @@ group :development do
   end
 end
 
+group :travis, :optional => true do
+  gem "travis"
+end
+
 group :site, :optional => true do
   gem "jekyll-assets", :github => "jekyll/jekyll-assets"
   gem "jekyll", :github => "jekyll/jekyll"

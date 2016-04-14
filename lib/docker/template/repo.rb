@@ -27,12 +27,12 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Determines whether or not we should (or you should) sync the repo.
+      # Determines whether or not we should (or you should) cache the repo.
       # ----------------------------------------------------------------------
 
-      def syncable?
-        metadata["sync"] || metadata[
-          "sync_only"
+      def cacheable?
+        metadata["cache"] || metadata[
+          "cache_only"
         ]
       end
 
@@ -41,7 +41,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def buildable?
-        !metadata["push_only"] && !metadata["sync_only"] && !metadata[
+        !metadata["push_only"] && !metadata["cache_only"] && !metadata[
           "clean_only"
         ]
       end
@@ -83,7 +83,7 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # The directory you wish to cache to (like `cache`, `sync`) or other.
+      # The directory you wish to cache to (like `cache/`) or other.
       # ----------------------------------------------------------------------
 
       def cache_dir

@@ -54,7 +54,7 @@ describe Docker::Template::Cache do
       before do
         mocked_repo.add_alias :hello
         mocked_repo.with_repo_init :tag => :hello
-        mocked_repo.with_opts :sync => true
+        mocked_repo.with_opts :cache => true
 
         silence_io do
           subject.aliased_repo.builder.send :setup
