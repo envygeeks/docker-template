@@ -40,13 +40,17 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cleanup(repo)
-        repo.cache_dir.parent.children.each do |file|
-          unless repo.metadata.tags.include?(file.basename)
-            $stdout.puts Simple::Ansi.yellow("Removing %s." % [
-              file.relative_path_from(Template.root)
-            ])
+        cache_dir = repo.cache_dir.parent
 
-            file.rm_rf
+        if repo.cacheable? && cache_dir.exist?
+          then cache_dir.children.each do |file|
+            unless repo.metadata.tags.include?(file.basename)
+              $stdout.puts Simple::Ansi.yellow("Removing %s." % [
+                file.relative_path_from(Template.root)
+              ])
+
+              file.rm_rf
+            end
           end
         end
       end
