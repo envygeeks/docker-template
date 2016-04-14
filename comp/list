@@ -10,14 +10,13 @@
 
 ARGV.shift
 require "pathutil"
-require "bundler/setup"
 require "msgpack"
 
 # ----------------------------------------------------------------------------
 
-list = MessagePack.unpack(File.read(File.expand_path(
-  "comp-list.pak", __dir__
-)))
+list = MessagePack.unpack(
+  Pathutil.new(__dir__).expand_path.join("list.pak").read
+)
 
 # ----------------------------------------------------------------------------
 

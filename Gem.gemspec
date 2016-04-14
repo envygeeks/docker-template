@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.executables << "docker-template"
   spec.version = Docker::Template::VERSION
   spec.description = "Build and template awesome Docker images a variety of ways."
-  spec.files = %W(Rakefile Gemfile README.md LICENSE shas.yml) + Dir["{lib,bin,templates}/**/*"]
+  spec.files = %W(Rakefile Gemfile README.md LICENSE shas.yml) + Dir["{lib,bin,templates,comp}/**/*"]
   spec.summary = "Build and template Docker images a variety of ways."
   spec.homepage = "http://github.com/envygeeks/docker-template/"
   spec.required_ruby_version = ">= 2.3.0"
