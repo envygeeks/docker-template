@@ -1,23 +1,37 @@
----
 sudo: false
 cache: bundler
 os: linux
 rvm:
-  - &ruby1 2.3.0
-  - &ruby2 2.2.4
-  - &ruby3 2.1.8
-  - &jruby-previous jruby-9.0.4.0
-  - &jruby jruby-9.0.5.0
+  - 2.3.0
+  - 2.2.4
+  - 2.1.8
+  - jruby-9.0.4.0
+  - jruby-9.0.5.0
 matrix:
   allow_failures:
-    - rvm: *jruby
-    - rvm: *jruby-previous
+    - rvm: jruby-9.0.5.0
+    - rvm: jruby-9.0.4.0
 notifications:
   email:
     - jordon@envygeeks.io
+
+  slack:
+    secure: "\
+      v6u2DxGc/UP/lL+8OMqHTKLCnavqXMYEtKMF6HO+1NYkoFhXvuZwi00VVSvztkpqTm8PLyUZ\
+      eBR+SiMIOHe4YhorO7UwaQGMYko+YwiJ+sce+96q+1MziNknE+lqzGwlxRw0XOvXOr11iHBN\
+      bs2dOz8WeV8UtQ4pln9NwLSKcDdC+xWQh3h3mdzX/R+HhbTPYNWDxnFpSMhelXRno3lb6Dxe\
+      wzKHg5seTwunSjJWJX/1BqiCe8M0NXttY/iHhkNTFLh66pxLE2aK8Zgob9YvHaLJXAQXr4ZE\
+      yQbdpTzYFDHNnpfJHIWfDUP++0wIkQdLnoduxqzRHMtC5ntOKCa6JAog0Mqjn3ULQgjnJ9m7\
+      h2OyYl0LSeoGIiHVUlrY6CWXkeKRVbwK6b+VLtvdunoiszKwJKRM9yz02m/JzZ5JTpPzaWdf\
+      f2YHPwlxha+FsrpBBaXayKaobXp3lQENzncZaQtDSDj7SVNQh2sGr4bIMjTPJDGp3PLDXl7I\
+      5k0/hsitDzs2GSisQOdTrqqvPzxtLx3BMhk/NCHbcdrmaX9/lTnCaC8aSGIOUdLjTzCrmgBO\
+      yFYV9t/1vnUWL8VqjUwp14X3u8Wu+MVlIJSolcWAmk5Hv/UjJru4/+hoPa4fBxjupytS1r+E\
+      Vqkz5s22yejUtZF8OWMViZSjHyX3eP2c568=\
+    "
 branches:
   only:
     - master
+
 addons:
   code_climate:
     repo_token:
