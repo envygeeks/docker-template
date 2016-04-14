@@ -1,0 +1,6 @@
+[submodule "examples/envygeeks"]
+	path = examples/envygeeks
+	url = https://github.com/envygeeks/docker.git
+[submodule "examples/jekyll.git"]
+	path = examples/jekyll.git
+	url = https://github.com/jekyll/docker.git
