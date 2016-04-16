@@ -2,18 +2,18 @@ sudo: false
 cache: bundler
 os: linux
 rvm:
-- 2.3.0
-- 2.2.4
-- 2.1.8
-- jruby-9.0.4.0
-- jruby-9.0.5.0
+  - 2.3.0
+  - 2.2.4
+  - 2.1.8
+  - jruby-9.0.4.0
+  - jruby-9.0.5.0
 matrix:
   allow_failures:
-  - rvm: jruby-9.0.5.0
-  - rvm: jruby-9.0.4.0
+    - rvm: jruby-9.0.5.0
+    - rvm: jruby-9.0.4.0
 notifications:
   email:
-  - jordon@envygeeks.io
+    - jordon@envygeeks.io
   slack:
     secure: "\
       v6u2DxGc/UP/lL+8OMqHTKLCnavqXMYEtKMF6HO+1NYkoFhXvuZwi00VVSvztkpqTm8PLyUZ\
@@ -29,7 +29,8 @@ notifications:
     "
 branches:
   only:
-  - master
+    - master
+    - /^v[0-9\.]/
 addons:
   code_climate:
     repo_token:
