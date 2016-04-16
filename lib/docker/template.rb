@@ -83,3 +83,13 @@ module Docker
     end
   end
 end
+
+# ----------------------------------------------------------------------------
+# Trick extras into merging array's into array's for us so users can inherit.
+# ----------------------------------------------------------------------------
+
+class Array
+  def deep_merge(new_)
+    self | new_
+  end
+end
