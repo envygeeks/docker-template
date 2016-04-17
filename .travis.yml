@@ -1,16 +1,31 @@
 sudo: false
 cache: bundler
 os: linux
+
+#
+
 rvm:
-  - 2.3.0
-  - 2.2.4
-  - 2.1.8
-  - jruby-9.0.4.0
-  - jruby-9.0.5.0
+  - &ruby1 2.3.0
+  - &ruby2 2.2.4
+  - &ruby3 2.1.8
+  - &jruby jruby-9.0.5.0
+
+#
+
 matrix:
   allow_failures:
     - rvm: jruby-9.0.5.0
-    - rvm: jruby-9.0.4.0
+
+  exclude:
+    - rvm: *ruby2
+      branch: !ruby/regexp /^v[0-9\.]+$/
+    - branch: !ruby/regexp /^v[0-9\.]+$/
+      rvm: *jruby
+    - rvm: *ruby3
+      branch: !ruby/regexp /^v[0-9\.]+$/
+
+#
+
 notifications:
   email:
     - jordon@envygeeks.io
@@ -27,10 +42,16 @@ notifications:
       yFYV9t/1vnUWL8VqjUwp14X3u8Wu+MVlIJSolcWAmk5Hv/UjJru4/+hoPa4fBxjupytS1r+E\
       Vqkz5s22yejUtZF8OWMViZSjHyX3eP2c568=\
     "
+
+#
+
 branches:
   only:
     - master
-    - /^v[0-9\.]+$/
+    - !ruby/regexp /^v[0-9\.]+$/
+
+#
+
 addons:
   code_climate:
     repo_token:
@@ -46,7 +67,11 @@ addons:
         PNwjdv8B95AXuE6ujflug/9LjUyevnGWPFmoRtgxj5CqzsyFRIthYMpZwFV6p0ff5Tq2Z6\
         HgRmvWpZ8AVc/n2EiobOZ1zEAt+gzykmO8+1BuT/xDsFdAa/+NO0w=\
       "
+
+#
+
 deploy:
+  gem: docker-template
   gemspec: Gem.gemspec
   provider: rubygems
   on:
