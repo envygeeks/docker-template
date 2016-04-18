@@ -73,7 +73,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def self.to_repo_hash(val)
-        data = val.split(SPLIT_REGEXP)
+        data = val.to_s.split(SPLIT_REGEXP)
 
         return "name" => data[0] if data.one?
         return "name" => data[0], "tag"  => data[1] if val =~ COLON_REGEXP && data.size == 2
