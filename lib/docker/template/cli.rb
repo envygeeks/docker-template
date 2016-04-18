@@ -9,7 +9,8 @@ require "thor"
 module Docker
   module Template
     class CLI < Thor
-      autoload :List, "docker/template/cli/list"
+      autoload :Build, "docker/template/cli/build"
+      autoload :List,  "docker/template/cli/list"
 
       # ----------------------------------------------------------------------
       # docker-template build [repos [opts]]
@@ -29,14 +30,24 @@ module Docker
       # ----------------------------------------------------------------------
 
       def build(*args)
-        with_profiling do
-          Parser.new(args, options).parse.tap { |o| o.map(&:build) } \
-            .uniq(&:name).map(&:clean)
-        end
-
+        Build.new(args, options).start
       rescue Docker::Template::Error::StandardError => e
         $stderr.puts Simple::Ansi.red(e.message)
-        exit e.respond_to?(:status) ? e.status : 1
+        exit e.respond_to?(:status) ? \
+          e.status : 1
+
+      rescue Excon::Errors::SocketError
+        $stderr.puts "Unable to connect to your Docker Instance."
+        $stderr.puts "Are you absolutely sure that you have the Docker installed?"
+        abort "Unable to build your images."
+
+      rescue Exception
+        raise unless $ERROR_POSITION
+        $ERROR_POSITION.delete_if do |source|
+          source =~ %r!#{Regexp.escape(
+            __FILE__
+          )}!o
+        end
       end
 
       # ----------------------------------------------------------------------
@@ -53,52 +64,6 @@ module Docker
         return $stdout.puts(
           List.build
         )
-      end
-
-      # ----------------------------------------------------------------------
-      # rubocop:enable Metrics/AbcSize
-      # ----------------------------------------------------------------------
-
-      no_tasks do
-
-        # --------------------------------------------------------------------
-        # When a user wishes to profile their builds to see memory being used.
-        # rubocop:disable Lint/RescueException
-        # --------------------------------------------------------------------
-
-        def with_profiling
-          if options.profile?
-            begin
-              require "memory_profiler"
-              MemoryProfiler.report(:top => 10_240) { yield }.pretty_print({\
-                :to_file => "mem.txt"
-              })
-
-            rescue LoadError
-              $stderr.puts "The gem 'memory_profiler' wasn't found."
-              $stderr.puts "You can install it with `gem install memory_profiler'"
-              abort "Hope you install it so you can report back."
-            end
-
-          else
-            yield
-          end
-
-        rescue Excon::Errors::SocketError
-          $stderr.puts "Unable to connect to your Docker Instance."
-          $stderr.puts "Are you absolutely sure that you have the Docker installed?"
-          abort "Unable to build your images."
-
-        rescue Exception
-          raise unless $ERROR_POSITION
-          $ERROR_POSITION.delete_if do |source|
-            source =~ %r!#{Regexp.escape(
-              __FILE__
-            )}!o
-          end
-
-          raise
-        end
       end
     end
   end
