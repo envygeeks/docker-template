@@ -53,7 +53,7 @@ gem "docker-template", {
 
 ### Build
 
-You can build a template by sending either `image`, `user/image`, `image:tag`, or `user/image:tag` to `docker-template build`.<br>
+You can build a template by sending `image`, `user/image`, `image:tag`, or `user/image:tag` to `docker-template build`.<br>
 Build supports the following arguments:
 
 ```
