@@ -9,6 +9,7 @@ require "thor"
 module Docker
   module Template
     class CLI < Thor
+      autoload :List, "docker/template/cli/list"
 
       # ----------------------------------------------------------------------
       # docker-template build [repos [opts]]
@@ -43,23 +44,15 @@ module Docker
       # ----------------------------------------------------------------------
 
       desc "list [OPTS]", "List all possible builds."
-      option :grep, :type => :boolean, :desc => "Make --only a Regexp search."
-      option :only, :type => :string,  :desc => "Only a specific repo."
 
       # ----------------------------------------------------------------------
       # rubocop:disable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       def list
-        Parser.new([], {}).parse.each do |repo|
-          repo_s = repo.to_s.gsub(/^[^\/]+\//, "")
-          next unless (only.is_a?(Regexp) && repo_s =~ only) \
-            || (only && repo_s == only) || !only
-
-          $stderr.print repo.to_s
-          $stderr.print " -> ", repo.aliased.to_s, "\n" if repo.alias?
-          $stderr.puts unless repo.alias?
-        end
+        return $stdout.puts(
+          List.build
+        )
       end
 
       # ----------------------------------------------------------------------

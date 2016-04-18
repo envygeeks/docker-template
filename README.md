@@ -78,9 +78,25 @@ Build all (or some) of your repositories
 
 ### List
 
-You can get a list of the possible images that can be built, an example:
+You can get a list of all the images via `docker-template list`:
 
 ```
-envygeeks/alpine:3.3
-envygeeks/alpine:latest -> envygeeks/alpine:3.3
+[user] jekyll
+  ├─ [repo] builder
+  │  ├─ [tag] 3.1.2
+  │  │  ├─ [alias] latest
+  │  │  │  ├─ [alias] jekyll:builder
+  │  │  ├─ [alias] stable
+  │  │  ├─ [alias] 3.1
+  │  │  ├─ [alias] 3
+  │  ├─ [tag] pages
+  ├─ [repo] jekyll
+  │  ├─ [tag] 3.1.2
+  │  │  ├─ [alias] latest
+  │  │  ├─ [alias] stable
+  │  │  ├─ [alias] 3.1
+  │  │  ├─ [alias] 3
+  │  ├─ [tag] pages
+  │  ├─ [remote] envygeeks/alpine:latest
+  │  │  ├─ [alias] envygeeks
 ```

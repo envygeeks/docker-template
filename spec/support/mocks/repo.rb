@@ -158,6 +158,14 @@ module Mocks
     end
 
     # ------------------------------------------------------------------------
+
+    def clear_opts
+      @hashes[:opts] = {}
+      repo_dir.join(Docker::Template::Metadata::OPTS_FILE).rm_f
+      self
+    end
+
+    # ------------------------------------------------------------------------
     # Example: mocked_repo.with_opts(:hello => :world)
     # Write the hash data into the repos `opts.yml`
     # ------------------------------------------------------------------------
