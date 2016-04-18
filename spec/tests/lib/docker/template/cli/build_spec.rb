@@ -6,6 +6,8 @@
 
 require "rspec/helper"
 describe Docker::Template::CLI::Build do
+  include_context :repos
+
   before do
     allow_any_instance_of(  Hash).to receive(:profile?).and_return nil
     allow(Docker::Template::Repo).to receive(:build)   .and_return nil
