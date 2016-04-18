@@ -60,20 +60,6 @@ module Docker
       # ----------------------------------------------------------------------
 
       no_tasks do
-        def only
-          return @only ||= begin
-            if !options.grep?
-              then options[
-                :only
-              ]
-
-            elsif options.only?
-              Regexp.new(options[
-                :only
-              ])
-            end
-          end
-        end
 
         # --------------------------------------------------------------------
         # When a user wishes to profile their builds to see memory being used.
