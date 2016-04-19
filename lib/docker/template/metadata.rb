@@ -609,8 +609,8 @@ module Docker
           )
 
         else
-          val != false && !val.nil? && \
-            !val.empty?
+          val != false && !val.nil? && (val == true || (val \
+            && val.is_a?(String) && !val.empty?))
         end
       end
 
