@@ -61,7 +61,7 @@ describe Docker::Template::CLI::Build do
 
   #
 
-  context "when the user wishes to build only diffs" do
+  context "when the user wishes to build only diffs", :ruby => "!jruby" do
     it "should reselect the repositories" do
       expect(subject).to receive(:reselect_repos).and_return(
         []
@@ -79,7 +79,7 @@ describe Docker::Template::CLI::Build do
 
   #
 
-  context "when the user wishes to profile" do
+  context "when the user wishes to profile", :ruby => "!jruby" do
     require "memory_profiler"
 
     subject do
