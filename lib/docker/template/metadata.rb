@@ -596,21 +596,22 @@ module Docker
 
       private
       def method_missing(method, *args, shell: false, &block)
-        key = method.to_s.gsub(/\?$/, "")
-        val = self[key] || self[key.singularize] \
-           || self[key.pluralize]
+        key  = method.to_s.gsub(/\?$/, "")
+        val  = self[key] || self[key.singularize] \
+                || self[key.pluralize]
 
         if !args.empty? || block_given?
           super
 
         elsif method !~ /\?$/
-          string_wrapper(
-            val, :shell => shell
-          )
+          string_wrapper(val, {
+            :shell => shell
+          })
 
         else
-          val != false && !val.nil? && (val == true || (val \
-            && val.is_a?(String) && !val.empty?))
+          val == true || val == false ? val : if val.respond_to?(:empty?)
+            then !val.empty? else !!val
+          end
         end
       end
 

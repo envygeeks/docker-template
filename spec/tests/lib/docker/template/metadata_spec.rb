@@ -1298,7 +1298,24 @@ describe Docker::Template::Metadata do
     context do
       before do
         subject.merge!({
-          "hello" => :world
+          "hello"  => :world,
+
+          "false1" => {},
+          "false2" => false,
+          "false3" => nil,
+          "false4" => [],
+          "false5" => "",
+
+          "true1"  => :true,
+          "true2"  => "true",
+          "true3"  => true,
+          "true4"  => {
+            :key => :val
+          },
+
+          "true5" => [
+            :key
+          ]
         })
       end
 
@@ -1320,11 +1337,16 @@ describe Docker::Template::Metadata do
     #
 
     context "when a method contains ?" do
-      it "should make it a boolean" do
-        expect(subject.hello?).to eq(
-          true
-        )
-      end
+      specify { expect(subject.false1?).to eq false }
+      specify { expect(subject.false2?).to eq false }
+      specify { expect(subject.false3?).to eq false }
+      specify { expect(subject.false4?).to eq false }
+      specify { expect(subject.false5?).to eq false }
+      specify { expect(subject. true1?).to eq false }
+      specify { expect(subject. true2?).to eq false }
+      specify { expect(subject. true3?).to eq false }
+      specify { expect(subject. true4?).to eq false }
+      specify { expect(subject. true5?).to eq false }
     end
   end
 end
