@@ -15,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.files = %W(Rakefile Gemfile README.md LICENSE shas.yml) + Dir["{lib,bin,templates,comp}/**/*"]
   spec.summary = "Build and template Docker images a variety of ways."
   spec.homepage = "http://github.com/envygeeks/docker-template/"
-  spec.required_ruby_version = ">= 2.3.0"
+  spec.required_ruby_version = ">= 2.1.0"
   spec.email = ["jordon@envygeeks.io"]
   spec.require_paths = ["lib"]
   spec.name = "docker-template"
