@@ -23,18 +23,14 @@ module Docker
 
         def reselect_repos
           Template._require "rugged" do
-            git = Rugged::Repository.new(".")
-            repos_dir = Template.root.join(@opts.repos_dir)
-            walker = Rugged::Walker.new(git)
-            walker.push(git.last_commit)
+            git = Rugged::Repository.new(Template.root.to_s)
+            dir = Template.root.join(@opts.repos_dir)
 
-            repos = git.last_commit.parents.each_with_object(Set.new) do |parent, set|
-              git.last_commit.diff(parent).each_delta do |delta, file = delta.new_file[:path]|
-                if Pathutil.new(file).expand_path(Template.root).in_path?(repos_dir)
-                  set.merge(file.split("/").values_at(
-                    1
-                  ))
-                end
+            repos = git.last_commit.diff.each_delta.each_with_object(Set.new) do |delta, set|
+              if Pathutil.new(delta.new_file[:path]).expand_path(Template.root).in_path?(dir)
+                set.merge(delta.new_file[:path].split("/").values_at(
+                  1
+                ))
               end
             end
 
