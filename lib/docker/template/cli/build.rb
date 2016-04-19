@@ -20,6 +20,8 @@ module Docker
         end
 
         # --------------------------------------------------------------------
+        # rubocop:disable Metrics/AbcSize
+        # --------------------------------------------------------------------
 
         def reselect_repos
           Template._require "rugged" do
@@ -27,11 +29,10 @@ module Docker
             dir = Template.root.join(@opts.repos_dir)
 
             repos = git.last_commit.diff.each_delta.each_with_object(Set.new) do |delta, set|
-              if Pathutil.new(delta.new_file[:path]).expand_path(Template.root).in_path?(dir)
-                set.merge(delta.new_file[:path].split("/").values_at(
-                  1
-                ))
-              end
+              next unless Pathutil.new(delta.new_file[:path]).expand_path(Template.root).in_path?(dir)
+              set.merge(delta.new_file[:path].split("/").values_at(
+                1
+              ))
             end
 
             @repos = @repos.select do |repo|
@@ -42,6 +43,8 @@ module Docker
           end
         end
 
+        # --------------------------------------------------------------------
+        # rubocop:enable Metrics/AbcSize
         # --------------------------------------------------------------------
 
         private

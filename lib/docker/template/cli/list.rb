@@ -3,9 +3,7 @@ module Docker
     class CLI
       class List
         def self.build
-          return (
-            new.build
-          )
+          return new.build
         end
 
         # --------------------------------------------------------------------
@@ -19,7 +17,7 @@ module Docker
         def build
           out = ""
 
-          @images.group_by { |image| image.user }.each do |user, images|
+          @images.group_by(&:user).each do |user, images|
             out += "[user] " + Simple::Ansi.blue(user) + "\n" + repos(
               user, images
             )
@@ -33,7 +31,7 @@ module Docker
         def repos(user, images)
           out = ""
 
-          images.group_by { |image| image.name }.each do |name, image|
+          images.group_by(&:name).each do |name, _|
             out += "  ├─ [repo] " + Simple::Ansi.green(name) + "\n"
             out += tags(user, name, images)
             out += remote_aliases(
@@ -49,9 +47,7 @@ module Docker
         def tags(user, name, images)
           out = ""
 
-          images.select { |image| image.name == name && image.user == user \
-              && !image.alias? }.each do |image|
-
+          images.select { |image| image.name == name && image.user == user && !image.alias? }.each do |image|
             out += "  │  ├─ [tag] " + Simple::Ansi.magenta(image.tag) + "\n"
             out += aliases(
               user, name, image.tag, images
@@ -63,19 +59,22 @@ module Docker
 
         # --------------------------------------------------------------------
 
-        def remote_aliases(user, name, images)
+        def remote_aliases(*args)
           out = ""
 
-          images.select { |image| aliased_remote?(image) && image.user == user \
-              && image.name == name }.group_by { |image| image.metadata[:aliases][image.tag] \
-                }.each do |remote, images_|
+          remotes = _remote_aliases(*args).group_by do |image|
+            image.metadata[:aliases][
+              image.tag
+            ]
+          end
 
+          remotes.each do |remote, images_|
             out += "  │  ├─ [remote] "
             out += Simple::Ansi.yellow(remote)
             out += "\n"
 
             images_.each do |image|
-              out +=  "  │  │  ├─ [alias] "
+              out += "  │  │  ├─ [alias] "
               out += Simple::Ansi.yellow(
                 image.tag
               )
@@ -89,20 +88,31 @@ module Docker
 
         # --------------------------------------------------------------------
 
+        def _remote_aliases(user, name, images)
+          images.select do |image|
+            image.user == user && image.name == name && aliased_remote?(
+              image
+            )
+          end
+        end
+
+        # --------------------------------------------------------------------
+
         def aliases(user, name, tag, images, depth: 0)
           out = ""
 
           _aliases(user, name, tag, images).each do |alias_|
-            if alias_.name == name
-              name_ = Simple::Ansi.yellow(
-                alias_.tag
-              )
+            name_ = \
+              if alias_.name == name
+                Simple::Ansi.yellow(
+                  alias_.tag
+                )
 
-            else
-              name_ = Simple::Ansi.yellow(
-                "#{alias_.name}:#{alias_.tag}"
-              )
-            end
+              else
+                Simple::Ansi.yellow(
+                  "#{alias_.name}:#{alias_.tag}"
+                )
+              end
 
             out += "  │  │  #{"│  " * depth}├─ [alias] #{name_}\n"
             out += aliases(user, name, alias_.tag, images, {

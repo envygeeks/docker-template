@@ -609,9 +609,10 @@ module Docker
           })
 
         else
-          val == true || val == false ? val : if val.respond_to?(:empty?)
-            then !val.empty? else !!val
-          end
+          [true, false].include?(val) ? val : \
+            if val.respond_to?(:empty?)
+              then !val.empty? else !!val
+            end
         end
       end
 

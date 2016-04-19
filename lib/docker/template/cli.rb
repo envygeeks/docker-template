@@ -29,18 +29,16 @@ module Docker
       option :clean,      :type => :boolean, :desc => "Cleanup your caches."
 
       # ----------------------------------------------------------------------
+      # rubocop:disable Lint/RescueException
+      # ----------------------------------------------------------------------
 
       def build(*args)
         Build.new(args, options).start
+
       rescue Docker::Template::Error::StandardError => e
         $stderr.puts Simple::Ansi.red(e.message)
         exit e.respond_to?(:status) ? \
           e.status : 1
-
-      rescue Excon::Errors::SocketError
-        $stderr.puts "Unable to connect to your Docker Instance."
-        $stderr.puts "Are you absolutely sure that you have the Docker installed?"
-        abort "Unable to build your images."
 
       rescue Exception
         raise unless $ERROR_POSITION
@@ -52,13 +50,12 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # rubocop:enable Lint/RescueException
       # docker-template list [options]
       # ----------------------------------------------------------------------
 
       desc "list [OPTS]", "List all possible builds."
 
-      # ----------------------------------------------------------------------
-      # rubocop:disable Metrics/AbcSize
       # ----------------------------------------------------------------------
 
       def list

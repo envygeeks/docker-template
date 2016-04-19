@@ -9,7 +9,9 @@ describe Docker::Template::CLI::Build do
   include_context :repos
 
   before do
-    allow(Docker::Template::Repo).to receive(:build)   .and_return nil
+    allow(Docker::Template::Repo).to receive(:build).and_return(
+      nil
+    )
   end
 
   #
@@ -92,12 +94,11 @@ describe Docker::Template::CLI::Build do
       })
     end
 
-
     #
 
     before :all do
       class ProfilerMock
-        def pretty_print(*args)
+        def pretty_print(*)
           return
         end
       end
@@ -192,7 +193,7 @@ describe Docker::Template::CLI::Build do
 
     context "when argv = [val, val]" do
       it "should drop repos from that list that are not modified" do
-        expect(described_class.new(["hello", "default"], {}).reselect_repos.count).to eq(
+        expect(described_class.new(%w(hello default), {}).reselect_repos.count).to eq(
           1
         )
       end
