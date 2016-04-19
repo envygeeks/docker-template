@@ -81,6 +81,20 @@ module Docker
         data._binding
       )
     end
+
+    # ------------------------------------------------------------------------
+
+    def _require(what)
+      require what
+      if block_given?
+        yield
+      end
+
+    rescue LoadError
+      $stderr.puts "The gem '#{what}' wasn't found."
+      $stderr.puts "You can install it with `gem install #{what}'"
+      abort "Hope you install it so you can report back."
+    end
   end
 end
 

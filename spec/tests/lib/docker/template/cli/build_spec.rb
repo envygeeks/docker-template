@@ -9,7 +9,6 @@ describe Docker::Template::CLI::Build do
   include_context :repos
 
   before do
-    allow_any_instance_of(  Hash).to receive(:profile?).and_return nil
     allow(Docker::Template::Repo).to receive(:build)   .and_return nil
   end
 
@@ -62,8 +61,33 @@ describe Docker::Template::CLI::Build do
 
   #
 
+  context "when the user wishes to build only diffs" do
+    it "should reselect the repositories" do
+      expect(subject).to receive(:reselect_repos).and_return(
+        []
+      )
+    end
+
+    #
+
+    subject do
+      described_class.new([], {
+        :diff => true
+      })
+    end
+  end
+
+  #
+
   context "when the user wishes to profile" do
     require "memory_profiler"
+
+    subject do
+      described_class.new([], {
+        :profile => true
+      })
+    end
+
 
     #
 
@@ -78,7 +102,6 @@ describe Docker::Template::CLI::Build do
     #
 
     before do
-      allow_any_instance_of(Hash).to receive(:profile?).and_return true
       allow(MemoryProfiler).to receive(:report).and_return(
         ProfilerMock.new
       )

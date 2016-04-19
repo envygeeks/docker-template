@@ -17,6 +17,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       desc "build [REPOS [OPTS]]", "Build all (or some) of your repositories"
+      option :diff,       :type => :boolean, :desc => "Build only modified repositories."
       option :cache_only, :type => :boolean, :desc => "Only cache your repositories, don't build."
       option :clean_only, :type => :boolean, :desc => "Only clean your repositories, don't build."
       option :push_only,  :type => :boolean, :desc => "Only push  your repositories, don't build."
