@@ -1295,32 +1295,32 @@ describe Docker::Template::Metadata do
   #
 
   describe "#method_missing" do
+    before do
+      subject.merge!({
+        "hello"  => :world,
+
+        "false1" => {},
+        "false2" => false,
+        "false3" => nil,
+        "false4" => [],
+        "false5" => "",
+
+        "true1"  => :true,
+        "true2"  => "true",
+        "true3"  => true,
+        "true4"  => {
+          :key => :val
+        },
+
+        "true5" => [
+          :key
+        ]
+      })
+    end
+
+    #
+
     context do
-      before do
-        subject.merge!({
-          "hello"  => :world,
-
-          "false1" => {},
-          "false2" => false,
-          "false3" => nil,
-          "false4" => [],
-          "false5" => "",
-
-          "true1"  => :true,
-          "true2"  => "true",
-          "true3"  => true,
-          "true4"  => {
-            :key => :val
-          },
-
-          "true5" => [
-            :key
-          ]
-        })
-      end
-
-      #
-
       it "should call to_s unless boolean" do
         expect(subject["hello"]).to receive(
           :to_s
@@ -1342,11 +1342,11 @@ describe Docker::Template::Metadata do
       specify { expect(subject.false3?).to eq false }
       specify { expect(subject.false4?).to eq false }
       specify { expect(subject.false5?).to eq false }
-      specify { expect(subject. true1?).to eq false }
-      specify { expect(subject. true2?).to eq false }
-      specify { expect(subject. true3?).to eq false }
-      specify { expect(subject. true4?).to eq false }
-      specify { expect(subject. true5?).to eq false }
+      specify { expect(subject. true1?).to eq  true }
+      specify { expect(subject. true2?).to eq  true }
+      specify { expect(subject. true3?).to eq  true }
+      specify { expect(subject. true4?).to eq  true }
+      specify { expect(subject. true5?).to eq  true }
     end
   end
 end
