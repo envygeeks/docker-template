@@ -18,6 +18,7 @@ group :test do
   gem "benchmark-ips", :require => false
   gem "rspec-helpers", :require => false
   gem "cucumber", :require => false
+  gem "rugged", :require => false
 end
 
 group :development do
@@ -27,13 +28,4 @@ group :development do
       :require => false
     }
   end
-end
-
-group :travis, :optional => true do
-  gem "travis"
-end
-
-group :site, :optional => true do
-  gem "jekyll-assets", :github => "jekyll/jekyll-assets"
-  gem "jekyll", :github => "jekyll/jekyll"
 end
