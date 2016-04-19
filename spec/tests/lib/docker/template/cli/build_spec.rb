@@ -80,7 +80,11 @@ describe Docker::Template::CLI::Build do
   #
 
   context "when the user wishes to profile", :ruby => "!jruby" do
-    require "memory_profiler"
+    before :all do
+      require "memory_profiler"
+    end
+
+    #
 
     subject do
       described_class.new([], {
