@@ -102,11 +102,9 @@ module Docker
         setup
 
         if @repo.buildable?
-          Notify.build(@repo, {
-            :rootfs => rootfs?
-          })
-
-          chdir_build
+          then Notify.build(@repo, :rootfs => rootfs?) do
+            chdir_build
+          end
         end
 
         push

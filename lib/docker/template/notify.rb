@@ -31,13 +31,58 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+
+      def build(repo, rootfs: false)
+        build_start(repo, {
+          :rootfs => rootfs
+        })
+
+        if block_given?
+          yield
+          build_end(repo, {
+            :rootfs => rootfs
+          })
+        end
+      end
+
+      # ----------------------------------------------------------------------
       # Notify the user that we are building their repository.
       # ----------------------------------------------------------------------
 
-      def build(repo, **kwd)
-        img = repo.to_s(**kwd)
-        msg = Simple::Ansi.green("Building: #{img}")
-        $stderr.puts msg
+      def build_start(repo, rootfs: false)
+        if ENV["TRAVIS"] && !ENV.key?("RSPEC_RUNNING")
+          STDOUT.puts(format("travis_fold:end:%s",
+            repo.to_s(:rootfs => rootfs).tr("^A-Za-z0-9", "-").gsub(
+              /\-$/, ""
+            )
+          ))
+        end
+
+        $stderr.puts Simple::Ansi.green(format(
+          "Building: %s", repo.to_s({
+            :rootfs => rootfs
+          })
+        ))
+      end
+
+      # ----------------------------------------------------------------------
+      # Notify the user that building their repository has ended.
+      # ----------------------------------------------------------------------
+
+      def build_end(repo, rootfs: false)
+        if ENV["TRAVIS"] && !ENV.key?("RSPEC_RUNNING")
+          STDOUT.puts(format("travis_fold:end:%s",
+            repo.to_s(:rootfs => rootfs).tr("^A-Za-z0-9", "-").gsub(
+              /\-$/, ""
+            )
+          ))
+        end
+
+        $stderr.puts Simple::Ansi.green(format(
+          "Done Building: %s", repo.to_s({
+            :rootfs => rootfs
+          })
+        ))
       end
     end
   end

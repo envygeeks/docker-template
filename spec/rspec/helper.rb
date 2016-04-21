@@ -9,6 +9,7 @@ require "luna/rspec/formatters/checks"
 require "docker/template"
 require "rspec/helpers"
 
+ENV["RSPEC_RUNNING"] ||= "true"
 Dir[File.expand_path("../../support/**/*.rb", __FILE__)].each do |f|
   require f
 end
