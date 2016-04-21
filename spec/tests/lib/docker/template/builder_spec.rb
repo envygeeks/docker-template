@@ -505,4 +505,100 @@ describe Docker::Template::Builder do
       )
     end
   end
+
+  #
+
+  describe "#auth!" do
+    before :all do
+      class AuthPathutilWrapper
+        def expand_path
+          self
+        end
+
+        #
+
+        def read_json
+          return {
+            "auths" => {
+              "server.com" => {
+                "email" => "user@example.com",
+                "auth"  => Base64.encode64(
+                  "user:password"
+                )
+              }
+            }
+          }
+        end
+      end
+    end
+
+    #
+
+    before do
+      allow(Pathutil).to receive(:new).and_call_original
+      allow(Docker).to receive(:authenticate!).and_return(nil)
+      allow(Pathutil).to receive(:new).with("~/.docker/config.json") \
+        .and_return(AuthPathutilWrapper.new)
+    end
+
+    #
+
+    context "when using env vars" do
+      before do
+        ENV["DOCKER_PASSWORD"] = "epassword"
+        ENV["DOCKER_EMAIL"] = "euser@example.com"
+        ENV["DOCKER_SERVER"] = "eserver.com"
+        ENV["DOCKER_USER"] = "euser"
+      end
+
+      #
+
+      it "should authenticate with those credentials" do
+        expect(Docker).to receive(:authenticate!).with({
+          "username" => "euser",
+          "serveraddress" => "eserver.com",
+          "email" => "euser@example.com",
+          "password" => "epassword"
+        })
+      end
+    end
+
+    #
+
+    context "when not using env vars" do
+      context "and the user has ~/.docker/config.json" do
+        before :all do
+          ENV["DOCKER_EMAIL"] = nil
+          ENV["DOCKER_PASSWORD"] = nil
+          ENV["DOCKER_SERVER"] = nil
+          ENV["DOCKER_USER"] = nil
+        end
+
+        it "should read the file" do
+          expect(Pathutil).to receive(:new).with("~/.docker/config.json").and_return(
+            AuthPathutilWrapper.new
+          )
+        end
+
+        #
+
+        it "should auth with the credentials" do
+          expect(Docker).to receive(:authenticate!).at_least(:once).with({
+            "username" => "user",
+            "serveraddress" => "server.com",
+            "email" => "user@example.com",
+            "password" => "password"
+          })
+        end
+      end
+    end
+
+    #
+
+    after do
+      mocked_repo.to_repo.builder.send(
+        :auth!
+      )
+    end
+  end
 end

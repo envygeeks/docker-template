@@ -287,20 +287,35 @@ module Docker
 
       private
       def auth!
-        credentials = Pathutil.new("~/.docker/config.json").expand_path.read_json
-        return if credentials.empty?
-
-        credentials["auths"].each do |server, info|
-          user, pass = Base64.decode64(info["auth"]).split(
-            ":", 2
-          )
+        if ENV["DOCKER_EMAIL"] && ENV["DOCKER_PASSWORD"] && ENV["DOCKER_USER"]
+          email, password, server, user = ENV.values_at("DOCKER_EMAIL", \
+            "DOCKER_PASSWORD", "DOCKER_SERVER", "DOCKER_USER")
 
           Docker.authenticate!({
             "username" => user,
-            "serveraddress" => server,
-            "email" => info["email"],
-            "password" => pass
+            "serveraddress" => server || "https://index.docker.io/v1/",
+            "password" => password,
+            "email" => email
           })
+
+        else
+          credentials = Pathutil.new("~/.docker/config.json")
+          credentials = credentials.expand_path.read_json
+
+          unless credentials.empty?
+            credentials["auths"].each do |server_, info|
+              user, password = Base64.decode64(info["auth"]).split(
+                ":", 2
+              )
+
+              Docker.authenticate!({
+                "username" => user,
+                "serveraddress" => server_,
+                "email" => info["email"],
+                "password" => password
+              })
+            end
+          end
         end
       end
 
