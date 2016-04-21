@@ -44,8 +44,6 @@ module Docker
 
       def api(part, *_)
         stream = JSON.parse(part)
-        retried ||= false
-
         return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
         return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
         return progress_error(stream) if stream.any_key?("errorDetail", "error")
@@ -55,15 +53,10 @@ module Docker
           part
         )
 
-      # Addresses a Docker 1.9 bug.
       rescue JSON::ParserError => e
-        if !retried
-          retried = true
-          part = "#{part}\" }"
-          retry
-        else
-          raise e
-        end
+        $stderr.puts format("Unparsable JSON message given: %s",
+          part
+        )
       end
 
       # ----------------------------------------------------------------------
