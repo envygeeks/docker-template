@@ -287,12 +287,12 @@ module Docker
 
       private
       def auth!
-        if ENV["DOCKER_EMAIL"] && ENV["DOCKER_PASSWORD"] && ENV["DOCKER_USER"]
-          email, password, server, user = ENV.values_at("DOCKER_EMAIL", \
-            "DOCKER_PASSWORD", "DOCKER_SERVER", "DOCKER_USER")
+        if ENV["DOCKER_EMAIL"] && ENV["DOCKER_PASSWORD"] && ENV["DOCKER_USERNAME"]
+          email, password, server, username = ENV.values_at("DOCKER_EMAIL", \
+            "DOCKER_PASSWORD", "DOCKER_SERVER", "DOCKER_USERNAME")
 
           Docker.authenticate!({
-            "username" => user,
+            "username" => username,
             "serveraddress" => server || "https://index.docker.io/v1/",
             "password" => password,
             "email" => email
@@ -304,12 +304,12 @@ module Docker
 
           unless credentials.empty?
             credentials["auths"].each do |server_, info|
-              user, password = Base64.decode64(info["auth"]).split(
+              username, password = Base64.decode64(info["auth"]).split(
                 ":", 2
               )
 
               Docker.authenticate!({
-                "username" => user,
+                "username" => username,
                 "serveraddress" => server_,
                 "email" => info["email"],
                 "password" => password

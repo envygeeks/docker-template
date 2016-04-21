@@ -523,7 +523,7 @@ describe Docker::Template::Builder do
               "server.com" => {
                 "email" => "user@example.com",
                 "auth"  => Base64.encode64(
-                  "user:password"
+                  "username:password"
                 )
               }
             }
@@ -545,17 +545,17 @@ describe Docker::Template::Builder do
 
     context "when using env vars" do
       before do
-        ENV["DOCKER_PASSWORD"] = "epassword"
-        ENV["DOCKER_EMAIL"] = "euser@example.com"
         ENV["DOCKER_SERVER"] = "eserver.com"
-        ENV["DOCKER_USER"] = "euser"
+        ENV["DOCKER_EMAIL"] = "euser@example.com"
+        ENV["DOCKER_PASSWORD"] = "epassword"
+        ENV["DOCKER_USERNAME"] = "eusername"
       end
 
       #
 
       it "should authenticate with those credentials" do
         expect(Docker).to receive(:authenticate!).with({
-          "username" => "euser",
+          "username" => "eusername",
           "serveraddress" => "eserver.com",
           "email" => "euser@example.com",
           "password" => "epassword"
@@ -568,10 +568,10 @@ describe Docker::Template::Builder do
     context "when not using env vars" do
       context "and the user has ~/.docker/config.json" do
         before :all do
-          ENV["DOCKER_EMAIL"] = nil
-          ENV["DOCKER_PASSWORD"] = nil
           ENV["DOCKER_SERVER"] = nil
-          ENV["DOCKER_USER"] = nil
+          ENV["DOCKER_PASSWORD"] = nil
+          ENV["DOCKER_USERNAME"] = nil
+          ENV["DOCKER_EMAIL"] = nil
         end
 
         it "should read the file" do
@@ -584,7 +584,7 @@ describe Docker::Template::Builder do
 
         it "should auth with the credentials" do
           expect(Docker).to receive(:authenticate!).at_least(:once).with({
-            "username" => "user",
+            "username" => "username",
             "serveraddress" => "server.com",
             "email" => "user@example.com",
             "password" => "password"
