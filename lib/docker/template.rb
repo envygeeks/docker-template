@@ -38,6 +38,7 @@ module Docker
     autoload :Rootfs, "docker/template/rootfs"
     autoload :Cache, "docker/template/cache"
     autoload :Alias, "docker/template/alias"
+    autoload :Auth, "docker/template/auth"
     autoload :CLI, "docker/template/cli"
 
     # ------------------------------------------------------------------------

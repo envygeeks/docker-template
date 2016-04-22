@@ -81,9 +81,8 @@ module Docker
 
       def push
         return if rootfs? || !@repo.pushable?
-        Notify.push self
-        auth!
 
+        Notify.push(self); Auth.hub
         img = @img || Image.get(@repo.to_s)
         img.push nil, :repo_tag => \
           @repo.to_s, &Logger.new.method(:api)
@@ -277,42 +276,6 @@ module Docker
             then dir.safe_copy(
               @copy, :root => Template.root
             )
-          end
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      private
-      def auth!
-        if ENV["DOCKER_EMAIL"] && ENV["DOCKER_PASSWORD"] && ENV["DOCKER_USERNAME"]
-          email, password, server, username = ENV.values_at("DOCKER_EMAIL", \
-            "DOCKER_PASSWORD", "DOCKER_SERVER", "DOCKER_USERNAME")
-
-          Docker.authenticate!({
-            "username" => username,
-            "serveraddress" => server || "https://index.docker.io/v1/",
-            "password" => password,
-            "email" => email
-          })
-
-        else
-          credentials = Pathutil.new("~/.docker/config.json")
-          credentials = credentials.expand_path.read_json
-
-          unless credentials.empty?
-            credentials["auths"].each do |server_, info|
-              username, password = Base64.decode64(info["auth"]).split(
-                ":", 2
-              )
-
-              Docker.authenticate!({
-                "username" => username,
-                "serveraddress" => server_,
-                "email" => info["email"],
-                "password" => password
-              })
-            end
           end
         end
       end
