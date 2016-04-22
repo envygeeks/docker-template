@@ -43,6 +43,26 @@ describe Docker::Template::Auth do
 
   #
 
+  describe "#hub" do
+    context "when it cannot authenticate" do
+      before do
+        allow(Docker).to receive :authenticate! do
+          raise Docker::Error::AuthenticationError
+        end
+      end
+
+      #
+
+      it "should try to abort" do
+        expect(described_class).to receive(:abort).and_return(
+          nil
+        )
+      end
+    end
+  end
+
+  #
+
   describe "_hub_env" do
     before do
       allow(described_class).to receive(:env?).and_return true
