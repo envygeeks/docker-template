@@ -27,13 +27,16 @@ module Docker
       option :cache,      :type => :boolean, :desc => "Cache your repositories to cache."
       option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
       option :clean,      :type => :boolean, :desc => "Cleanup your caches."
+      option :help,       :type => :boolean, :desc => "Output this."
 
       # ----------------------------------------------------------------------
       # rubocop:disable Lint/RescueException
       # ----------------------------------------------------------------------
 
       def build(*args)
-        Build.new(args, options).start
+        return help(__method__) if options.help?
+        Build.new(args, options) \
+          .start
 
       rescue Docker::Template::Error::StandardError => e
         $stderr.puts Simple::Ansi.red(e.message)
@@ -41,9 +44,6 @@ module Docker
           e.status : 1
 
       rescue Exception => _e
-        require "pry"
-        Pry.output = STDOUT
-        binding.pry
         raise unless $ERROR_POSITION
         $ERROR_POSITION.delete_if do |source|
           source =~ %r!#{Regexp.escape(
@@ -57,11 +57,13 @@ module Docker
       # docker-template list [options]
       # ----------------------------------------------------------------------
 
+      option :help, :type => :boolean, :desc => "Output this."
       desc "list [OPTS]", "List all possible builds."
 
       # ----------------------------------------------------------------------
 
       def list
+        return help(__method__) if options.help?
         return $stdout.puts(
           List.build
         )
