@@ -25,9 +25,9 @@ module Docker
         end
 
       rescue Docker::Error::AuthenticationError
-        abort(Simple::Ansi.red(
-          "Unable to authenticate."
-        ))
+        raise(
+          Error::UnsuccessfulAuth
+        )
       end
 
       # ----------------------------------------------------------------------

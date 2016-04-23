@@ -40,7 +40,10 @@ module Docker
         exit e.respond_to?(:status) ? \
           e.status : 1
 
-      rescue Exception
+      rescue Exception => _e
+        require "pry"
+        Pry.output = STDOUT
+        binding.pry
         raise unless $ERROR_POSITION
         $ERROR_POSITION.delete_if do |source|
           source =~ %r!#{Regexp.escape(

@@ -13,11 +13,9 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      class PlaceHolderError < StandardError
-        def initialize(error)
-          super format(
-            "PLACEHOLDER ERROR: %s", error
-          )
+      class Error::UnsuccessfulAuth < StandardError
+        def initialize
+          super "Unable to authorize you to Dockerhub, something is wrong."
         end
       end
 
@@ -45,17 +43,6 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      class InvalidRepoType < StandardError
-        def initialize(type)
-          build_types = Template.config.build_types.join(", ")
-          super "Uknown repo type given '#{type}' not in '#{
-            build_types
-          }'"
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
       class InvalidTargzFile < StandardError
         def initialize(tar_gz)
           super "No data was given to the tar.gz file '#{
@@ -69,22 +56,6 @@ module Docker
       class InvalidYAMLFile < StandardError
         def initialize(file)
           super "The yaml data provided by #{file} is invalid and not a hash."
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      class NoRootMetadata < StandardError
-        def initialize
-          super "Metadata without the root flag must provide the root_metadata."
-        end
-      end
-
-      # ----------------------------------------------------------------------
-
-      class NoRootfsMkimg < StandardError
-        def initialize
-          super "Unable to find rootfs.rb in your repo folder."
         end
       end
 

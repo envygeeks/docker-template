@@ -43,7 +43,7 @@ describe Docker::Template::Auth do
 
   #
 
-  describe "#hub" do
+  describe "#hub", :skip_auth => true do
     context "when it cannot authenticate" do
       before do
         allow(Docker).to receive :authenticate! do
@@ -53,9 +53,9 @@ describe Docker::Template::Auth do
 
       #
 
-      it "should try to abort" do
-        expect(described_class).to receive(:abort).and_return(
-          nil
+      it "should throw" do
+        expect { described_class.hub }.to raise_error(
+          Docker::Template::Error::UnsuccessfulAuth
         )
       end
     end
@@ -130,7 +130,9 @@ describe Docker::Template::Auth do
 
   #
 
-  after do
-    Docker::Template::Auth.hub
+  after do |ex|
+    unless ex.metadata[:skip_auth]
+      described_class.hub
+    end
   end
 end
