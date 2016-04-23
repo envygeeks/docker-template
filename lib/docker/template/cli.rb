@@ -13,14 +13,62 @@ module Docker
       autoload :List,  "docker/template/cli/list"
 
       # ----------------------------------------------------------------------
+
+      option :force, :type => :boolean, :desc => "Force caching."
+      desc "cache [REPOS [OPTS]]", "Cache all (or some) of your repositories."
+      option :help,  :type => :boolean, :desc => "Output this."
+
+      # ----------------------------------------------------------------------
+
+      def cache(*args)
+        return help(__method__) if options.help?
+        self.options = options.merge(:cache => true) if options.force?
+        self.options = options.merge(:cache_only => true)
+        return build(
+          *args
+        )
+      end
+
+      # ----------------------------------------------------------------------
+
+      option :force, :type => :boolean, :desc => "Force cleaning."
+      desc "clean [REPOS [OPTS]]", "Clean all (or some) of your repositories caches."
+      option :help,  :type => :boolean, :desc => "Output this."
+
+      # ----------------------------------------------------------------------
+
+      def clean(*args)
+        return help(__method__) if options.help?
+        self.options = options.merge(:clean => true) if options.force?
+        self.options = options.merge(:clean_only => true)
+        return build(
+          *args
+        )
+      end
+
+      # ----------------------------------------------------------------------
+
+      option :force, :type => :boolean, :desc => "Force cleaning."
+      desc "push [REPOS [OPTS]]", "Push all (or some) of your repositories."
+      option :help,  :type => :boolean, :desc => "Output this."
+
+      # ----------------------------------------------------------------------
+
+      def push(*args)
+        return help(__method__) if options.help?
+        self.options = options.merge(:push => true) if options.force?
+        self.options = options.merge(:push_only => true)
+        return build(
+          *args
+        )
+      end
+
+      # ----------------------------------------------------------------------
       # docker-template build [repos [opts]]
       # ----------------------------------------------------------------------
 
-      desc "build [REPOS [OPTS]]", "Build all (or some) of your repositories"
+      desc "build [REPOS [OPTS]]", "Build all (or some) of your repositories."
       option :diff,       :type => :boolean, :desc => "Build only modified repositories."
-      option :cache_only, :type => :boolean, :desc => "Only cache your repositories, don't build."
-      option :clean_only, :type => :boolean, :desc => "Only clean your repositories, don't build."
-      option :push_only,  :type => :boolean, :desc => "Only push  your repositories, don't build."
       option :profile,    :type => :boolean, :desc => "Profile Memory."
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
       option :push,       :type => :boolean, :desc => "Push Repo After Building."
