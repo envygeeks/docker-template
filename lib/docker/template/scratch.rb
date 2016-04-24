@@ -86,7 +86,7 @@ module Docker
         @rootfs.build
 
         img = Container.create(create_args)
-        img.start(start_args).attach(logger_opts, &Logger.new.method(logger_type))
+        img.start.attach(logger_opts, &Logger.new.method(logger_type))
         status = img.json["State"]["ExitCode"]
 
         if status != 0
@@ -148,17 +148,6 @@ module Docker
               "destination" => @tar_gz.to_s
             }
           }
-        }
-      end
-
-      # ----------------------------------------------------------------------
-
-      private
-      def start_args
-        {
-          # "Binds" => [
-          #   "#{@copy}:#{@copy}", "#{@tar_gz}:#{@tar_gz}"
-          # ]
         }
       end
     end
