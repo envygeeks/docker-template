@@ -22,6 +22,8 @@ RSpec::Core::RakeTask.new :spec
 task :test => :spec
 
 # ----------------------------------------------------------------------------
+# TODO: Cleanup and remove this whenever you can.
+# ----------------------------------------------------------------------------
 
 module CompList
   module_function
