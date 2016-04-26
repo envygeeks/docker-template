@@ -19,12 +19,25 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def builder_data
-        tpl = "rootfs/#{@repo.metadata.rootfs_template}"
-        erb = @repo.root.join("rootfs.erb")
+      def discover_rootfs
+        %w(Rootfs Rootfs.erb rootfs rootfs.rb).map do |file|
+          file = @repo.root.join(
+            file
+          )
 
+          if file.file?
+            then return file
+          end
+        end
+
+        nil
+      end
+
+      # ----------------------------------------------------------------------
+
+      def builder_data
         Template.get(
-          erb.file?? erb : tpl, {
+          discover_rootfs || "rootfs/#{@repo.metadata.rootfs_template}", {
             :metadata => @repo.metadata
           }
         )

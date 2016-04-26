@@ -29,7 +29,7 @@ module Mocks
         [:mkdir, "copy/tag/latest"],
         [:mkdir, "copy/group/normal"],
         [:write, "copy/all/usr/local/bin/hello", "world"],
-        [:write, "rootfs.erb", "hello"],
+        [:write, "Rootfs", "hello"],
         [:mkdir, "copy/rootfs/"],
         [:with_opts, {}]
       ]
