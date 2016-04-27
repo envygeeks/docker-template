@@ -22,9 +22,10 @@ end
 # ----------------------------------------------------------------------------
 
 begin
-  require "docker/template"
+  require "docker/template/cli"
 rescue LoadError
-  %w(bundler/setup docker/template).each do |k|
+  # Retry and let it fail if it doesn't work again.
+  %w(bundler/setup docker/template/cli).each do |k|
     require k
   end
 end
@@ -33,4 +34,5 @@ end
 # Time to play the game.
 # ----------------------------------------------------------------------------
 
-Docker::Template::CLI.start
+Docker::Template::CLI \
+  .start

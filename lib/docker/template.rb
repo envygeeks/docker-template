@@ -25,21 +25,6 @@ module Docker
 
     # ------------------------------------------------------------------------
 
-    autoload :Notify, "docker/template/notify"
-    autoload :Utils, "docker/template/utils"
-    autoload :Repo, "docker/template/repo"
-    autoload :Error, "docker/template/error"
-    autoload :Logger, "docker/template/logger"
-    autoload :Normal, "docker/template/normal"
-    autoload :Parser, "docker/template/parser"
-    autoload :Builder, "docker/template/builder"
-    autoload :Metadata, "docker/template/metadata"
-    autoload :Scratch, "docker/template/scratch"
-    autoload :Rootfs, "docker/template/rootfs"
-    autoload :Cache, "docker/template/cache"
-    autoload :Alias, "docker/template/alias"
-    autoload :Auth, "docker/template/auth"
-    autoload :CLI, "docker/template/cli"
 
     # ------------------------------------------------------------------------
 
@@ -108,3 +93,12 @@ class Array
     self | new_
   end
 end
+
+require "docker/template/error"
+require "docker/template/cache"
+require "docker/template/notify"
+require "docker/template/builder"
+require "docker/template/logger"
+require "docker/template/repo"
+require "docker/template/metadata"
+require "docker/template/auth"

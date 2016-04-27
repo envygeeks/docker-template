@@ -208,7 +208,7 @@ module Mocks
 
     %W(Scratch Normal Rootfs).each do |k|
       define_method "to_#{k.downcase}" do
-        Docker::Template.const_get(k).new(
+        Docker::Template::Builder.const_get(k).new(
           to_repo
         )
       end

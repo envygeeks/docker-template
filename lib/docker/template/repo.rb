@@ -87,7 +87,7 @@ module Docker
 
       def builder
         return @builder ||= begin
-          Template.const_get(type.capitalize).new(
+          Template::Builder.const_get(type.capitalize).new(
             self
           )
         end

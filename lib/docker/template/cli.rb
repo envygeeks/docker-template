@@ -4,13 +4,12 @@
 # Encoding: utf-8
 # ----------------------------------------------------------------------------
 
+require "docker/template"
 require "thor"
 
 module Docker
   module Template
     class CLI < Thor
-      autoload :Build, "docker/template/cli/build"
-      autoload :List,  "docker/template/cli/list"
 
       # ----------------------------------------------------------------------
 
@@ -119,3 +118,7 @@ module Docker
     end
   end
 end
+
+require "docker/template/cli/build"
+require "docker/template/cli/parser"
+require "docker/template/cli/list"

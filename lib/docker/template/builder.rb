@@ -289,3 +289,7 @@ module Docker
     end
   end
 end
+
+require "docker/template/builder/rootfs"
+require "docker/template/builder/scratch"
+require "docker/template/builder/normal"

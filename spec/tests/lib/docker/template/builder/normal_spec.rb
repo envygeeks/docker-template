@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe Docker::Template::Normal do
+describe Docker::Template::Builder::Normal do
   include_contexts :docker, :repos
 
   #

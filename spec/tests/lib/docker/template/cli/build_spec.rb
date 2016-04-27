@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
+require "docker/template/cli"
 describe Docker::Template::CLI::Build do
   include_context :repos
 

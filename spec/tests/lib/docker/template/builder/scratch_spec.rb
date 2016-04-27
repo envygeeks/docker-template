@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe Docker::Template::Scratch do
+describe Docker::Template::Builder::Scratch do
   include_contexts :docker, :repos
 
   #
@@ -151,7 +151,7 @@ describe Docker::Template::Scratch do
 
   describe "#build_context" do
     before do
-      allow_any_instance_of(Docker::Template::Rootfs).to receive(:build).and_return(
+      allow_any_instance_of(Docker::Template::Builder::Rootfs).to receive(:build).and_return(
         nil
       )
     end
