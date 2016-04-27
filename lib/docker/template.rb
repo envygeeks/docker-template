@@ -54,7 +54,7 @@ module Docker
 
     # ------------------------------------------------------------------------
     # Pull a `template` from the `template_root` to parse it's data.
-    # TODO: Rename this get template!
+    # TODO: Rename this to get_template!
     # ------------------------------------------------------------------------
 
     def get(name, data = {})
@@ -93,6 +93,8 @@ class Array
     self | new_
   end
 end
+
+# ----------------------------------------------------------------------------
 
 require "docker/template/error"
 require "docker/template/cache"
