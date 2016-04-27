@@ -8,9 +8,6 @@ module Docker
   module Template
     class Builder
       extend Forwardable::Extended
-
-      # ----------------------------------------------------------------------
-
       attr_reader :repo
       attr_reader :context
       attr_reader :img
@@ -286,6 +283,54 @@ module Docker
       rb_delegate :aliased_repo, {
         :to => :repo, :alias_of => :aliased
       }
+
+      class << self
+
+        # --------------------------------------------------------------------
+        # REFERENCE METHOD: This is here to let you know we access files.
+        # --------------------------------------------------------------------
+
+        def files
+          return [
+            #
+          ]
+        end
+
+        # --------------------------------------------------------------------
+
+        def singles_allowed!
+          return @singles_allowed = \
+            true
+        end
+
+        # ----------------------------------------------------------------------
+
+        def singles_allowed?
+          return !!@singles_allowed
+        end
+
+        # ----------------------------------------------------------------------
+
+        def sub?
+          false
+        end
+
+        # --------------------------------------------------------------------
+
+        def inherited(klass)
+          (@sub_classes ||= []).push(
+            klass
+          )
+        end
+
+        # ----------------------------------------------------------------------
+
+        def all
+          @sub_classes ||= [
+            #
+          ]
+        end
+      end
     end
   end
 end

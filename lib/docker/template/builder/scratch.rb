@@ -151,6 +151,13 @@ module Docker
             }
           }
         end
+
+        class << self
+          def files
+            return Rootfs \
+              .files
+          end
+        end
       end
     end
   end

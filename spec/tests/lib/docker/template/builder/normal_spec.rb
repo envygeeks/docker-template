@@ -25,6 +25,22 @@ describe Docker::Template::Builder::Normal do
 
   #
 
+  it "should allow singles" do
+    expect(described_class.singles_allowed?).to eq(
+      true
+    )
+  end
+
+  #
+
+  it "should allow what Dockerfiles it allows" do
+    expect(described_class.files).not_to(
+      be_empty
+    )
+  end
+
+  #
+
   describe "#cache_context" do
     context "when cache = false" do
       before do

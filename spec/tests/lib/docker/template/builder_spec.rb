@@ -35,6 +35,58 @@ describe Docker::Template::Builder do
 
   #
 
+  describe ".files" do
+    it "should be a reference method and empty" do
+      expect(described_class.files).to(
+        be_empty
+      )
+    end
+  end
+
+  #
+
+  describe ".singles_allowed?" do
+    context "when the user wishes to allow single builds" do
+      before :all do
+        class BuilderTestMock < Docker::Template::Builder
+          singles_allowed!
+        end
+      end
+
+      it "should be true" do
+        expect(BuilderTestMock.singles_allowed?).to eq(
+          true
+        )
+      end
+
+      after :all do
+        Object.send(:remove_const,
+          :BuilderTestMock
+        )
+      end
+    end
+
+    #
+
+    it "should be nil by default" do
+      expect(described_class.singles_allowed?).to(
+        be_falsey
+      )
+    end
+  end
+
+  #
+
+  describe ".all" do
+    it "should hold a list of all classes" do
+      expect(described_class.all).not_to(
+        be_empty
+      )
+    end
+  end
+
+  #
+
   describe "#alias?" do
     it "should return false if the repository is not an alias" do
       expect(mocked_repo.to_normal.alias?).to eq(

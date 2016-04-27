@@ -33,6 +33,22 @@ describe Docker::Template::Builder::Scratch do
 
   #
 
+  it "should not allow singles" do
+    expect(described_class.singles_allowed?).to(
+      be_falsey
+    )
+  end
+
+  #
+
+  it "should support the types of Dockerfiles it supports" do
+    expect(described_class.files).not_to(
+      be_empty
+    )
+  end
+
+  #
+
   describe "#data" do
     before do
       subject.send(

@@ -24,6 +24,30 @@ RSpec.describe Docker::Template::Builder::Rootfs do
 
   #
 
+  it "should flag itself as a sub-builder" do
+    expect(described_class.sub?).to eq(
+      true
+    )
+  end
+
+  #
+
+  it "should not allow singles" do
+    expect(described_class.singles_allowed?).to(
+      be_falsey
+    )
+  end
+
+  #
+
+  it "should support the types of Dockerfiles it supports" do
+    expect(described_class.files).not_to(
+      be_empty
+    )
+  end
+
+  #
+
   describe "#data" do
     it "should add the FROM line" do
       expect(subject.data).to match(

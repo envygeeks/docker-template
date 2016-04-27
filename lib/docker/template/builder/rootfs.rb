@@ -98,6 +98,12 @@ module Docker
         end
 
         class << self
+          def sub?
+            return true
+          end
+
+          # ------------------------------------------------------------------
+
           def files
             %w(
               Rootfs.erb Rootfs rootfs.erb rootfs

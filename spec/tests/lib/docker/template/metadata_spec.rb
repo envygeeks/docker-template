@@ -34,6 +34,23 @@ describe Docker::Template::Metadata do
 
     #
 
+    context "when overrides is a Metadata" do
+      it "should pull the raw data" do
+        expect(subject).to receive(:to_h).with(:raw => true) \
+          .and_call_original
+      end
+
+      #
+
+      after do
+        described_class.new(
+          subject
+        )
+      end
+    end
+
+    #
+
     context "when initializing a sub-hash" do
       subject do
         data = { :hello => :world }
@@ -49,6 +66,71 @@ describe Docker::Template::Metadata do
           subject.root_data
         )
       end
+    end
+
+    #
+
+    context "when initializing as a single repo" do
+      before do
+        allow(Docker::Template).to receive(:single?).and_return(
+          true
+        )
+      end
+
+      #
+
+      it "should load YAML from docker/template.yml file" do
+        expect(   Docker::Template.root).to receive(:join).with("docker/template.yml").and_call_original
+        expect_any_instance_of(Pathutil).to receive(:read_yaml).and_return(
+          {}
+        )
+      end
+
+      #
+
+      after do
+        described_class.new(
+          {}
+        )
+      end
+    end
+  end
+
+  #
+
+  describe ".opts_file" do
+    context "when the Template.single? is true" do
+      before do
+        allow(Docker::Template).to receive(:single?).and_return(
+          true
+        )
+      end
+
+      #
+
+      it "should get docker/template.yml" do
+        expect(described_class.opts_file).to eq(
+          "docker/template.yml"
+        )
+      end
+    end
+
+    #
+
+    context "when the user asks for single" do
+      it "should return the single path" do
+        expect(described_class.opts_file(:force => :single)).to eq(
+          "docker/template.yml"
+        )
+      end
+    end
+
+    #
+
+    it "should return opts.yml" do
+      expect(described_class.opts_file).to eq(
+        "opts.yml"
+      )
     end
   end
 

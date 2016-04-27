@@ -29,6 +29,29 @@ describe Docker::Template do
 
   #
 
+  describe "#single?" do
+    include_context :repos
+    context "when laid out as a single repository", :type => :single do
+      it "should return true" do
+        expect(template.single?).to eq(
+          true
+        )
+      end
+    end
+
+    #
+
+    context "when it's not laid out as single" do
+      it "should return false" do
+        expect(template.single?).to(
+          be_falsey
+        )
+      end
+    end
+  end
+
+  #
+
   describe "#get" do
     context "when no data is given" do
       it "should still return a string" do

@@ -18,11 +18,10 @@ module Docker
       # rubocop:disable Style/MultilineBlockLayout
       # ----------------------------------------------------------------------
 
-      OPTS_FILE = "opts.yml"
-      [Pathutil.allowed[:yaml][:classes], Array.allowed[:keys], \
-          Hash.allowed[:vals]].each do |v| v.push(
-            self, HashWithIndifferentAccess, Regexp
-          )
+      [Pathutil.allowed[:yaml][:classes], Array.allowed[:keys], Hash.allowed[:vals]].each do |v|
+        v.push(self,
+          HashWithIndifferentAccess, Regexp
+        )
       end
 
       # ----------------------------------------------------------------------
@@ -48,6 +47,15 @@ module Docker
         "tty" => false,
         "tags" => {}
       }).freeze
+
+      # ----------------------------------------------------------------------
+
+      class << self
+        def opts_file(force: nil)
+          force == :single || Template.single?? "docker/template.yml" : \
+            "opts.yml"
+        end
+      end
 
       # ----------------------------------------------------------------------
       # @param data [Hash, self.class] - the main data.
@@ -76,19 +84,11 @@ module Docker
           })
         end
 
-        if root.nil?
-          overrides = overrides.stringify
-          gdata = Template.root.join(OPTS_FILE).read_yaml
-          @data = DEFAULTS.deep_merge(gdata.stringify).deep_merge(overrides)
-          tdata = Template.root.join(@data[:repos_dir], @data[:name], OPTS_FILE).read_yaml
-          @data = @data.deep_merge(tdata.stringify).deep_merge(overrides)
-          @data = @data.stringify.with_indifferent_access
-
-        else
-          @data = overrides.stringify.with_indifferent_access
-          @root_data = root.stringify \
-            .with_indifferent_access
-        end
+        return load_normal_config(overrides) if root.nil? && !Template.single?
+        return load_single_config(overrides) if root.nil? &&  Template.single?
+        @data = overrides.stringify.with_indifferent_access
+        @root_data = root.stringify \
+          .with_indifferent_access
       end
 
       # ----------------------------------------------------------------------
@@ -614,6 +614,28 @@ module Docker
               then !val.empty? else !!val
             end
         end
+      end
+
+      # ----------------------------------------------------------------------
+
+      private
+      def load_normal_config(overrides)
+        overrides = overrides.stringify
+        gdata = Template.root.join(self.class.opts_file).read_yaml
+        @data = DEFAULTS.deep_merge(gdata.stringify).deep_merge(overrides)
+        tdata = Template.root.join(@data[:repos_dir], @data[:name], self.class.opts_file).read_yaml
+        @data = @data.deep_merge(tdata.stringify).deep_merge(overrides)
+        @data = @data.stringify.with_indifferent_access
+      end
+
+      # ----------------------------------------------------------------------
+
+      private
+      def load_single_config(overrides)
+        overrides = overrides.stringify
+        gdata = Template.root.join(self.class.opts_file).read_yaml
+        @data = DEFAULTS.deep_merge(gdata.stringify).deep_merge(overrides)
+        @data = @data.stringify.with_indifferent_access
       end
 
       # ----------------------------------------------------------------------

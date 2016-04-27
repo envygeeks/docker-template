@@ -25,6 +25,13 @@ module Docker
 
     # ------------------------------------------------------------------------
 
+    def single?
+      dir = root.join("docker")
+      any = Builder.all.dup.keep_if(&:singles_allowed?)
+      any = any.map(&:files).reduce(&:|).any? { |file| root.join(file).file? }
+      return true if any && root.join(Metadata.opts_file(:force => \
+        :single)).file?
+    end
 
     # ------------------------------------------------------------------------
 

@@ -8,6 +8,8 @@ module Docker
   module Template
     class Builder
       class Normal < Builder
+        singles_allowed!
+
         def teardown(img: false)
           @img.delete "force" => true if @img && img
           @context.rmtree if @context && \
@@ -41,6 +43,14 @@ module Docker
           return unless @repo.cacheable?
           return Cache.aliased_context(self) if alias?
           Cache.context(self, @context)
+        end
+
+        class << self
+          def files
+            return %w(
+              Dockerfile
+            )
+          end
         end
       end
     end
