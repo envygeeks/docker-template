@@ -168,7 +168,7 @@ module Mocks
 
     def clear_opts
       @hashes[:opts] = {}
-      repo_dir.join(Docker::Template::Metadata.opts_file).rm_f
+      repo_dir.join(Docker::Template::Meta.opts_file).rm_f
       self
     end
 
@@ -178,7 +178,7 @@ module Mocks
     # ------------------------------------------------------------------------
 
     def with_opts(opts)
-      @hashes[:opts] ||= repo_dir.join(Docker::Template::Metadata.opts_file).read_yaml
+      @hashes[:opts] ||= repo_dir.join(Docker::Template::Meta.opts_file).read_yaml
       @hashes[:opts] = @hashes[:opts].deep_merge(opts.stringify)
       repo_dir.join("opts.yml").write(
         @hashes[:opts].to_yaml
@@ -331,7 +331,7 @@ module Mocks
     private
     def repo_dir
       rtn = @root if @fs_layout == :project
-      rtn = @root.join(Docker::Template::Metadata::DEFAULTS[:repos_dir], @hashes[:init][:name]) unless @fs_layout == :project
+      rtn = @root.join(Docker::Template::Meta::DEFAULTS[:repos_dir], @hashes[:init][:name]) unless @fs_layout == :project
       rtn.mkdir_p unless rtn.exist? || emptied?
       rtn
     end

@@ -63,7 +63,7 @@ module Docker
           out = ""
 
           remotes = _remote_aliases(*args).group_by do |image|
-            image.metadata[:aliases][
+            image.meta[:aliases][
               image.tag
             ]
           end

@@ -49,7 +49,7 @@ module Docker
 
         if repo.cacheable? && cache_dir.exist?
           then cache_dir.children.each do |file|
-            next unless repo.metadata.tags.include?(file.basename)
+            next unless repo.meta.tags.include?(file.basename)
             $stdout.puts Simple::Ansi.yellow(format("Removing %s.",
               file.relative_path_from(Template.root)
             ))

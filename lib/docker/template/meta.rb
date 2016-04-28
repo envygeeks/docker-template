@@ -10,7 +10,7 @@ require "yaml"
 
 module Docker
   module Template
-    class Metadata
+    class Meta
       attr_reader :data
       extend Forwardable::Extended
 
@@ -188,8 +188,8 @@ module Docker
       # ----------------------------------------------------------------------
       # Check if a part of the hash or a value is inside.
       # @param val [Anytning(), Hash] - The key or key => val you wish check.
-      # @example metadata.include?(:key => :val) => true|false
-      # @example metadata.include?(:key) => true|false
+      # @example meta.include?(:key => :val) => true|false
+      # @example meta.include?(:key) => true|false
       # ----------------------------------------------------------------------
 
       def include?(val)
@@ -273,7 +273,7 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Merge a hash into the metadata.  If you merge non-queryable data
+      # Merge a hash into the meta.  If you merge non-queryable data
       # it will then get merged into the queryable data.
       # ----------------------------------------------------------------------
 
@@ -441,7 +441,7 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
-      # Checks to see if the current metadata is an alias of another. This
+      # Checks to see if the current meta is an alias of another. This
       # happens when the user has the tag in aliases but it's not complex.
       # ----------------------------------------------------------------------
 
@@ -536,7 +536,7 @@ module Docker
       # rubocop:eanble Metrics/CyclomaticComplexity
       # rubocop:eanble Metrics/PerceivedComplexity
       # ----------------------------------------------------------------------
-      # Convert a `Metadata' into a normal hash. If `self' is queryable then
+      # Convert a `Meta' into a normal hash. If `self' is queryable then
       # we go and start merging values smartly.  This means that we will merge
       # all the arrays into one another and we will merge hashes into hashes.
       # ----------------------------------------------------------------------

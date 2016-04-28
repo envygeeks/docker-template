@@ -29,7 +29,7 @@ module Docker
       dir = root.join("docker")
       any = Builder.all.dup.keep_if(&:projects_allowed?)
       any = any.map(&:files).reduce(&:|).any? { |file| root.join(file).file? }
-      return true if any && root.join(Metadata.opts_file(:force => \
+      return true if any && root.join(Meta.opts_file(:force => \
         :project)).file?
     end
 
@@ -109,5 +109,5 @@ require "docker/template/notify"
 require "docker/template/builder"
 require "docker/template/logger"
 require "docker/template/repo"
-require "docker/template/metadata"
+require "docker/template/meta"
 require "docker/template/auth"

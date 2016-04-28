@@ -68,7 +68,7 @@ describe Docker::Template::Builder::Normal, :type => :normal do
   describe "#cache_context" do
     context "when cache = false" do
       before do
-        subject.repo.metadata.merge!({
+        subject.repo.meta.merge!({
           "cache" => false
         })
       end
@@ -116,7 +116,7 @@ describe Docker::Template::Builder::Normal, :type => :normal do
 
     context "when cache = true" do
       before do
-        subject.repo.metadata.merge!({
+        subject.repo.meta.merge!({
           "cache" => true
         })
       end
@@ -162,7 +162,7 @@ describe Docker::Template::Builder::Normal, :type => :normal do
 
       after do
         subject.teardown
-        subject.repo.metadata.merge!({
+        subject.repo.meta.merge!({
           "cache" => false
         })
       end

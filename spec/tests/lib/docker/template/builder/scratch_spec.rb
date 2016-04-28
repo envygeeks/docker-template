@@ -68,7 +68,7 @@ describe Docker::Template::Builder::Scratch do
 
     it "adds the MAINTAINER" do
       expect(subject.data).to match %r!MAINTAINER #{Regexp.escape(
-        subject.repo.metadata["maintainer"]
+        subject.repo.meta["maintainer"]
       )}!
     end
 

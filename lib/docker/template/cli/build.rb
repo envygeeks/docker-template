@@ -3,7 +3,7 @@ module Docker
     class CLI
       class Build
         def initialize(args, opts)
-          @opts = Metadata.new(opts || {})
+          @opts = Meta.new(opts || {})
           @repos = Parser.new(args, opts || {}).parse
           @args = args
         end

@@ -26,7 +26,7 @@ module Docker
         def all
           return @raw_repos unless @raw_repos.empty?
           return [Template.root.basename.to_s] if Template.project?
-          Template.root.join(Metadata.new({}).repos_dir).children.map do |path|
+          Template.root.join(Meta.new({}).repos_dir).children.map do |path|
             path.basename.to_s
           end
 

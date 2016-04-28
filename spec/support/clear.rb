@@ -5,8 +5,8 @@
 # ----------------------------------------------------------------------------
 
 RSpec.configure do |config|
-  config.before do |example|
-    unless example.metadata[:clear]
+  config.before do |ex|
+    unless ex.metadata[:clear]
       allow(Simple::Ansi).to receive(:clear).and_return(
         nil
       )

@@ -191,8 +191,8 @@ module Docker
       def chdir_build
         @context.chdir do
           logger = Logger.new(repo).method(:api)
-          opts = { :t => @repo.to_s(rootfs: rootfs?), :force => @repo.metadata.force? }
-          $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.metadata["tty"]
+          opts = { :t => @repo.to_s(rootfs: rootfs?), :force => @repo.meta.force? }
+          $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.meta["tty"]
           @img = Docker::Image.build_from_dir(".", opts, &logger)
         end
       end
@@ -217,7 +217,7 @@ module Docker
       def copy_global
         unless rootfs?
           dir = Template.root.join(
-            @repo.metadata["copy_dir"]
+            @repo.meta["copy_dir"]
           )
 
           if dir.exist?
@@ -233,14 +233,14 @@ module Docker
       private
       def copy_project
         if Template.project?
-          ignores = repo.metadata["project_copy_ignore"].map do |path|
+          ignores = repo.meta["project_copy_ignore"].map do |path|
             Pathutil.new(path).expand_path(
               Template.root
             )
           end
 
           Template.root.safe_copy(
-            context.join(repo.metadata.project_copy_dir), {
+            context.join(repo.meta.project_copy_dir), {
               :root => Template.root, :ignore => ignores
             }
           )
@@ -266,7 +266,7 @@ module Docker
 
       private
       def copy_group
-        build_group = @repo.metadata["tags"][
+        build_group = @repo.meta["tags"][
           @repo.tag
         ]
 
@@ -298,7 +298,7 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      rb_delegate :aliased_tag, :to => "repo.metadata"
+      rb_delegate :aliased_tag, :to => "repo.meta"
       rb_delegate :aliased_repo, {
         :to => :repo, :alias_of => :aliased
       }

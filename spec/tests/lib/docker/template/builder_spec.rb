@@ -257,7 +257,7 @@ describe Docker::Template::Builder do
 
   describe "#push" do
     before do
-      subject.repo.metadata.merge!({
+      subject.repo.meta.merge!({
         "push" => true
       })
     end
@@ -266,7 +266,7 @@ describe Docker::Template::Builder do
 
     after do
       silence_io { subject.build }
-      subject.repo.metadata.merge!({
+      subject.repo.meta.merge!({
         "push" => false
       })
     end
@@ -303,7 +303,7 @@ describe Docker::Template::Builder do
 
     context "when push == false" do
       before do
-        subject.repo.metadata.merge!({
+        subject.repo.meta.merge!({
           "push" => false
         })
       end
@@ -454,7 +454,7 @@ describe Docker::Template::Builder do
 
     describe "#copy_group" do
       before do
-        subject.repo.metadata["tags"] = {
+        subject.repo.meta["tags"] = {
           "latest" => "normal"
         }
       end

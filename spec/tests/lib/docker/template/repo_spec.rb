@@ -131,7 +131,7 @@ describe Docker::Template::Repo do
 
     context "when rootfs: true" do
       it "should use the repo name as the tag" do
-        prefix = Docker::Template::Metadata::DEFAULTS["local_prefix"]
+        prefix = Docker::Template::Meta::DEFAULTS["local_prefix"]
         expect(mocked_repo.to_repo.to_s(rootfs: true)).to eq(
           "#{prefix}/rootfs:default"
         )
@@ -201,7 +201,7 @@ describe Docker::Template::Repo do
     #
 
     it "should include prefix/rootfs" do
-      prefix = Docker::Template::Metadata::DEFAULTS["local_prefix"]
+      prefix = Docker::Template::Meta::DEFAULTS["local_prefix"]
       expect(mocked_repo.to_repo.to_rootfs_h).to include({
         "repo" => match(%r!\A#{Regexp.escape(prefix)}/rootfs!)
       })
@@ -352,10 +352,10 @@ describe Docker::Template::Repo do
 
   #
 
-  describe "#metadata" do
-    it "should be a Metadata" do
-      expect(mocked_repo.to_repo.metadata).to be_a(
-        Docker::Template::Metadata
+  describe "#meta" do
+    it "should be a Meta" do
+      expect(mocked_repo.to_repo.meta).to be_a(
+        Docker::Template::Meta
       )
     end
   end
@@ -365,7 +365,7 @@ describe Docker::Template::Repo do
   describe "#to_env" do
     it "should return a hash to you" do
       expect(mocked_repo.to_repo.to_env).to be_a(
-        Docker::Template::Metadata
+        Docker::Template::Meta
       )
     end
 

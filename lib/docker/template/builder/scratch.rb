@@ -22,8 +22,8 @@ module Docker
 
         def data
           Template.get(:scratch, {
-            :entrypoint => @repo.metadata.entry,
-            :maintainer => @repo.metadata.maintainer,
+            :entrypoint => @repo.meta.entry,
+            :maintainer => @repo.meta.maintainer,
             :tar_gz => @tar_gz.basename
           })
         end
@@ -107,7 +107,7 @@ module Docker
 
         private
         def logger_type
-          @repo.metadata["tty"] ? :tty : :simple
+          @repo.meta["tty"] ? :tty : :simple
         end
 
         # ----------------------------------------------------------------------
@@ -115,7 +115,7 @@ module Docker
         private
         def logger_opts
           return {
-            :tty => @repo.metadata["tty"], :stdout => true, :stderr => true
+            :tty => @repo.meta["tty"], :stdout => true, :stderr => true
           }
         end
 
@@ -128,7 +128,7 @@ module Docker
 
           return {
             "Env"     => env.to_a,
-            "Tty"     => @repo.metadata["tty"],
+            "Tty"     => @repo.meta["tty"],
             "Image"   => @rootfs.img.id,
             "Name"    => name,
 

@@ -6,10 +6,10 @@ arch=$(uname -i)
 rootfs=$(mktemp -d)
 tmp=$(mktemp -d)
 
-mirrors="\nhttp://dl-2.alpinelinux.org/alpine/v<%= @metadata.release %>/main"
+mirrors="\nhttp://dl-2.alpinelinux.org/alpine/v<%= @meta.release %>/main"
 mirrors=$mirrors"\n@testing http://dl-3.alpinelinux.org/alpine/edge/testing"
 mirrors=$mirrors"\n@testing http://dl-4.alpinelinux.org/alpine/edge/testing"
-release_url="http://nl.alpinelinux.org/alpine/v<%= @metadata.release %>/main"
+release_url="http://nl.alpinelinux.org/alpine/v<%= @meta.release %>/main"
 testing_url="http://nl.alpinelinux.org/alpine/edge/testing"
 
 tar_ignore() {
@@ -17,10 +17,10 @@ tar_ignore() {
 }
 
 apt-get update && apt-get install --no-install-recommends -y wget
-<% sha1 = @metadata._shas[:alpine][:apk_keys ][@metadata.tag].sha %>
-<% pkg1 = @metadata._shas[:alpine][:apk_keys ][@metadata.tag].package %>
-<% pkg2 = @metadata._shas[:alpine][:apk_tools][@metadata.tag].package %>
-<% sha2 = @metadata._shas[:alpine][:apk_tools][@metadata.tag].sha %>
+<% sha1 = @meta._shas[:alpine][:apk_keys ][@meta.tag].sha %>
+<% pkg1 = @meta._shas[:alpine][:apk_keys ][@meta.tag].package %>
+<% pkg2 = @meta._shas[:alpine][:apk_tools][@meta.tag].package %>
+<% sha2 = @meta._shas[:alpine][:apk_tools][@meta.tag].sha %>
 for v in <%= sha1 %>:<%= pkg1 %> <%= sha2 %>:<%= pkg2 %>; do
   sha=$(echo $v | awk -F: '{ print $1 }')
   pkg=$(echo $v | awk -F: '{ print $2 }')
@@ -52,10 +52,10 @@ mkdir -p $rootfs/etc/shutdown.d
 cp /etc/hosts $rootfs/etc/hosts
 cp /etc/resolv.conf $rootfs/etc/resolv.conf
 printf "$mirrors" > $rootfs/etc/apk/repositories
-<% if @metadata.pkgs?  %>chroot $rootfs sh -ec "apk --update add <%= @metadata.pkgs %>"<% end %>
-<% if @metadata.packages?  %>chroot $rootfs sh -ec "apk --update add <%= @metadata.packages %>"<% end %>
-<% if @metadata.package_cleanup?  %>chroot $rootfs sh -ec "apk del <%= @metadata.package_cleanup %>"<% end %>
-<% if @metadata.pkg_cleanup?  %>chroot $rootfs sh -ec "apk del <%= @metadata.pkg_cleanup %>"<% end %>
+<% if @meta.pkgs?  %>chroot $rootfs sh -ec "apk --update add <%= @meta.pkgs %>"<% end %>
+<% if @meta.packages?  %>chroot $rootfs sh -ec "apk --update add <%= @meta.packages %>"<% end %>
+<% if @meta.package_cleanup?  %>chroot $rootfs sh -ec "apk del <%= @meta.package_cleanup %>"<% end %>
+<% if @meta.pkg_cleanup?  %>chroot $rootfs sh -ec "apk del <%= @meta.pkg_cleanup %>"<% end %>
 chroot $rootfs sh -ec '{
 	mv /var/run/* /run 2> /dev/null || true
 	mv /var/lock  /run 2> /dev/null || true

@@ -133,7 +133,7 @@ module Docker
       def filter_matches?(msg)
         return false unless @repo
 
-        @repo.metadata["log_filters"].any? do |filter|
+        @repo.meta["log_filters"].any? do |filter|
           filter.is_a?(Regexp) && msg =~ filter || msg == filter
         end
       end

@@ -32,7 +32,7 @@ module Docker
           dockerfile = Template.project?? Template.root : @repo.root
           dockerfile = dockerfile.join("Dockerfile").read
 
-          data = ERB::Context.new(:metadata => @repo.metadata)
+          data = ERB::Context.new(:meta => @repo.meta)
           data = ERB.new(dockerfile).result(data._binding)
           context = @context.join("Dockerfile")
           context.write(

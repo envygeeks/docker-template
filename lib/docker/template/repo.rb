@@ -28,8 +28,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def pushable?
-        (metadata["push"] || metadata["push_only"]) &&
-          !metadata["cache_only"] && !metadata[
+        (meta["push"] || meta["push_only"]) &&
+          !meta["cache_only"] && !meta[
             "clean_only"
           ]
       end
@@ -39,8 +39,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cacheable?
-        (metadata["cache"] || metadata["cache_only"]) &&
-          !metadata[
+        (meta["cache"] || meta["cache_only"]) &&
+          !meta[
             "push_only"
           ]
       end
@@ -50,8 +50,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def buildable?
-        !metadata["push_only"] && !metadata["cache_only"] &&
-          !metadata[
+        !meta["push_only"] && !meta["cache_only"] &&
+          !meta[
             "clean_only"
           ]
       end
@@ -63,17 +63,17 @@ module Docker
 
       def aliased
         full = CLI::Parser.full_name?(
-          metadata.aliased_tag
+          meta.aliased_tag
         )
 
         if alias? && full
           self.class.new(to_h.merge(CLI::Parser.to_repo_hash(
-            metadata.aliased_tag
+            meta.aliased_tag
           )))
 
         elsif alias?
           self.class.new(to_h.merge({
-            "tag" => metadata.aliased_tag
+            "tag" => meta.aliased_tag
           }))
         end
 
@@ -101,7 +101,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def to_s(rootfs: false)
-        prefix = metadata["local_prefix"]
+        prefix = meta["local_prefix"]
         return "#{user}/#{name}:#{tag}" unless rootfs
         "#{prefix}/rootfs:#{name}"
       end
@@ -112,7 +112,7 @@ module Docker
 
       def cache_dir
         return root.join(
-          metadata["cache_dir"], tag
+          meta["cache_dir"], tag
         )
       end
 
@@ -121,7 +121,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def copy_dir(*path)
-        dir = metadata["copy_dir"]
+        dir = meta["copy_dir"]
         root.join(dir,
           *path
         )
@@ -142,7 +142,7 @@ module Docker
       def to_rootfs_h
         {
           "tag"   => name,
-          "repo"  => "#{metadata["local_prefix"]}/rootfs",
+          "repo"  => "#{meta["local_prefix"]}/rootfs",
           "force" => true
         }
       end
@@ -196,9 +196,9 @@ module Docker
 
       # ----------------------------------------------------------------------
 
-      def metadata
-        return @metadata ||= begin
-          Metadata.new(
+      def meta
+        return @meta ||= begin
+          Meta.new(
             @base_meta
           )
         end
@@ -207,12 +207,12 @@ module Docker
       # ----------------------------------------------------------------------
 
       def to_env(tar_gz: nil, copy_dir: nil)
-        hash = metadata["env"] || { "all" => {}}
-        Metadata.new(hash, :root => metadata).merge({
+        hash = meta["env"] || { "all" => {}}
+        Meta.new(hash, :root => meta).merge({
           "REPO" => name,
           "TAR_GZ" => tar_gz,
-          "GROUP" => metadata.group,
-          "DEBUG" => metadata.debug?? "true" : "",
+          "GROUP" => meta.group,
+          "DEBUG" => meta.debug?? "true" : "",
           "COPY_DIR" => copy_dir,
           "BUILD_TYPE" => type,
           "TAG" => tag
@@ -222,15 +222,15 @@ module Docker
       # ----------------------------------------------------------------------
 
       rb_delegate :build, :to => :builder
-      rb_delegate :alias?, :to => :metadata
-      rb_delegate :complex_alias?, :to => :metadata
-      rb_delegate :type, :to => :metadata, :type => :hash
-      rb_delegate :user, :to => :metadata, :type => :hash
-      rb_delegate :name, :to => :metadata, :type => :hash
-      rb_delegate :tag,  :to => :metadata, :type => :hash
+      rb_delegate :alias?, :to => :meta
+      rb_delegate :complex_alias?, :to => :meta
+      rb_delegate :type, :to => :meta, :type => :hash
+      rb_delegate :user, :to => :meta, :type => :hash
+      rb_delegate :name, :to => :meta, :type => :hash
+      rb_delegate :tag,  :to => :meta, :type => :hash
       rb_delegate :to_h, :to => :@base_meta
-      rb_delegate :root, :to => :metadata
-      rb_delegate :tags, :to => :metadata
+      rb_delegate :root, :to => :meta
+      rb_delegate :tags, :to => :meta
       rb_delegate :clean, {
         :to => Cache, :alias_of => :cleanup, :args => %w(
           self

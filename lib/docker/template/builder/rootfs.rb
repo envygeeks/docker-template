@@ -14,7 +14,7 @@ module Docker
 
         def data
           Template.get(:rootfs, {
-            :rootfs_base_img => @repo.metadata["rootfs_base_img"]
+            :rootfs_base_img => @repo.meta["rootfs_base_img"]
           })
         end
 
@@ -32,7 +32,7 @@ module Docker
           end
 
           "rootfs/#{
-            @repo.metadata.rootfs_template
+            @repo.meta.rootfs_template
           }"
         end
 
@@ -41,7 +41,7 @@ module Docker
         def builder_data
           Template.get(
             discover, {
-              :metadata => @repo.metadata
+              :meta => @repo.meta
             }
           )
         end
@@ -73,7 +73,7 @@ module Docker
         private
         def setup_context
           @context = @repo.tmpdir("rootfs")
-          @copy = @context.join(@repo.metadata["copy_dir"])
+          @copy = @context.join(@repo.meta["copy_dir"])
           @context.join("Dockerfile").write(data)
 
           @copy.join("usr/local/bin").mkdir_p

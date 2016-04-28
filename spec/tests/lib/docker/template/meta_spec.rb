@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe Docker::Template::Metadata do
+describe Docker::Template::Meta do
   subject do
     described_class.new({
       "hello" => "world"
@@ -25,7 +25,7 @@ describe Docker::Template::Metadata do
 
       #
 
-      it "should stringify the metadata" do
+      it "should stringify the meta" do
         expect(subject).to include({
           "hello" => "world"
         })
@@ -34,7 +34,7 @@ describe Docker::Template::Metadata do
 
     #
 
-    context "when overrides is a Metadata" do
+    context "when overrides is a Meta" do
       it "should pull the raw data" do
         expect(subject).to receive(:to_h).with(:raw => true) \
           .and_call_original
@@ -1205,7 +1205,7 @@ describe Docker::Template::Metadata do
 
       #
 
-      it "should pull from the root metadata" do
+      it "should pull from the root meta" do
         expect(subject["hello"].tags).to eq %w(
           hello
         )
@@ -1242,7 +1242,7 @@ describe Docker::Template::Metadata do
 
       #
 
-      it "should pull groups from the root metadata" do
+      it "should pull groups from the root meta" do
         expect(subject["hello"].groups).to eq %w(
           world
         )
@@ -1254,8 +1254,8 @@ describe Docker::Template::Metadata do
 
   describe "#try_default" do
     it "should pull from the base configuration" do
-      expect(subject[Docker::Template::Metadata::DEFAULTS.keys.first]).to eq(
-        Docker::Template::Metadata::DEFAULTS.values.first
+      expect(subject[Docker::Template::Meta::DEFAULTS.keys.first]).to eq(
+        Docker::Template::Meta::DEFAULTS.values.first
       )
     end
   end
