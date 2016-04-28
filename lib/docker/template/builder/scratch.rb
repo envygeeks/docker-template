@@ -94,13 +94,13 @@ module Docker
             raise Error::BadExitStatus, status
           end
         ensure
-          @rootfs.teardown
-
           if img
             then img.tap(&:stop).delete({
               "force" => true
             })
           end
+
+          @rootfs.teardown
         end
 
         # ----------------------------------------------------------------------
