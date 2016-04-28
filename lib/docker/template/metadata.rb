@@ -29,7 +29,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       DEFAULTS = HashWithIndifferentAccess.new({
-        "log_filters" => [],
+        "aliases" => {},
         "push" => false,
         "cache" => false,
         "type" => "normal",
@@ -45,7 +45,11 @@ module Docker
         "tag" => "latest",
         "clean" => true,
         "tty" => false,
-        "tags" => {}
+        "tags" => {},
+        "log_filters" => [
+          /^The push refers to a repository/,
+          /\sdigest: sha256:/
+        ]
       }).freeze
 
       # ----------------------------------------------------------------------
