@@ -199,10 +199,10 @@ module Docker
       def to_env(tar_gz: nil, copy_dir: nil)
         hash = metadata["env"] || { "all" => {}}
         Metadata.new(hash, :root => metadata).merge({
-          "DEBUG" => metadata.debug?,
           "REPO" => name,
           "TAR_GZ" => tar_gz,
           "GROUP" => metadata.group,
+          "DEBUG" => metadata.debug?? "true" : "",
           "COPY_DIR" => copy_dir,
           "BUILD_TYPE" => type,
           "TAG" => tag
