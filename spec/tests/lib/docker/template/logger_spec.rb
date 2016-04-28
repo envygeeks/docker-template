@@ -28,7 +28,7 @@ describe Docker::Template::Logger do
       end
 
       it "should be able to filter messages" do
-        expect(described_class.new(mocked_repo.to_normal).send(:output, "hello world")).to(
+        expect(described_class.new(mocked_repo.to_repo).send(:output, "hello world")).to(
           be_nil
         )
       end

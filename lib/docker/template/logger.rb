@@ -7,10 +7,10 @@
 module Docker
   module Template
     class Logger
-      def initialize(builder = nil)
+      def initialize(repo = nil)
         @lines = { 0 => 0 }
-        @builder = \
-          builder
+        @repo = \
+          repo
       end
 
       # ----------------------------------------------------------------------
@@ -131,9 +131,9 @@ module Docker
 
       private
       def filter_matches?(msg)
-        return false unless @builder
+        return false unless @repo
 
-        @builder.repo.metadata["log_filters"].any? do |filter|
+        @repo.metadata["log_filters"].any? do |filter|
           filter.is_a?(Regexp) && msg =~ filter || msg == filter
         end
       end

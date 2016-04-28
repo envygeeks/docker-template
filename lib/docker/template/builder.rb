@@ -81,8 +81,8 @@ module Docker
 
         Notify.push(self); Auth.hub
         img = @img || Image.get(@repo.to_s)
-        img.push nil, :repo_tag => \
-          @repo.to_s, &Logger.new.method(:api)
+        img.push nil, :repo_tag => @repo.to_s, \
+          &Logger.new(repo).method(:api)
 
       rescue Docker::Error::NotFoundError
         $stderr.puts Simple::Ansi.red(
@@ -190,7 +190,7 @@ module Docker
       private
       def chdir_build
         @context.chdir do
-          logger = Logger.new(self).method(:api)
+          logger = Logger.new(repo).method(:api)
           opts = { :t => @repo.to_s(rootfs: rootfs?), :force => @repo.metadata.force? }
           $stderr.puts Simple::Ansi.yellow("TTY not supported: Ignored.") if @repo.metadata["tty"]
           @img = Docker::Image.build_from_dir(".", opts, &logger)
