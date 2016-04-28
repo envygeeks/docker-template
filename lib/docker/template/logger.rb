@@ -42,7 +42,7 @@ module Docker
       # A more complex streamer designed for the actual output of the Docker.
       # ----------------------------------------------------------------------
 
-      def api(part, *_)
+      def api(part, *args)
         stream = JSON.parse(part)
         return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
         return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
@@ -54,8 +54,8 @@ module Docker
         )
 
       rescue JSON::ParserError => e
-        $stderr.puts format("Unparsable JSON message given: %s",
-          part
+        $stderr.puts format("Unparsable JSON message given: %s\n\nargs: %s",
+          part, args.inspect
         )
       end
 
