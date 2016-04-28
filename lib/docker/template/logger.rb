@@ -41,6 +41,10 @@ module Docker
       # ----------------------------------------------------------------------
       # A more complex streamer designed for the actual output of the Docker.
       # ----------------------------------------------------------------------
+      # This method will save parts into a buffer until it can either parse
+      # that buffer or it parses the actual part itself, if it can parse the
+      # part itself, it will first dump the buffer as errors and then parse.
+      # ----------------------------------------------------------------------
 
       def api(part, *args)
         chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
@@ -49,6 +53,15 @@ module Docker
           chunked_part
         )
 
+        if chunked_part == part && @chunks && !@chunks.empty?
+          @chunks.each do |chunk|
+            $stderr.puts format("Unparsable JSON: %s",
+              chunk
+            )
+          end
+        end
+
+        @chunks = nil
         return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
         return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
         return progress_error(stream) if stream.any_key?("errorDetail", "error")
@@ -57,19 +70,10 @@ module Docker
           part
         )
 
-        @chunks = nil
       rescue JSON::ParserError => e
-        if part.bytesize == Excon.defaults[:chunk_size]
-          (@chunks ||= []).push(
-            part
-          )
-
-        else
-          @chunks = nil
-          $stderr.puts format("Unparsable JSON: %s\n\nargs: %s\nbytesize: %d\nsize: %d",
-            chunked_part, args.inspect, part.bytesize, part.size
-          )
-        end
+        (@chunks ||= []).push(
+          part
+        )
       end
 
       # ----------------------------------------------------------------------
