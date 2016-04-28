@@ -20,8 +20,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       def hub
-        if env?
-          then _hub_env else _hub_config
+        unless Docker.creds
+          env?? _hub_env : _hub_config
         end
 
       rescue Docker::Error::AuthenticationError
