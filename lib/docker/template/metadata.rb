@@ -518,7 +518,9 @@ module Docker
 
             else
               vals.find do |v|
-                v[k]
+                v.key?(
+                  k
+                )
               end \
               [k]
             end
