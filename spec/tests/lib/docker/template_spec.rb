@@ -29,11 +29,11 @@ describe Docker::Template do
 
   #
 
-  describe "#single?" do
+  describe "#project?" do
     include_context :repos
-    context "when laid out as a single repository", :type => :single do
+    context "when laid out as a project repository", :type => :project do
       it "should return true" do
-        expect(template.single?).to eq(
+        expect(template.project?).to eq(
           true
         )
       end
@@ -41,9 +41,9 @@ describe Docker::Template do
 
     #
 
-    context "when it's not laid out as single" do
+    context "when it's not laid out as project" do
       it "should return false" do
-        expect(template.single?).to(
+        expect(template.project?).to(
           be_falsey
         )
       end

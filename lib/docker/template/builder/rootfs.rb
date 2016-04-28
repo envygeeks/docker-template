@@ -48,7 +48,7 @@ module Docker
 
         # ----------------------------------------------------------------------
         # During a simple copy you store all the data (including rootfs) data
-        # as a single unit, this helps us clean up data that is known to be for
+        # as a project unit, this helps us clean up data that is known to be for
         # just the rootfs image and remove it so it doesn't impact.
         # ----------------------------------------------------------------------
 

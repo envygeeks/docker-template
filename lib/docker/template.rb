@@ -25,12 +25,12 @@ module Docker
 
     # ------------------------------------------------------------------------
 
-    def single?
+    def project?
       dir = root.join("docker")
-      any = Builder.all.dup.keep_if(&:singles_allowed?)
+      any = Builder.all.dup.keep_if(&:projects_allowed?)
       any = any.map(&:files).reduce(&:|).any? { |file| root.join(file).file? }
       return true if any && root.join(Metadata.opts_file(:force => \
-        :single)).file?
+        :project)).file?
     end
 
     # ------------------------------------------------------------------------

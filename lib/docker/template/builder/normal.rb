@@ -8,7 +8,7 @@ module Docker
   module Template
     class Builder
       class Normal < Builder
-        singles_allowed!
+        projects_allowed!
 
         def teardown(img: false)
           @img.delete "force" => true if @img && img

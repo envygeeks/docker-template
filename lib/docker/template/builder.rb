@@ -298,15 +298,15 @@ module Docker
 
         # --------------------------------------------------------------------
 
-        def singles_allowed!
-          return @singles_allowed = \
+        def projects_allowed!
+          return @projects_allowed = \
             true
         end
 
         # ----------------------------------------------------------------------
 
-        def singles_allowed?
-          return !!@singles_allowed
+        def projects_allowed?
+          return !!@projects_allowed
         end
 
         # ----------------------------------------------------------------------

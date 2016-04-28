@@ -32,8 +32,8 @@ RSpec.describe Docker::Template::Builder::Rootfs do
 
   #
 
-  it "should not allow singles" do
-    expect(described_class.singles_allowed?).to(
+  it "should not allow projects" do
+    expect(described_class.projects_allowed?).to(
       be_falsey
     )
   end

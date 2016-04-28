@@ -11,7 +11,7 @@ module Mocks
     extend Forwardable::Extended
 
     FS_LAYOUTS = {
-      :single => [
+      :project => [
         [:mkdir, "docker"],
         [:write, "docker/copy/all/usr/local/bin/hello", "world"],
         [:write, "docker/template.yml", "--- {}\n"],
@@ -330,8 +330,8 @@ module Mocks
 
     private
     def repo_dir
-      rtn = @root if @fs_layout == :single
-      rtn = @root.join(Docker::Template::Metadata::DEFAULTS[:repos_dir], @hashes[:init][:name]) unless @fs_layout == :single
+      rtn = @root if @fs_layout == :project
+      rtn = @root.join(Docker::Template::Metadata::DEFAULTS[:repos_dir], @hashes[:init][:name]) unless @fs_layout == :project
       rtn.mkdir_p unless rtn.exist? || emptied?
       rtn
     end

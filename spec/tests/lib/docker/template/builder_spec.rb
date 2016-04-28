@@ -45,16 +45,16 @@ describe Docker::Template::Builder do
 
   #
 
-  describe ".singles_allowed?" do
-    context "when the user wishes to allow single builds" do
+  describe ".projects_allowed?" do
+    context "when the user wishes to allow project builds" do
       before :all do
         class BuilderTestMock < Docker::Template::Builder
-          singles_allowed!
+          projects_allowed!
         end
       end
 
       it "should be true" do
-        expect(BuilderTestMock.singles_allowed?).to eq(
+        expect(BuilderTestMock.projects_allowed?).to eq(
           true
         )
       end
@@ -69,7 +69,7 @@ describe Docker::Template::Builder do
     #
 
     it "should be nil by default" do
-      expect(described_class.singles_allowed?).to(
+      expect(described_class.projects_allowed?).to(
         be_falsey
       )
     end

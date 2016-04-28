@@ -52,7 +52,7 @@ module Docker
 
       class << self
         def opts_file(force: nil)
-          force == :single || Template.single?? "docker/template.yml" : \
+          force == :project || Template.project?? "docker/template.yml" : \
             "opts.yml"
         end
       end
@@ -84,8 +84,8 @@ module Docker
           })
         end
 
-        return load_normal_config(overrides) if root.nil? && !Template.single?
-        return load_single_config(overrides) if root.nil? &&  Template.single?
+        return load_normal_config(overrides) if root.nil? && !Template.project?
+        return load_project_config(overrides) if root.nil? &&  Template.project?
         @data = overrides.stringify.with_indifferent_access
         @root_data = root.stringify \
           .with_indifferent_access
@@ -631,7 +631,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       private
-      def load_single_config(overrides)
+      def load_project_config(overrides)
         overrides = overrides.stringify
         gdata = Template.root.join(self.class.opts_file).read_yaml
         @data = DEFAULTS.deep_merge(gdata.stringify).deep_merge(overrides)

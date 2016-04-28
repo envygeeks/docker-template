@@ -25,8 +25,8 @@ describe Docker::Template::Builder::Normal do
 
   #
 
-  it "should allow singles" do
-    expect(described_class.singles_allowed?).to eq(
+  it "should allow projects" do
+    expect(described_class.projects_allowed?).to eq(
       true
     )
   end

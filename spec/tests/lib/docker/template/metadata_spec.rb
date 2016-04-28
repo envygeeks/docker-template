@@ -70,9 +70,9 @@ describe Docker::Template::Metadata do
 
     #
 
-    context "when initializing as a single repo" do
+    context "when initializing as a project repo" do
       before do
-        allow(Docker::Template).to receive(:single?).and_return(
+        allow(Docker::Template).to receive(:project?).and_return(
           true
         )
       end
@@ -99,9 +99,9 @@ describe Docker::Template::Metadata do
   #
 
   describe ".opts_file" do
-    context "when the Template.single? is true" do
+    context "when the Template.project? is true" do
       before do
-        allow(Docker::Template).to receive(:single?).and_return(
+        allow(Docker::Template).to receive(:project?).and_return(
           true
         )
       end
@@ -117,9 +117,9 @@ describe Docker::Template::Metadata do
 
     #
 
-    context "when the user asks for single" do
-      it "should return the single path" do
-        expect(described_class.opts_file(:force => :single)).to eq(
+    context "when the user asks for project" do
+      it "should return the project path" do
+        expect(described_class.opts_file(:force => :project)).to eq(
           "docker/template.yml"
         )
       end
