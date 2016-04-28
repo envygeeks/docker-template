@@ -43,20 +43,32 @@ module Docker
       # ----------------------------------------------------------------------
 
       def api(part, *args)
-        stream = JSON.parse(part)
+        part = @chunks.push(part).join if @chunks && !@chunks.empty?
+        stream = JSON.parse(
+          part
+        )
+
         return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
         return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
         return progress_error(stream) if stream.any_key?("errorDetail", "error")
-
         warn Simple::Ansi.red("Unhandled Stream.")
         $stdout.puts(
           part
         )
 
+        @chunks = nil
       rescue JSON::ParserError => e
-        $stderr.puts format("Unparsable JSON message given: %s\n\nargs: %s",
-          part, args.inspect
-        )
+        if part.bytesize == Excon.defaults[:chunk_size]
+          (@chunks ||= []).push(
+            part
+          )
+
+        else
+          @chunks = nil
+          $stderr.puts format("Unparsable JSON message given: %s\n\nargs: %s",
+            part, args.inspect
+          )
+        end
       end
 
       # ----------------------------------------------------------------------
