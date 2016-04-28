@@ -13,6 +13,7 @@ $LOAD_PATH.unshift(File.expand_path(
 require "simple/ansi"
 require "rspec/core/rake_task"
 require "luna/rubocop/rake/task"
+require "docker/template/cli"
 require "open3"
 
 # ----------------------------------------------------------------------------
@@ -118,7 +119,7 @@ module CompList
   # --------------------------------------------------------------------------
 
   def pak_file
-    Pathutil.new("bin/comp-list.pak").expand_path.tap(
+    Pathutil.new("comp/list.pak").expand_path.tap(
       &:touch
     )
   end
