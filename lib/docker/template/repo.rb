@@ -12,7 +12,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def initialize(*hashes)
-        @base_meta = hashes.compact.reduce(:deep_merge).freeze
+        @base_meta = hashes.compact
+        @base_meta = @base_meta.reduce(:deep_merge)
+        @base_meta.freeze
 
         unless root.exist?
           raise(
