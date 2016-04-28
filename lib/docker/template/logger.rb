@@ -43,9 +43,10 @@ module Docker
       # ----------------------------------------------------------------------
 
       def api(part, *args)
-        part = @chunks.push(part).join if @chunks && !@chunks.empty?
+        chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
+        chunked_part = part if !@chunks
         stream = JSON.parse(
-          part
+          chunked_part
         )
 
         return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
@@ -65,8 +66,8 @@ module Docker
 
         else
           @chunks = nil
-          $stderr.puts format("Unparsable JSON message given: %s\n\nargs: %s",
-            part, args.inspect
+          $stderr.puts format("Unparsable JSON: %s\n\nargs: %s\nbytesize: %d\nsize: %d",
+            chunked_part, args.inspect, part.bytesize, part.size
           )
         end
       end
