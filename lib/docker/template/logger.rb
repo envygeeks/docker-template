@@ -45,6 +45,10 @@ module Docker
       # that buffer or it parses the actual part itself, if it can parse the
       # part itself, it will first dump the buffer as errors and then parse.
       # ----------------------------------------------------------------------
+      # This method has to buffer because Docker-API (or Excon, it's depend)
+      # gives us no indication of whether or not this is part of a larger chunk
+      # it just dumps it on us, so we have to blindly work around that.
+      # ----------------------------------------------------------------------
 
       def api(part, *args)
         chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
@@ -54,7 +58,7 @@ module Docker
         )
 
         if chunked_part == part && @chunks && !@chunks.empty?
-          @chunks.each do |chunk|
+          then @chunks.each do |chunk|
             $stderr.puts format("Unparsable JSON: %s",
               chunk
             )
