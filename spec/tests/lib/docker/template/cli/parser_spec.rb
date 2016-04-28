@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe Docker::Template::Parser do
+describe Docker::Template::CLI::Parser do
   include_context :repos
 
   #

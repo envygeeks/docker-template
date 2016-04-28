@@ -62,12 +62,12 @@ module Docker
       # ----------------------------------------------------------------------
 
       def aliased
-        full = Parser.full_name?(
+        full = CLI::Parser.full_name?(
           metadata.aliased_tag
         )
 
         if alias? && full
-          self.class.new(to_h.merge(Parser.to_repo_hash(
+          self.class.new(to_h.merge(CLI::Parser.to_repo_hash(
             metadata.aliased_tag
           )))
 

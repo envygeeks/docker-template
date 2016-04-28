@@ -18,7 +18,7 @@ describe Docker::Template::CLI::Build do
   #
 
   let :parser do
-    Docker::Template::Parser
+    Docker::Template::CLI::Parser
   end
 
   #
