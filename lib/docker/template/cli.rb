@@ -74,6 +74,7 @@ module Docker
       option :cache,      :type => :boolean, :desc => "Cache your repositories to cache."
       option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
       option :clean,      :type => :boolean, :desc => "Cleanup your caches."
+      option :force,      :type => :boolean, :desc => "Force your build."
       option :help,       :type => :boolean, :desc => "Output this."
 
       # ----------------------------------------------------------------------
