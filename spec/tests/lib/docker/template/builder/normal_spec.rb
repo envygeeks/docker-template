@@ -5,7 +5,7 @@
 # ----------------------------------------------------------------------------
 
 require "rspec/helper"
-describe Docker::Template::Builder::Normal do
+describe Docker::Template::Builder::Normal, :type => :normal do
   include_contexts :docker, :repos
 
   #
@@ -13,14 +13,6 @@ describe Docker::Template::Builder::Normal do
   subject do
     mocked_repo.with_repo_init("tag" => "latest")
     mocked_repo.to_normal
-  end
-
-  #
-
-  before do
-    mocked_repo.init({
-      :type => :normal
-    })
   end
 
   #
@@ -37,6 +29,38 @@ describe Docker::Template::Builder::Normal do
     expect(described_class.files).not_to(
       be_empty
     )
+  end
+
+  #
+
+  describe "#copy_dockerfile" do
+    context "when the it's a project build", :type => :project do
+      it "should pull the Dockerfile from the root" do
+        expect(Docker::Template).to receive(:root) \
+          .and_call_original
+      end
+    end
+
+    #
+
+    it "should pull the Dockerfile from the repo root" do
+      expect(subject.repo).to receive(:root) \
+        .and_call_original
+    end
+
+    #
+
+    it "should create an ERB context" do
+      expect(ERB::Context).to receive(:new) \
+        .and_call_original
+    end
+
+    #
+
+    after do
+      subject.send(:setup_context)
+      subject.teardown
+    end
   end
 
   #

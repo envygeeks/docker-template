@@ -24,12 +24,15 @@ module Docker
 
       def all
         return @raw_repos unless @raw_repos.empty?
+        return [Template.root.basename.to_s] if Template.project?
         Template.root.join(Metadata.new({}).repos_dir).children.map do |path|
           path.basename.to_s
         end
 
       rescue Errno::ENOENT
-        then raise Error::RepoNotFound
+        then raise(
+          Error::RepoNotFound
+        )
       end
 
       # ----------------------------------------------------------------------
@@ -57,7 +60,8 @@ module Docker
             Repo.new(hash, @argv).to_repos.each do |r|
               r.alias?? repos[:aliases] << r : \
                 if r.builder.scratch?
-                  repos[:scratch] << r else repos[:simple] << r
+                  then repos[:scratch] << r
+                  else repos[ :simple] << r
                 end
             end
           end

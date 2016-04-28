@@ -15,8 +15,8 @@ module Docker
       # ----------------------------------------------------------------------
 
       ALIAS_SETUP = [:cache_context]
-      SETUP = [:setup_context, :copy_global, :copy_all,
-        :copy_group, :copy_tag, :copy_cleanup, :build_context,
+      SETUP = [:setup_context, :copy_global, :copy_project,
+        :copy_all, :copy_group, :copy_tag, :copy_cleanup, :build_context,
           :verify_context, :cache_context].freeze
 
       # ----------------------------------------------------------------------
@@ -225,6 +225,25 @@ module Docker
               @copy, :root => Template.root
             )
           end
+        end
+      end
+
+      # ----------------------------------------------------------------------
+
+      private
+      def copy_project
+        if Template.project?
+          ignores = repo.metadata["project_copy_ignore"].map do |path|
+            Pathutil.new(path).expand_path(
+              Template.root
+            )
+          end
+
+          Template.root.safe_copy(
+            context.join(repo.metadata.project_copy_dir), {
+              :root => Template.root, :ignore => ignores
+            }
+          )
         end
       end
 

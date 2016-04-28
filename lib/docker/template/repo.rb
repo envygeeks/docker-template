@@ -172,18 +172,26 @@ module Docker
       # ----------------------------------------------------------------------
 
       def to_repos
-        set = Set.new
-        if @base_meta.key?("tag")
-          set << self
+        if Template.project?
+          then Set.new([
+            self
+          ])
+
         else
-          tags.each do |tag|
-            hash = to_h.merge("tag" => tag)
-            set << self.class.new(
-              hash, @cli_opts
-            )
+          set = Set.new
+          if @base_meta.key?("tag")
+            set << self
+          else
+            tags.each do |tag|
+              hash = to_h.merge("tag" => tag)
+              set << self.class.new(
+                hash, @cli_opts
+              )
+            end
           end
+
+          set
         end
-        set
       end
 
       # ----------------------------------------------------------------------

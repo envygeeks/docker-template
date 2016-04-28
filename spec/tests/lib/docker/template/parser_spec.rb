@@ -188,4 +188,41 @@ describe Docker::Template::Parser do
       end
     end
   end
+
+  #
+
+  describe "#all" do
+    context "when given raw repos" do
+      it "should return those" do
+        expect(described_class.new(%w(hello)).all).to eq %w(
+          hello
+        )
+      end
+    end
+
+    #
+
+    context "when it's project" do
+      before do
+        allow(Docker::Template).to receive(:project?).and_return(
+          true
+        )
+      end
+
+      #
+
+      subject do
+        described_class.new
+      end
+
+      #
+
+      it "should return the single root" do
+        expect(subject.all.size).to eq 1
+        expect(subject.all).to include(
+          Docker::Template.root.basename.to_s
+        )
+      end
+    end
+  end
 end

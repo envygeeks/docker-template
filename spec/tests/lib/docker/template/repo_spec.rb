@@ -330,6 +330,24 @@ describe Docker::Template::Repo do
         )
       end
     end
+
+    context "when the template is a project", :type => :project do
+      before do
+        allow(Docker::Template).to receive(:project?).and_return(
+          true
+        )
+      end
+
+      #
+
+      it "should return itself as a set" do
+        repo = mocked_repo.to_repo
+        expect(repo.to_repos.size).to eq 1
+        expect(repo.to_repos).to include(
+          repo
+        )
+      end
+    end
   end
 
   #

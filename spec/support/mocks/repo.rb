@@ -339,6 +339,7 @@ module Mocks
     # ------------------------------------------------------------------------
 
     alias clear empty
+    alias to_project to_normal
     rb_delegate :emptied?, :to => :@emptied, :type => :ivar, :bool => true
     rb_delegate :join,     :to => :@root
   end

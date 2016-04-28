@@ -33,11 +33,13 @@ module Docker
         "push" => false,
         "cache" => false,
         "type" => "normal",
-        "user" => "random_user",
         "local_prefix" => "local",
+        "project_data_dir" => "docker",
         "rootfs_base_img" => "envygeeks/ubuntu",
         "maintainer" => "Random User <random.user@example.com>",
+        "user" => ENV["USER"] || ENV["USERNAME"] || "random",
         "name" => Template.root.basename.to_s,
+        "project_copy_dir" => "project",
         "rootfs_template" => "alpine",
         "cache_dir" => "cache",
         "repos_dir" => "repos",
@@ -46,10 +48,23 @@ module Docker
         "clean" => true,
         "tty" => false,
         "tags" => {},
+
+        #
+
         "log_filters" => [
           /^The push refers to a repository/,
           /\sdigest: sha256:/
-        ]
+        ],
+
+        #
+
+        "project_copy_ignore" => %w(
+          vendor/bundle .bundle
+          .git .gitattributes .gitignore
+          Dockerfile docker
+          .node_modules
+          tmp log
+        ),
       }).freeze
 
       # ----------------------------------------------------------------------
@@ -156,9 +171,18 @@ module Docker
       # ----------------------------------------------------------------------
 
       def root
-        Template.root.join(
-          root_data[:repos_dir], root_data[:name]
-        )
+        if Template.project?
+          then return Template.root.join(root_data[
+            :project_data_dir
+          ])
+
+        else
+          Template.root.join(
+            root_data[:repos_dir], root_data[
+              :name
+            ]
+          )
+        end
       end
 
       # ----------------------------------------------------------------------

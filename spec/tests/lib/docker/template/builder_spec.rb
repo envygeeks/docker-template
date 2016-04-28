@@ -35,6 +35,16 @@ describe Docker::Template::Builder do
 
   #
 
+  describe "#.sub?" do
+    it "is false by default..." do
+      expect(described_class.sub?).to eq(
+        false
+      )
+    end
+  end
+
+  #
+
   describe ".files" do
     it "should be a reference method and empty" do
       expect(described_class.files).to(
@@ -353,6 +363,33 @@ describe Docker::Template::Builder do
       after do
         subject.send(
           :copy_global
+        )
+      end
+    end
+
+    #
+
+    describe "#copy_project", :type => :project do
+      it "should copy" do
+        expect(Docker::Template.root).to receive(:safe_copy).and_return(
+          nil
+        )
+      end
+
+      #
+
+      it "should pass ignores" do
+        expect(Docker::Template.root).to receive(:safe_copy).with(anything, \
+            :root => anything, :ignore => anything).and_return(
+          nil
+        )
+      end
+
+      #
+
+      after do
+        subject.send(
+          :copy_project
         )
       end
     end
