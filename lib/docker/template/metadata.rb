@@ -84,13 +84,34 @@ module Docker
           })
         end
 
-        return load_normal_config(overrides) if root.nil? && !Template.project?
-        return load_project_config(overrides) if root.nil? &&  Template.project?
-        @data = overrides.stringify.with_indifferent_access
-        @root_data = root.stringify \
-          .with_indifferent_access
+        if root.nil?
+          load_normal_config (overrides) if !Template.project?
+          load_project_config(overrides) if  Template.project?
+          @root = true
 
+        else
+          @data = overrides.stringify.with_indifferent_access
+          @root_data = root.stringify \
+            .with_indifferent_access
+        end
+
+        normalize!
         debug!
+      end
+
+      # ----------------------------------------------------------------------
+
+      def normalize!
+        if root?
+          opts = {
+            :allowed_keys => [], :allowed_vals => []
+          }
+
+          merge!({
+            "tags"    => @data[   "tags"].stringify(**opts),
+            "aliases" => @data["aliases"].stringify(**opts)
+          })
+        end
       end
 
       # ----------------------------------------------------------------------
