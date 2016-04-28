@@ -89,6 +89,25 @@ module Docker
         @data = overrides.stringify.with_indifferent_access
         @root_data = root.stringify \
           .with_indifferent_access
+
+        debug!
+      end
+
+      # ----------------------------------------------------------------------
+
+      def debug!
+        if root? && root_data["debug"]
+          if !key?(:env) || self[:env].queryable?
+            self[:env] ||= {}
+            merge!({
+              :env => {
+                :all => {
+                  :DEBUG => true
+                }
+              }
+            })
+          end
+        end
       end
 
       # ----------------------------------------------------------------------

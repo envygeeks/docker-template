@@ -72,6 +72,7 @@ module Docker
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
       option :push,       :type => :boolean, :desc => "Push Repo After Building."
       option :cache,      :type => :boolean, :desc => "Cache your repositories to cache."
+      option :debug,      :type => :boolean, :desc => "Send the DEBUG=true env var to your instance."
       option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
       option :clean,      :type => :boolean, :desc => "Cleanup your caches."
       option :force,      :type => :boolean, :desc => "Force your build."
