@@ -24,7 +24,7 @@ apt-get update && apt-get install --no-install-recommends -y wget
 for v in <%= sha1 %>:<%= pkg1 %> <%= sha2 %>:<%= pkg2 %>; do
   sha=$(echo $v | awk -F: '{ print $1 }')
   pkg=$(echo $v | awk -F: '{ print $2 }')
-  wget -nv -O $tmp/$pkg $release_url/$arch/$pkg
+  wget -O $tmp/$pkg $release_url/$arch/$pkg
   if [ "$(sha256sum $tmp/$pkg)" != "$sha  $tmp/$pkg" ]; then
     >&2 printf "%s sha error: %s" $pkg \
       "$(sha256sum $tmp/$pkg)"

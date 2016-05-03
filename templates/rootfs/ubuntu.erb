@@ -11,14 +11,14 @@ tmp=$(mktemp -d)
 cd $tmp
 gpg  --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
 sudo apt-get update && sudo apt-get install --no-install-recommends -y wget
-wget -nv $partner_url/<%= @meta.release %>/current/SHA256SUMS.gpg
-wget -nv $partner_url/<%= @meta.release %>/current/SHA256SUMS
+wget $partner_url/<%= @meta.release %>/current/SHA256SUMS.gpg
+wget $partner_url/<%= @meta.release %>/current/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
 
 img=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
 sha=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $1 }')
 
-wget -nv "$partner_url/<%= @meta.release %>/current/$img"
+wget "$partner_url/<%= @meta.release %>/current/$img"
 if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
 	echo "Bailing, the SHA256sum did not match."
 fi
