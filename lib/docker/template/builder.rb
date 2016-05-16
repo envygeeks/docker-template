@@ -8,8 +8,12 @@ module Docker
   module Template
     class Builder
       extend Forwardable::Extended
+
+      # ----------------------------------------------------------------------
+
       attr_reader :repo
       attr_reader :context
+      attr_reader :copy
       attr_reader :img
 
       # ----------------------------------------------------------------------
