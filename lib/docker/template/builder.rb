@@ -132,6 +132,24 @@ module Docker
       end
 
       # ----------------------------------------------------------------------
+      # The prebuild happens when a user has "setup_context", which typically
+      # only happens with scratch, which will prebuild it's rootfs image so
+      # it can get to building it's actual image.
+      # ----------------------------------------------------------------------
+
+      def setup
+        unless respond_to?(:setup_context, true)
+          raise Error::NoSetupContext
+        end
+
+        SETUP.map do |val|
+          if respond_to?(val, true)
+            send(val)
+          end
+        end
+      end
+
+      # ----------------------------------------------------------------------
 
       private
       def build_alias
@@ -157,25 +175,6 @@ module Docker
         end
 
         push
-      end
-
-      # ----------------------------------------------------------------------
-      # The prebuild happens when a user has "setup_context", which typically
-      # only happens with scratch, which will prebuild it's rootfs image so
-      # it can get to building it's actual image.
-      # ----------------------------------------------------------------------
-
-      private
-      def setup
-        unless respond_to?(:setup_context, true)
-          raise Error::NoSetupContext
-        end
-
-        SETUP.map do |val|
-          if respond_to?(val, true)
-            send(val)
-          end
-        end
       end
 
       # ----------------------------------------------------------------------
