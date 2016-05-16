@@ -31,6 +31,7 @@ module Docker
       DEFAULTS = HashWithIndifferentAccess.new({
         "aliases" => {},
         "push" => false,
+        "build" => true,
         "cache" => false,
         "type" => "normal",
         "local_prefix" => "local",

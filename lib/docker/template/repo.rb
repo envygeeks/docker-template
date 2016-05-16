@@ -50,7 +50,7 @@ module Docker
       # ----------------------------------------------------------------------
 
       def buildable?
-        !meta["push_only"] && !meta["cache_only"] &&
+        meta.build? && !meta["push_only"] && !meta["cache_only"] &&
           !meta[
             "clean_only"
           ]
