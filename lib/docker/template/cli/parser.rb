@@ -37,36 +37,26 @@ module Docker
         # rubocop:disable Metrics/AbcSize
         # --
         def parse
-          repos = {
-            :scratch => [],
-            :simple  => [],
-            :aliases => []
-          }
+          scratch = []
+          simple  = []
+          aliases = []
 
           all.each do |v|
-            hash = self.class.to_repo_hash(
-              v
-            )
-
-            if hash.empty?
-              raise(Docker::Template::Error::BadRepoName,
-                v
-              )
-
-            else
-              Repo.new(hash, @argv).to_repos.each do |r|
-                r.alias?? repos[:aliases] << r : \
-                  if r.builder.scratch?
-                    then repos[:scratch] << r
-                    else repos[ :simple] << r
-                  end
-              end
+            hash = self.class.to_repo_hash(v)
+            raise Error::BadRepoName, v if hash.empty?
+            Repo.new(hash, @argv).to_repos.each do |r|
+              scratch << r if r.builder.scratch? && !r.alias?
+              simple  << r unless r.alias? || r.builder.scratch?
+              aliases << r if r.alias?
             end
           end
 
-          repos.values.reduce(
-            :|
-          )
+          aliases.each_with_object(scratch | simple) do |alias_, repos|
+            index = repos.rindex { |v| v.name == alias_.name } + 1
+            repos.insert(index,
+              alias_
+            )
+          end
         end
 
         # --
