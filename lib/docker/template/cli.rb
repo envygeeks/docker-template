@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 require "docker/template"
 require "thor"
@@ -11,13 +9,13 @@ module Docker
   module Template
     class CLI < Thor
 
-      # ----------------------------------------------------------------------
+      # --
 
       option :force, :type => :boolean, :desc => "Force caching."
       desc "cache [REPOS [OPTS]]", "Cache all (or some) of your repositories."
       option :help,  :type => :boolean, :desc => "Output this."
 
-      # ----------------------------------------------------------------------
+      # --
 
       def cache(*args)
         return help(__method__) if options.help?
@@ -28,13 +26,13 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       option :force, :type => :boolean, :desc => "Force cleaning."
       desc "clean [REPOS [OPTS]]", "Clean all (or some) of your repositories caches."
       option :help,  :type => :boolean, :desc => "Output this."
 
-      # ----------------------------------------------------------------------
+      # --
 
       def clean(*args)
         return help(__method__) if options.help?
@@ -45,13 +43,13 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       option :force, :type => :boolean, :desc => "Force cleaning."
       desc "push [REPOS [OPTS]]", "Push all (or some) of your repositories."
       option :help,  :type => :boolean, :desc => "Output this."
 
-      # ----------------------------------------------------------------------
+      # --
 
       def push(*args)
         return help(__method__) if options.help?
@@ -62,29 +60,29 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # docker-template build [repos [opts]]
-      # ----------------------------------------------------------------------
+      # --
 
       desc "build [REPOS [OPTS]]", "Build all (or some) of your repositories."
-      option :diff,       :type => :boolean, :desc => "Build only modified repositories."
       option :profile,    :type => :boolean, :desc => "Profile Memory."
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
-      option :push,       :type => :boolean, :desc => "Push Repo After Building."
       option :cache,      :type => :boolean, :desc => "Cache your repositories to cache."
+      option :exclude,     :type => :array,  :desc => "Build everything except for these images."
       option :debug,      :type => :boolean, :desc => "Send the DEBUG=true env var to your instance."
-      option :mocking,    :type => :boolean, :desc => "Disable Certain Actions."
+      option :diff,       :type => :boolean, :desc => "Build only modified repositories."
+      option :push,       :type => :boolean, :desc => "Push Repo After Building."
       option :clean,      :type => :boolean, :desc => "Cleanup your caches."
       option :force,      :type => :boolean, :desc => "Force your build."
       option :help,       :type => :boolean, :desc => "Output this."
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:disable Lint/RescueException
-      # ----------------------------------------------------------------------
+      # --
 
       def build(*args)
         return help(__method__) if options.help?
-        Build.new(args, options) \
+        Build.new(args, options)
           .start
 
       rescue Docker::Template::Error::StandardError => e
@@ -101,15 +99,15 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:enable Lint/RescueException
       # docker-template list [options]
-      # ----------------------------------------------------------------------
+      # --
 
       option :help, :type => :boolean, :desc => "Output this."
       desc "list [OPTS]", "List all possible builds."
 
-      # ----------------------------------------------------------------------
+      # --
 
       def list
         return help(__method__) if options.help?

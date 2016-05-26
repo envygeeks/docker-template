@@ -66,7 +66,7 @@ describe Docker::Template::CLI::Build do
 
   context "--diff or diff: true", :ruby => "!jruby" do
     it "should reselect the repositories" do
-      expect(subject).to receive(:reselect_repos).and_return(
+      expect(subject).to receive(:git_reselect_repos).and_return(
         []
       )
     end
@@ -76,6 +76,26 @@ describe Docker::Template::CLI::Build do
     subject do
       described_class.new([], {
         :diff => true
+      })
+    end
+  end
+
+  #
+
+  context "--exclude or exclude: []", :ruby => "!jruby" do
+    it "should reselect the repositories" do
+      expect(subject).to receive(:exc_reselect_repos).and_return(
+        []
+      )
+    end
+
+    #
+
+    subject do
+      described_class.new([], {
+        :exclude => [
+          :hello
+        ]
       })
     end
   end
@@ -134,7 +154,7 @@ describe Docker::Template::CLI::Build do
 
   #
 
-  describe "#reselect_repos", :start => false, :ruby => "!jruby" do
+  describe "#git_reselect_repos", :start => false, :ruby => "!jruby" do
     before do
       # Require uses #_require so we need to shim that out.
       allow(Docker::Template).to receive(:require).with("rugged").and_return(
@@ -184,8 +204,8 @@ describe Docker::Template::CLI::Build do
     #
 
     it "should return all modified repositories" do
-      expect(subject.reselect_repos.count).to eq 1
-      expect(subject.reselect_repos.first.name).to eq(
+      expect(subject.git_reselect_repos.count).to eq 1
+      expect(subject.git_reselect_repos.first.name).to eq(
         "default"
       )
     end
@@ -194,7 +214,7 @@ describe Docker::Template::CLI::Build do
 
     context "when argv = [val, val]" do
       it "should drop repos from that list that are not modified" do
-        expect(described_class.new(%w(hello default), {}).reselect_repos.count).to eq(
+        expect(described_class.new(%w(hello default), {}).git_reselect_repos.count).to eq(
           1
         )
       end
@@ -203,7 +223,7 @@ describe Docker::Template::CLI::Build do
     #
 
     after do
-      subject.reselect_repos
+      subject.git_reselect_repos
     end
   end
 

@@ -1,3 +1,7 @@
+# Frozen-string-literal: true
+# Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
+# Encoding: utf-8
+
 module Docker
   module Template
     class CLI
@@ -8,22 +12,33 @@ module Docker
           @args = args
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def start
           _profile do
-            reselect_repos if @opts.diff?
+            git_reselect_repos if @opts.diff?
+            exc_reselect_repos if @opts.exclude?
             @repos.tap { |o| o.map(&:build) }.uniq(&:name).map(
               &:clean
             )
           end
         end
 
-        # --------------------------------------------------------------------
-        # rubocop:disable Metrics/AbcSize
-        # --------------------------------------------------------------------
+        # --
 
-        def reselect_repos
+        def exc_reselect_repos
+          Parser.new(@opts[:exclude].map{ |v| v.split(/,\s*/) }.flatten.compact).parse.each do |repo|
+            @repos.delete_if do |v|
+              v.name == repo.name && v.tag == repo.tag
+            end
+          end
+        end
+
+        # --
+        # rubocop:disable Metrics/AbcSize
+        # --
+
+        def git_reselect_repos
           Template._require "rugged" do
             git = Rugged::Repository.new(Template.root.to_s)
             dir = Template.root.join(@opts.repos_dir)
@@ -43,9 +58,9 @@ module Docker
           end
         end
 
-        # --------------------------------------------------------------------
+        # --
         # rubocop:enable Metrics/AbcSize
-        # --------------------------------------------------------------------
+        # --
 
         private
         def _profile
