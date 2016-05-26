@@ -6,10 +6,10 @@ arch=$(uname -i)
 rootfs=$(mktemp -d)
 tmp=$(mktemp -d)
 
-mirrors="\nhttp://nl.alpinelinux.org/alpine/v<%= @meta.release %>/main"
-mirrors=$mirrors"\n@testing http://nl.alpinelinux.org/alpine/edge/testing"
-release_url="http://nl.alpinelinux.org/alpine/v<%= @meta.release %>/main"
-testing_url="http://nl.alpinelinux.org/alpine/edge/testing"
+mirrors="\nhttp://mirror.envygeeks.io/alpine/v<%= @meta.release %>/main"
+mirrors=$mirrors"\n@testing http://mirror.envygeeks.io/alpine/edge/testing"
+release_url="http://mirror.envygeeks.io/alpine/v<%= @meta.release %>/main"
+testing_url="http://mirror.envygeeks.io/alpine/edge/testing"
 
 tar_ignore() {
   sed -r "/tar: Ignoring unknown extended header/d"
