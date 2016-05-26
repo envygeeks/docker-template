@@ -16,8 +16,8 @@ module Docker
 
         def start
           _profile do
-            git_reselect_repos if @opts.diff?
-            exc_reselect_repos if @opts.exclude?
+            changed! if @opts.diff?
+            exclude! if @opts.exclude?
             @repos.tap { |o| o.map(&:build) }.uniq(&:name).map(
               &:clean
             )
@@ -26,7 +26,7 @@ module Docker
 
         # --
 
-        def exc_reselect_repos
+        def exclude!
           Parser.new(@opts[:exclude].map{ |v| v.split(/,\s*/) }.flatten.compact).parse.each do |repo|
             @repos.delete_if do |v|
               v.name == repo.name && v.tag == repo.tag
@@ -38,7 +38,7 @@ module Docker
         # rubocop:disable Metrics/AbcSize
         # --
 
-        def git_reselect_repos
+        def changed!
           Template._require "rugged" do
             git = Rugged::Repository.new(Template.root.to_s)
             dir = Template.root.join(@opts.repos_dir)

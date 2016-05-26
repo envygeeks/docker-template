@@ -66,7 +66,7 @@ describe Docker::Template::CLI::Build do
 
   context "--diff or diff: true", :ruby => "!jruby" do
     it "should reselect the repositories" do
-      expect(subject).to receive(:git_reselect_repos).and_return(
+      expect(subject).to receive(:changed!).and_return(
         []
       )
     end
@@ -84,7 +84,7 @@ describe Docker::Template::CLI::Build do
 
   context "--exclude or exclude: []", :ruby => "!jruby" do
     it "should reselect the repositories" do
-      expect(subject).to receive(:exc_reselect_repos).and_return(
+      expect(subject).to receive(:exclude!).and_return(
         []
       )
     end
@@ -204,8 +204,8 @@ describe Docker::Template::CLI::Build do
     #
 
     it "should return all modified repositories" do
-      expect(subject.git_reselect_repos.count).to eq 1
-      expect(subject.git_reselect_repos.first.name).to eq(
+      expect(subject.changed!.count).to eq 1
+      expect(subject.changed!.first.name).to eq(
         "default"
       )
     end
@@ -214,7 +214,7 @@ describe Docker::Template::CLI::Build do
 
     context "when argv = [val, val]" do
       it "should drop repos from that list that are not modified" do
-        expect(described_class.new(%w(hello default), {}).git_reselect_repos.count).to eq(
+        expect(described_class.new(%w(hello default), {}).changed!.count).to eq(
           1
         )
       end
@@ -223,7 +223,7 @@ describe Docker::Template::CLI::Build do
     #
 
     after do
-      subject.git_reselect_repos
+      subject.changed!
     end
   end
 
