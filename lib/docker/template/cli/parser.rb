@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -17,12 +15,11 @@ module Docker
           @argv = argv
         end
 
-        # ----------------------------------------------------------------------
+        # --
         # Return `raw_repos` if you send us a list of repos you wish to build,
         # otherwise we get the children of the repo folder and ship that off so
         # you can build *every* repo, I don't know if you want that.
-        # ----------------------------------------------------------------------
-
+        # --
         def all
           return @raw_repos unless @raw_repos.empty?
           return [Template.root.basename.to_s] if Template.project?
@@ -36,10 +33,9 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
         # rubocop:disable Metrics/AbcSize
-        # ----------------------------------------------------------------------
-
+        # --
         def parse
           repos = {
             :scratch => [],
@@ -73,10 +69,9 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
         # rubocop:enable Metrics/AbcSize
-        # ----------------------------------------------------------------------
-
+        # --
         def self.to_repo_hash(val)
           data = val.to_s.split(SPLIT_REGEXP)
 
@@ -88,7 +83,7 @@ module Docker
           {}
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def self.full_name?(val)
           parsed = to_repo_hash(val)

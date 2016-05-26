@@ -27,7 +27,7 @@ module Docker
         # --
 
         def exclude!
-          Parser.new(@opts[:exclude].map{ |v| v.split(/,\s*/) }.flatten.compact).parse.each do |repo|
+          Parser.new(@opts[:exclude].map { |v| v.split(/,\s*/) }.flatten.compact).parse.each do |repo|
             @repos.delete_if do |v|
               v.name == repo.name && v.tag == repo.tag
             end

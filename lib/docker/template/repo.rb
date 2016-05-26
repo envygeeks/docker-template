@@ -1,15 +1,13 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
     class Repo
       extend Forwardable::Extended
 
-      # ----------------------------------------------------------------------
+      # --
 
       def initialize(*hashes)
         @base_meta = hashes.compact
@@ -23,9 +21,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
-      # Determines whether or not we should (or you should) push the repo.
-      # ----------------------------------------------------------------------
+      # --
 
       def pushable?
         (meta["push"] || meta["push_only"]) &&
@@ -34,9 +30,7 @@ module Docker
           ]
       end
 
-      # ----------------------------------------------------------------------
-      # Determines whether or not we should (or you should) cache the repo.
-      # ----------------------------------------------------------------------
+      # --
 
       def cacheable?
         (meta["cache"] || meta["cache_only"]) &&
@@ -45,9 +39,7 @@ module Docker
           ]
       end
 
-      # ----------------------------------------------------------------------
-      # Determines whether or not we should (or you should) build the repo.
-      # ----------------------------------------------------------------------
+      # --
 
       def buildable?
         meta.build? && !meta["push_only"] && !meta["cache_only"] &&
@@ -56,11 +48,10 @@ module Docker
           ]
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Pulls out the repo this repo is aliasing it, this happens when you
       # when you set the tag in the "alias" section of your `opts.yml`.
-      # ----------------------------------------------------------------------
-
+      # --
       def aliased
         full = CLI::Parser.full_name?(
           meta.aliased_tag
@@ -83,10 +74,9 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Initializes and returns the builder so that you can build the repo.
-      # ----------------------------------------------------------------------
-
+      # --
       def builder
         return @builder ||= begin
           Template::Builder.const_get(type.capitalize).new(
@@ -95,39 +85,36 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Convert the repo into it's final image name, however if you tell, us
       # this is a rootfs build we will convert it into the rootfs name.
-      # ----------------------------------------------------------------------
-
+      # --
       def to_s(rootfs: false)
         prefix = meta["local_prefix"]
         return "#{user}/#{name}:#{tag}" unless rootfs
         "#{prefix}/rootfs:#{name}"
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # The directory you wish to cache to (like `cache/`) or other.
-      # ----------------------------------------------------------------------
-
+      # --
       def cache_dir
         return root.join(
           meta["cache_dir"], tag
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # The directory you store your image data in (by default `copy/`.)
-      # ----------------------------------------------------------------------
-
+      # --
       def copy_dir(*path)
         dir = meta["copy_dir"]
-        root.join(dir,
-          *path
+        root.join(
+          dir, *path
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def to_tag_h
         {
@@ -137,7 +124,7 @@ module Docker
         }
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def to_rootfs_h
         {
@@ -147,30 +134,29 @@ module Docker
         }
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def tmpdir(*args, root: nil)
         args.unshift(user, name, tag)
-        Pathutil.tmpdir(args,
-          nil, root
+        Pathutil.tmpdir(
+          args, nil, root
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def tmpfile(*args, root: nil)
         args.unshift(user, name, tag)
-        Pathutil.tmpfile(args,
-          nil, root
+        Pathutil.tmpfile(
+          args, nil, root
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # If a tag was given then it returns [self] and if a tag was not sent
       # it then goes on to detect the type and split itself accordingly
       # returning multiple, AKA all repos that should be built.
-      # ----------------------------------------------------------------------
-
+      # --
       def to_repos
         if Template.project?
           then Set.new([
@@ -194,7 +180,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def meta
         return @meta ||= begin
@@ -204,7 +190,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def to_env(tar_gz: nil, copy_dir: nil)
         hash = meta["env"] || { "all" => {}}
@@ -219,7 +205,7 @@ module Docker
         })
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       rb_delegate :build, :to => :builder
       rb_delegate :alias?, :to => :meta

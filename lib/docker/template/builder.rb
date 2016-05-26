@@ -1,45 +1,43 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
     class Builder
       extend Forwardable::Extended
 
-      # ----------------------------------------------------------------------
+      # --
 
       attr_reader :repo
       attr_reader :context
       attr_reader :copy
       attr_reader :img
 
-      # ----------------------------------------------------------------------
+      # --
 
       ALIAS_SETUP = [:cache_context]
       SETUP = [:setup_context, :copy_global, :copy_project,
         :copy_all, :copy_group, :copy_tag, :copy_cleanup, :build_context,
           :verify_context, :cache_context].freeze
 
-      # ----------------------------------------------------------------------
+      # --
 
       def initialize(repo)
         @repo = repo
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Checks to see if this repository is an alias. This happens when the
       # user has alised data inside of their configuration file.  At this point
       # we will not only copy the parent's data but the aliased data.
-      # ----------------------------------------------------------------------
+      # --
 
       def alias?
         !@repo.complex_alias? && @repo.alias? && !rootfs?
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def rootfs?
         is_a?(
@@ -47,21 +45,21 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def normal?
         @repo.type == "normal" \
           && !rootfs?
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def scratch?
         @repo.type == "scratch" \
           && !rootfs?
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def aliased_img
         if alias?
@@ -78,7 +76,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def push
         return if rootfs? || !@repo.pushable?
@@ -94,7 +92,7 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def build
         Simple::Ansi.clear if @repo.buildable?
@@ -119,11 +117,11 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # This method is a default reference.  It is called when the image is
       # done building or when there is an error and we need to clean up some
       # stuff before exiting, use it... please.
-      # ----------------------------------------------------------------------
+      # --
 
       def teardown(*_)
         $stderr.puts Ansi.red(
@@ -131,11 +129,11 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # The prebuild happens when a user has "setup_context", which typically
       # only happens with scratch, which will prebuild it's rootfs image so
       # it can get to building it's actual image.
-      # ----------------------------------------------------------------------
+      # --
 
       def setup
         unless respond_to?(:setup_context, true)
@@ -149,7 +147,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def build_alias
@@ -177,7 +175,7 @@ module Docker
         push
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def alias_setup
@@ -188,7 +186,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def chdir_build
@@ -200,7 +198,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def cache_context
@@ -211,10 +209,10 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # The root can have it's own global copy directory shared across all
       # repos in your repo container dir so this encapsulates those.
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def copy_global
@@ -231,7 +229,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def copy_project
@@ -250,7 +248,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def copy_tag
@@ -265,7 +263,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def copy_group
@@ -284,7 +282,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def copy_all
@@ -299,7 +297,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       rb_delegate :aliased_tag, :to => "repo.meta"
       rb_delegate :aliased_repo, {
@@ -308,9 +306,9 @@ module Docker
 
       class << self
 
-        # --------------------------------------------------------------------
+        # --
         # REFERENCE METHOD: This is here to let you know we access files.
-        # --------------------------------------------------------------------
+        # --
 
         def files
           return [
@@ -318,26 +316,26 @@ module Docker
           ]
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def projects_allowed!
-          return @projects_allowed = \
-            true
+          return @projects_allowed \
+            = true
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def projects_allowed?
           return !!@projects_allowed
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def sub?
           false
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def inherited(klass)
           (@sub_classes ||= []).push(
@@ -345,7 +343,7 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def all
           @sub_classes ||= [

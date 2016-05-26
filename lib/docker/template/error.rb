@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -11,15 +9,15 @@ module Docker
         StandardError
       )
 
-      # ----------------------------------------------------------------------
+      # --
 
-      class Error::UnsuccessfulAuth < StandardError
+      class UnsuccessfulAuth < StandardError
         def initialize
           super "Unable to authorize you to Dockerhub, something is wrong."
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class BadExitStatus < StandardError
         attr_reader :status
@@ -31,7 +29,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class BadRepoName < StandardError
         def initialize(name)
@@ -41,7 +39,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class InvalidTargzFile < StandardError
         def initialize(tar_gz)
@@ -51,7 +49,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class InvalidYAMLFile < StandardError
         def initialize(file)
@@ -59,7 +57,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class NoSetupContext < StandardError
         def initialize
@@ -67,7 +65,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class NotImplemented < StandardError
         def initialize
@@ -75,7 +73,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class RepoNotFound < StandardError
         def initialize(repo = nil)
@@ -86,7 +84,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       class ImageNotFound < StandardError
         def initialize(image)

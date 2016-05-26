@@ -13,7 +13,7 @@ module Docker
 
       option :force, :type => :boolean, :desc => "Force caching."
       desc "cache [REPOS [OPTS]]", "Cache all (or some) of your repositories."
-      option :help,  :type => :boolean, :desc => "Output this."
+      option :help, :type => :boolean, :desc => "Output this."
 
       # --
 
@@ -30,7 +30,7 @@ module Docker
 
       option :force, :type => :boolean, :desc => "Force cleaning."
       desc "clean [REPOS [OPTS]]", "Clean all (or some) of your repositories caches."
-      option :help,  :type => :boolean, :desc => "Output this."
+      option :help, :type => :boolean, :desc => "Output this."
 
       # --
 
@@ -47,7 +47,7 @@ module Docker
 
       option :force, :type => :boolean, :desc => "Force cleaning."
       desc "push [REPOS [OPTS]]", "Push all (or some) of your repositories."
-      option :help,  :type => :boolean, :desc => "Output this."
+      option :help, :type => :boolean, :desc => "Output this."
 
       # --
 
@@ -68,7 +68,7 @@ module Docker
       option :profile,    :type => :boolean, :desc => "Profile Memory."
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
       option :cache,      :type => :boolean, :desc => "Cache your repositories to cache."
-      option :exclude,     :type => :array,  :desc => "Build everything except for these images."
+      option :exclude,    :type => :array,  :desc => "Build everything except for these images."
       option :debug,      :type => :boolean, :desc => "Send the DEBUG=true env var to your instance."
       option :diff,       :type => :boolean, :desc => "Build only modified repositories."
       option :push,       :type => :boolean, :desc => "Push Repo After Building."

@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 require "yaml"
 
@@ -15,7 +13,7 @@ module Mocks
         [:mkdir, "docker"],
         [:write, "docker/copy/all/usr/local/bin/hello", "world"],
         [:write, "docker/template.yml", "--- {}\n"],
-        [:touch, "Dockerfile"],
+        [:touch, "Dockerfile"]
       ],
 
       :normal => [
@@ -42,13 +40,13 @@ module Mocks
       ]
     }
 
-    # ------------------------------------------------------------------------
+    # --
 
     FS_LAYOUTS[:rootfs] = FS_LAYOUTS[
       :scratch
     ]
 
-    # ------------------------------------------------------------------------
+    # --
 
     FS_LAYOUTS.freeze
     attr_reader :hashes
@@ -56,7 +54,7 @@ module Mocks
     attr_reader :context
     attr_reader :root
 
-    # ------------------------------------------------------------------------
+    # --
 
     def initialize(context)
       @original_pwd = Dir.pwd
@@ -78,9 +76,9 @@ module Mocks
       raise
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Adds a tag to opts.yml properly, on your behalf.
-    # ------------------------------------------------------------------------
+    # --
 
     def add_tag(name, group: :normal)
       return with_opts(:tags => {
@@ -88,9 +86,9 @@ module Mocks
       })
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Adds an alias on your behalf, properly.
-    # ------------------------------------------------------------------------
+    # --
 
     def add_alias(name, tag: :default)
       return with_opts(:aliases => {
@@ -98,10 +96,10 @@ module Mocks
       })
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Determines if a type and layout are valid to use, AKA within the list.
     # Example: mocked_repo.valid_layout?(:scratch, :simple) #=> true
-    # ------------------------------------------------------------------------
+    # --
 
     def valid_layout?(type)
       return FS_LAYOUTS.key?(
@@ -109,7 +107,7 @@ module Mocks
       )
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Initialize and write all of the files for a given layout, making it
     # possible to run `to_repo` and get back a valid repository to test.
     # type - the type of layout you wish to use.
@@ -125,7 +123,7 @@ module Mocks
     #   File: /tmp/*/repos/*/Dockerfile
     #   File: /tmp/*/repos/*/copy/usr/local/bin/hello
     #   File: /tmp/*/repos/*/opts.yml
-    # ------------------------------------------------------------------------
+    # --
 
     def init(type: :normal)
       if !valid_layout?(type)
@@ -142,9 +140,9 @@ module Mocks
       end
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Options being passed to `Repo`.
-    # ------------------------------------------------------------------------
+    # --
 
     def with_cli_opts(args)
       @hashes[:cli] = @hashes[:cli].deep_merge(
@@ -154,7 +152,7 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def with_repo_init(hash)
       @hashes[:init] = @hashes[:init].deep_merge(
@@ -164,7 +162,7 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def clear_opts
       @hashes[:opts] = {}
@@ -172,10 +170,10 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Example: mocked_repo.with_opts(:hello => :world)
     # Write the hash data into the repos `opts.yml`
-    # ------------------------------------------------------------------------
+    # --
 
     def with_opts(opts)
       @hashes[:opts] ||= repo_dir.join(Docker::Template::Meta.opts_file).read_yaml
@@ -187,7 +185,7 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def to_img
       Docker::Image.get(
@@ -200,7 +198,7 @@ module Mocks
       end
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def to_repo
       repo_dir
@@ -209,9 +207,9 @@ module Mocks
       )
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # to_rootfs, to_normal, to_scratch
-    # ------------------------------------------------------------------------
+    # --
 
     %W(Scratch Normal Rootfs).each do |k|
       define_method "to_#{k.downcase}" do
@@ -221,7 +219,7 @@ module Mocks
       end
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def empty
       @emptied = true
@@ -232,20 +230,20 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Example: mocked_repo.mkdir("hello")
     # Make an empty directory!
-    # ------------------------------------------------------------------------
+    # --
 
     def mkdir(dir)
       repo_dir.join(dir).mkdir_p
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Example: mocked_rep.write("hello", "world")
     # Make a file and write data to it.
-    # ------------------------------------------------------------------------
+    # --
 
     def write(file, data)
       path = repo_dir.join(file)
@@ -257,20 +255,20 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Example: mocked_repo.touch("my_file")
     # Create an empty file of your choosing.
-    # ------------------------------------------------------------------------
+    # --
 
     def touch(file)
       repo_dir.join(file).touch
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Symlink a file within the current repository directory.
     # Example: mocked_repo.symlink("/etc", "etc")
-    # ------------------------------------------------------------------------
+    # --
 
     def symlink(target, name)
       repo_dir.join(target).symlink(repo_dir.join(
@@ -280,20 +278,20 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Delete a file from the current repository directory.
     # Example: mocked_repo.delete("hello")
-    # ------------------------------------------------------------------------
+    # --
 
     def delete(file)
       repo_dir.join(file).rm_r
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Link to a file outside of any known and recognized root.
     # Example: mocked_repo.symlink("/etc", "etc")
-    # ------------------------------------------------------------------------
+    # --
 
     def external_symlink(target, name)
       Pathutil.new(target).symlink(repo_dir.join(
@@ -303,7 +301,7 @@ module Mocks
       self
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def setup
       @context.allow(Dir).to @context.receive(:pwd).and_return @root if rspec?
@@ -312,13 +310,13 @@ module Mocks
       Dir.stub(:pwd).and_return @repo.to_s unless rspec?
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def teardown
       @root.rm_rf
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def rspec?
       @context.is_a?(
@@ -326,17 +324,18 @@ module Mocks
       )
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     private
     def repo_dir
       rtn = @root if @fs_layout == :project
-      rtn = @root.join(Docker::Template::Meta::DEFAULTS[:repos_dir], @hashes[:init][:name]) unless @fs_layout == :project
+      rtn = @root.join(Docker::Template::Meta::DEFAULTS[:repos_dir], \
+        @hashes[:init][:name]) unless @fs_layout == :project
       rtn.mkdir_p unless rtn.exist? || emptied?
       rtn
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     alias clear empty
     alias to_project to_normal

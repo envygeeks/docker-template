@@ -31,6 +31,7 @@ Style/PercentLiteralDelimiters:
     '%w': '()'
     '%W': '()'
     '%x': '()'
+
 Style/HashSyntax:                     { Enabled: false }
 Style/AlignArray:                     { Enabled: false }
 Style/StringLiterals:                 { Enabled: false }

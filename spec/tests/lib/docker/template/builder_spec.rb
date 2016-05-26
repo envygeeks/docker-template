@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Builder do
@@ -70,8 +68,8 @@ describe Docker::Template::Builder do
       end
 
       after :all do
-        Object.send(:remove_const,
-          :BuilderTestMock
+        Object.send(
+          :remove_const, :BuilderTestMock
         )
       end
     end
@@ -275,9 +273,9 @@ describe Docker::Template::Builder do
 
     it "should try to auth" do
       expect(Docker::Template::Auth).to \
-      receive(:hub).and_return(
-        nil
-      )
+        receive(:hub).and_return(
+          nil
+        )
     end
 
     #
@@ -285,9 +283,9 @@ describe Docker::Template::Builder do
     context do
       before do
         allow(Docker::Template::Auth).to \
-        receive(:hub).and_return(
-          nil
-        )
+          receive(:hub).and_return(
+            nil
+          )
       end
 
       #
@@ -379,8 +377,8 @@ describe Docker::Template::Builder do
       #
 
       it "should pass ignores" do
-        expect(Docker::Template.root).to receive(:safe_copy).with(anything, \
-            :root => anything, :ignore => anything).and_return(
+        hash = { :root => anything, :ignore => anything }
+        expect(Docker::Template.root).to receive(:safe_copy).with(anything, hash).and_return(
           nil
         )
       end

@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 require "rspec/helper"
 describe Docker::Template::Meta do
@@ -80,7 +78,7 @@ describe Docker::Template::Meta do
       #
 
       it "should load YAML from docker/template.yml file" do
-        expect(   Docker::Template.root).to receive(:join).with("docker/template.yml").and_call_original
+        expect(Docker::Template.root).to receive(:join).with("docker/template.yml").and_call_original
         expect_any_instance_of(Pathutil).to receive(:read_yaml).and_return(
           {}
         )
