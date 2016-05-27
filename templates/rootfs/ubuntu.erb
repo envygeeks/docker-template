@@ -10,7 +10,7 @@ tmp=$(mktemp -d)
 
 cd $tmp
 gpg  --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
-sudo apt-get update && sudo apt-get install --no-install-recommends -y wget
+apt-get update && apt-get install --no-install-recommends -y wget
 wget $partner_url/<%= @meta.release %>/current/SHA256SUMS.gpg
 wget $partner_url/<%= @meta.release %>/current/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
