@@ -10,38 +10,20 @@ mirrors="\nhttp://mirror.envygeeks.io/alpine/v<%= @meta.release %>/main"
 mirrors=$mirrors"\n@testing http://mirror.envygeeks.io/alpine/edge/testing"
 release_url="http://mirror.envygeeks.io/alpine/v<%= @meta.release %>/main"
 testing_url="http://mirror.envygeeks.io/alpine/edge/testing"
+apk --update add wget
 
 tar_ignore() {
   sed -r "/tar: Ignoring unknown extended header/d"
 }
 
-apt-get update && apt-get install --no-install-recommends -y wget
-<% sha1 = @meta._shas[:alpine][:apk_keys ][@meta.tag].sha %>
-<% pkg1 = @meta._shas[:alpine][:apk_keys ][@meta.tag].package %>
-<% pkg2 = @meta._shas[:alpine][:apk_tools][@meta.tag].package %>
-<% sha2 = @meta._shas[:alpine][:apk_tools][@meta.tag].sha %>
-for v in <%= sha1 %>:<%= pkg1 %> <%= sha2 %>:<%= pkg2 %>; do
-  sha=$(echo $v | awk -F: '{ print $1 }')
-  pkg=$(echo $v | awk -F: '{ print $2 }')
-  wget -O $tmp/$pkg $release_url/$arch/$pkg
-  if [ "$(sha256sum $tmp/$pkg)" != "$sha  $tmp/$pkg" ]; then
-    >&2 printf "%s sha error: %s" $pkg \
-      "$(sha256sum $tmp/$pkg)"
-    exit 1
-  fi
-done
-
-tar xzf $tmp/alpine-keys-*.apk -C $tmp etc/ 2>&1 | tar_ignore
-tar xzf $tmp/apk-tools-static-*.apk -C $tmp sbin/apk.static 2>&1 | tar_ignore
-$tmp/sbin/apk.static --keys-dir=$tmp/etc/apk/keys --initdb --root=$rootfs \
-  --repository=$release_url --update-cache add apk-tools busybox \
-      libc-utils alpine-baselayout alpine-keys musl
-
 cd $tmp
-$tmp/sbin/apk.static --keys-dir=$tmp/etc/apk/keys --root=$rootfs --repository=$release_url --update fetch alpine-base
-tar xzf $tmp/alpine-base-*.apk -C $rootfs etc/ 2>&1 | tar_ignore
-cd -> /dev/null
+apk --update fetch --repository=$release_url alpine-keys
+tar xzf alpine-keys-*.apk && mkdir -p $rootfs/etc && cp -a etc/* $rootfs/etc && rm -rf $tmp && mkdir -p $tmp && cd $tmp
+apk --initdb --root=$rootfs --repository=$release_url --update-cache add apk-tools busybox libc-utils alpine-baselayout alpine-keys musl
+apk --keys-dir=$rootfs/etc/apk/keys --root=$rootfs --repository=$release_url --update fetch alpine-base
+tar xzf alpine-base-*.apk && cp -a etc/* $rootfs/etc && rm -rf $tmp && mkdir -p $tmp
 
+cd ~> /dev/null
 cp -R $COPY_DIR/* $rootfs 2> /dev/null || true
 mkdir -p $rootfs/etc/startup1.d
 mkdir -p $rootfs/etc/startup2.d
@@ -51,10 +33,9 @@ mkdir -p $rootfs/etc/shutdown.d
 cp /etc/hosts $rootfs/etc/hosts
 cp /etc/resolv.conf $rootfs/etc/resolv.conf
 printf "$mirrors" > $rootfs/etc/apk/repositories
-<% if @meta.pkgs?  %>chroot $rootfs sh -ec "apk --update add <%= @meta.pkgs %>"<% end %>
-<% if @meta.packages?  %>chroot $rootfs sh -ec "apk --update add <%= @meta.packages %>"<% end %>
-<% if @meta.package_cleanup?  %>chroot $rootfs sh -ec "apk del <%= @meta.package_cleanup %>"<% end %>
-<% if @meta.pkg_cleanup?  %>chroot $rootfs sh -ec "apk del <%= @meta.pkg_cleanup %>"<% end %>
+chroot $rootfs sh -ec "apk --update add <%= @meta.packages %>"
+chroot $rootfs sh -ec "apk del <%= @meta.package_cleanup %>"
+chroot $rootfs sh -ec "apk del <%= @meta.package_deep_cleanup %>"
 chroot $rootfs sh -ec '{
 	mv /var/run/* /run 2> /dev/null || true
 	mv /var/lock  /run 2> /dev/null || true
