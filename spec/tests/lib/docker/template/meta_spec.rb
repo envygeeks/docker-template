@@ -134,16 +134,6 @@ describe Docker::Template::Meta do
 
   #
 
-  describe "#_shas" do
-    it "should pull the shas from the Gem root" do
-      expect(subject._shas).to eq(
-        Docker::Template.gem_root.join("shas.yml").read_yaml.stringify
-      )
-    end
-  end
-
-  #
-
   describe "#root_data" do
     context "when no root data was given" do
       it "should return the data" do

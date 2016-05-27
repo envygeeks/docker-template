@@ -150,18 +150,6 @@ module Docker
       end
 
       # --
-      # rubocop:enable Metrics/AbcSize
-      # --
-
-      def _shas
-        return @_shas ||= begin
-          self.class.new(Template.gem_root.join("shas.yml").read_yaml, {
-            :root => root_data
-          })
-        end
-      end
-
-      # --
 
       def root_data
         return @root_data || @data
