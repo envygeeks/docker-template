@@ -1,6 +1,6 @@
 alpine:
   apk_tools:
-    3.4: { package: apk-tools-static-2.6.6-r1.apk, sha: 29e9e6c850b9cd00bd8201fc534abc28601ac6596a4b713cc42e74641c63234c }
+    3.4: { package: apk-tools-static-2.6.7-r0.apk, sha: 342458308b8ebdb6a91d347b6b2cced7349c0cd0560a7fd7cdd71c5e1aa2b9f3 }
     3.3: { package: apk-tools-static-2.6.5-r1.apk, sha: 03162d70e6d42eea77624a8da76d69e665ca19aa834361c3652414f111884636 }
     3.2: { package: apk-tools-static-2.6.3-r0.apk, sha: ee5f42e06731c7447ce8fae99116a637f261e24f67826ca81dbe60ffbdb5c40e }
 
