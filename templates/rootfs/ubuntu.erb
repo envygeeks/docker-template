@@ -3,20 +3,20 @@
 set -e
 
 arch=$(uname -i)
-rootfs=$(mktemp -d)
 partner_url="https://partner-images.canonical.com/core"
-dpkg_arch=$(dpkg --print-architecture)
+rootfs=$(mktemp -d)
 tmp=$(mktemp -d)
 
 cd $tmp
-gpg  --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
-apt-get update && apt-get install --no-install-recommends -y wget
+apk --update add gnupg wget gawk sed
+gpg --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
 wget $partner_url/<%= @meta.release %>/current/SHA256SUMS.gpg
 wget $partner_url/<%= @meta.release %>/current/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
 
-img=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
-sha=$(cat SHA256SUMS | grep "$dpkg_arch" | awk -F' *' '{ print $1 }')
+cat SHA256SUMS
+img=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
+sha=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $1 }')
 
 wget "$partner_url/<%= @meta.release %>/current/$img"
 if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
@@ -51,12 +51,10 @@ chroot "$rootfs" sh -ec "{
 	apt-get install --no-install-recommends -yf \
 		locales deborphan
 
-  apt-get autoremove --purge $REMOVE -yf
-  apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
-  <% if @meta.pkgs?  %>apt-get install --no-install-recommends -y <%= @meta.pkgs %><% end %>
-  <% if @meta.packages?  %>apt-get install --no-install-recommends -y <%= @meta.packages %><% end %>
-  <% if @meta.package_cleanup?  %>apt-get autoremove --purge -y <%= @meta.package_cleanup %><% end %>
-  <% if @meta.pkg_cleanup?  %>apt-get autoremove --purge -y <%= @meta.pkg_cleanup %><% end %>
+  apt-get install --no-install-recommends -y <%= @meta.packages %>
+  echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove --purge -yf --force-yes --purge <%= @meta.package_cleanup %>
+  echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove --purge -yf --force-yes --purge <%= @meta.package_deep_cleanup %>
+	apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
   apt-get autoremove --purge
 	apt-get autoclean
 	apt-get clean
