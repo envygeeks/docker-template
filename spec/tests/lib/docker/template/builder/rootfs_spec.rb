@@ -51,7 +51,7 @@ RSpec.describe Docker::Template::Builder::Rootfs do
   describe "#data" do
     it "should add the FROM line" do
       expect(subject.data).to match(
-        %r!\AFROM [a-z]+/ubuntu!
+        %r!\AFROM [a-z]+/alpine!
       )
     end
   end

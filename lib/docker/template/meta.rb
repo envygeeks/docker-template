@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 require "active_support/inflector"
 require "active_support/core_ext/hash/indifferent_access"
@@ -14,9 +12,9 @@ module Docker
       attr_reader :data
       extend Forwardable::Extended
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:disable Style/MultilineBlockLayout
-      # ----------------------------------------------------------------------
+      # --
 
       [Pathutil.allowed[:yaml][:classes], Array.allowed[:keys], Hash.allowed[:vals]].each do |v|
         v.push(self,
@@ -24,9 +22,9 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:enable Style/MultilineBlockLayout
-      # ----------------------------------------------------------------------
+      # --
 
       DEFAULTS = HashWithIndifferentAccess.new({
         "aliases" => {},
@@ -36,7 +34,7 @@ module Docker
         "type" => "normal",
         "local_prefix" => "local",
         "project_data_dir" => "docker",
-        "rootfs_base_img" => "envygeeks/ubuntu",
+        "rootfs_base_img" => "envygeeks/alpine",
         "maintainer" => "Random User <random.user@example.com>",
         "user" => ENV["USER"] || ENV["USERNAME"] || "random",
         "name" => Template.root.basename.to_s,
@@ -68,7 +66,7 @@ module Docker
         ),
       }).freeze
 
-      # ----------------------------------------------------------------------
+      # --
 
       class << self
         def opts_file(force: nil)
@@ -77,7 +75,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # @param data [Hash, self.class] - the main data.
       # @param root [Hash, self.class] - the root data.
       # Create a new instance of `self.class`.
@@ -87,9 +85,9 @@ module Docker
       #     :hello => :world
       #   })
       # ```
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:disable Metrics/AbcSize
-      # ----------------------------------------------------------------------
+      # --
 
       def initialize(overrides, root: nil)
         if root.is_a?(self.class)
@@ -119,7 +117,7 @@ module Docker
         debug!
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def normalize!
         if root?
@@ -134,7 +132,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def debug!
         if root? && root_data["debug"]
@@ -151,9 +149,9 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:enable Metrics/AbcSize
-      # ----------------------------------------------------------------------
+      # --
 
       def _shas
         return @_shas ||= begin
@@ -163,13 +161,13 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def root_data
         return @root_data || @data
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def root
         if Template.project?
@@ -186,12 +184,12 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Check if a part of the hash or a value is inside.
       # @param val [Anytning(), Hash] - The key or key => val you wish check.
       # @example meta.include?(:key => :val) => true|false
       # @example meta.include?(:key) => true|false
-      # ----------------------------------------------------------------------
+      # --
 
       def include?(val)
         if val.is_a?(Hash)
@@ -210,11 +208,11 @@ module Docker
         true
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # @param key [Anything()] the key you wish to pull.
       # @note we make the getter slightly more indifferent because of tags.
       # Pull an indifferent key from the hash.
-      # ----------------------------------------------------------------------
+      # --
 
       def [](key)
         val = begin
@@ -242,7 +240,7 @@ module Docker
         val
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def []=(key, val)
         hash = { key => val }.stringify
@@ -251,7 +249,7 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def update(hash)
         @data.update(
@@ -259,7 +257,7 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def to_enum
         @data.each_with_object({}) do |(k, v), h|
@@ -273,10 +271,10 @@ module Docker
         end.to_enum
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Merge a hash into the meta.  If you merge non-queryable data
       # it will then get merged into the queryable data.
-      # ----------------------------------------------------------------------
+      # --
 
       def merge(new_)
         if !queryable?(:query_data => new_) && queryable?
@@ -291,9 +289,9 @@ module Docker
         })
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Destructive merging (@see self#merge)
-      # ----------------------------------------------------------------------
+      # --
 
       def merge!(new_)
         if !queryable?(:query_data => new_) && queryable?
@@ -309,9 +307,9 @@ module Docker
         self
       end
 
-      # --------------------------------------------------------------------
+      # --
       # Check if a hash is queryable. AKA has "all", "group", "tag".
-      # --------------------------------------------------------------------
+      # --
 
       def queryable?(query_data: @data)
         if query_data.is_a?(self.class)
@@ -328,12 +326,12 @@ module Docker
         end
       end
 
-      # --------------------------------------------------------------------
+      # --
       # Fallback, determining which route is the best.  Tag > Group > All.
-      # --------------------------------------------------------------------
+      # --
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
-      # ----------------------------------------------------------------------
+      # --
 
       def fallback(group: current_group, tag: current_tag, query_data: @data)
         if query_data.is_a?(self.class)
@@ -353,10 +351,10 @@ module Docker
         end
       end
 
-      # --------------------------------------------------------------------
+      # --
       # rubocop:enable Metrics/CyclomaticComplexity
       # rubocop:enable Metrics/PerceivedComplexity
-      # ----------------------------------------------------------------------
+      # --
 
       def for_all(query_data: @data)
         if query_data.is_a?(self.class)
@@ -373,7 +371,7 @@ module Docker
         end
       end
 
-      # --------------------------------------------------------------------
+      # --
 
       def by_tag(tag: current_tag, query_data: @data)
         if query_data.is_a?(self.class)
@@ -391,7 +389,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def by_parent_tag(tag: current_tag, query_data: @data)
         if aliased_tag == current_tag || !complex_alias?
@@ -407,7 +405,7 @@ module Docker
         end
       end
 
-      # --------------------------------------------------------------------
+      # --
 
       def by_group(group: current_group, query_data: @data)
         if query_data.is_a?(self.class)
@@ -425,7 +423,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def by_parent_group(tag: current_tag, query_data: @data)
         if aliased_tag == current_tag || !complex_alias?
@@ -441,21 +439,21 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Checks to see if the current meta is an alias of another. This
       # happens when the user has the tag in aliases but it's not complex.
-      # ----------------------------------------------------------------------
+      # --
 
       def alias?
         !!(aliased_tag && aliased_tag != tag)
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # A complex alias happens when the user has an alias but also tries to
       # add extra data, this allows them to use data from all parties. This
       # allows them to reap the benefits of having shared data but sometimes
       # independent data that diverges into it's own.
-      # ----------------------------------------------------------------------
+      # --
 
       def complex_alias?
         if !alias?
@@ -469,7 +467,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def aliased_tag(tag: current_tag)
         aliases = root_data[:aliases]
@@ -483,7 +481,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def aliased_group(tag: current_tag)
         root_data[:tags][aliased_tag({
@@ -491,9 +489,9 @@ module Docker
         })]
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Converts the current meta into a string.
-      # ----------------------------------------------------------------------
+      # --
 
       def to_s(raw: false, shell: false)
         if !raw && (mergeable_hash? || mergeable_array?)
@@ -510,10 +508,10 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:disable Metrics/CyclomaticComplexity
       # rubocop:disable Metrics/PerceivedComplexity
-      # ----------------------------------------------------------------------
+      # --
 
       def to_a(raw: false, shell: false)
         if raw
@@ -533,16 +531,16 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:eanble Metrics/CyclomaticComplexity
       # rubocop:eanble Metrics/PerceivedComplexity
-      # ----------------------------------------------------------------------
+      # --
       # Convert a `Meta' into a normal hash. If `self' is queryable then
       # we go and start merging values smartly.  This means that we will merge
       # all the arrays into one another and we will merge hashes into hashes.
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:disable Metrics/AbcSize
-      # ----------------------------------------------------------------------
+      # --
 
       def to_h(raw: false)
         return @data.to_h if raw || !queryable? || !mergeable_hash?
@@ -577,9 +575,9 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:enable Metrics/AbcSize
-      # ----------------------------------------------------------------------
+      # --
 
       def mergeable_hash?(key = nil)
         return false unless queryable?
@@ -599,7 +597,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def mergeable_array?(key = nil)
         return false unless queryable?
@@ -619,30 +617,30 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def current_group
         root_data[:tags][current_tag] ||
           "normal"
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # HELPER: Get a list of all the tags.
-      # ----------------------------------------------------------------------
+      # --
 
       def tags
         (root_data[:tags] || {}).keys | (root_data[:aliases] || {}).keys
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # HELPER: Get a list of all the groups.
-      # ----------------------------------------------------------------------
+      # --
 
       def groups
         root_data["tags"].values.uniq
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def merge_or_override(val, new_val)
@@ -652,7 +650,7 @@ module Docker
         return new_val | val if val.respond_to?(:|)
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def string_wrapper(obj, shell: false)
@@ -663,7 +661,7 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def method_missing(method, *args, shell: false, &block)
@@ -687,7 +685,7 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def load_normal_config(overrides)
@@ -699,7 +697,7 @@ module Docker
         @data = @data.stringify.with_indifferent_access
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def load_project_config(overrides)
@@ -709,7 +707,7 @@ module Docker
         @data = @data.stringify.with_indifferent_access
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       alias deep_merge merge
       alias group current_group
@@ -718,7 +716,7 @@ module Docker
       rb_delegate :tag, :to => :root_data, :type => :hash, :key => :tag
       rb_delegate :root, :to => :@root, :type => :ivar, :bool => true
 
-      # ----------------------------------------------------------------------
+      # --
 
       rb_delegate :fetch,     :to => :@data
       rb_delegate :delete,    :to => :@data
@@ -730,7 +728,7 @@ module Docker
       rb_delegate :key?,      :to => :@data
       rb_delegate :==,        :to => :@data
 
-      # ----------------------------------------------------------------------
+      # --
 
       rb_delegate :inject,            :to => :to_enum
       rb_delegate :select,            :to => :to_enum
