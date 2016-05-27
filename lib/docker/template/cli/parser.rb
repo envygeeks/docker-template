@@ -51,11 +51,18 @@ module Docker
             end
           end
 
-          aliases.each_with_object(scratch | simple) do |alias_, repos|
-            index = repos.rindex { |v| v.name == alias_.name } + 1
-            repos.insert(index,
-              alias_
-            )
+          out = aliases.each_with_object(scratch | simple) do |alias_, repos|
+            index = repos.rindex { |v| v.name == alias_.name }
+            if index
+              repos.insert(index + 1,
+                alias_
+              )
+
+            else
+              repos.push(
+                alias_
+              )
+            end
           end
         end
 
