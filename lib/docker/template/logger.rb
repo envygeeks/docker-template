@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -13,7 +11,13 @@ module Docker
           repo
       end
 
-      # ----------------------------------------------------------------------
+      # --
+
+      def output?
+        return !!@output
+      end
+
+      # --
 
       def increment
         @lines.update({
@@ -21,34 +25,35 @@ module Docker
         })
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # A simple TTY stream that just prints out the data that it is given.
       # This is the logger that most will use for most of their building.
-      # ----------------------------------------------------------------------
+      # --
 
       def tty(stream)
         $stdout.print stream
+        @output = true
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # A simple logger that accepts a multi-type stream.
-      # ----------------------------------------------------------------------
+      # --
 
       def simple(type, str)
         type == :stderr ? $stderr.print(str) : $stdout.print(str)
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # A more complex streamer designed for the actual output of the Docker.
-      # ----------------------------------------------------------------------
+      # --
       # This method will save parts into a buffer until it can either parse
       # that buffer or it parses the actual part itself, if it can parse the
       # part itself, it will first dump the buffer as errors and then parse.
-      # ----------------------------------------------------------------------
+      # --
       # This method has to buffer because Docker-API (or Excon, it's depend)
       # gives us no indication of whether or not this is part of a larger chunk
       # it just dumps it on us, so we have to blindly work around that.
-      # ----------------------------------------------------------------------
+      # --
 
       def api(part, *args)
         chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
@@ -74,22 +79,25 @@ module Docker
           part
         )
 
+        @output = true
       rescue JSON::ParserError => e
         (@chunks ||= []).push(
           part
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def output(msg)
         unless filter_matches?(msg)
           $stdout.puts msg
           increment
         end
+
+        @output = true
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def progress_error(stream)
         abort Object::Simple::Ansi.red(
@@ -97,7 +105,7 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def progress_bar(stream)
@@ -114,7 +122,7 @@ module Docker
         ))
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def progress_diff(id)
@@ -127,7 +135,7 @@ module Docker
         return before, 0
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       private
       def filter_matches?(msg)

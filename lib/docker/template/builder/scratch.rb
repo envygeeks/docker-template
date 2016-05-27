@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -10,7 +8,7 @@ module Docker
       class Scratch < Builder
         attr_reader :rootfs
 
-        # ----------------------------------------------------------------------
+        # --
 
         def initialize(*args)
           super; @rootfs = Rootfs.new(
@@ -18,7 +16,7 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def data
           Template.get(:scratch, {
@@ -28,7 +26,7 @@ module Docker
           })
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def teardown(img: false)
           @copy.rm_rf if @copy
@@ -44,7 +42,7 @@ module Docker
           nil
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def setup_context
@@ -54,7 +52,7 @@ module Docker
           copy_dockerfile
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def copy_dockerfile
@@ -63,7 +61,7 @@ module Docker
           dockerfile.write(data)
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def copy_cleanup
           @rootfs.simple_cleanup(
@@ -71,7 +69,7 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def verify_context
           if @repo.buildable? && @tar_gz.zero?
@@ -79,18 +77,21 @@ module Docker
           end
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def build_context
           return unless @repo.buildable?
           @rootfs.build
 
+          logger = Logger.new
           img = Container.create(create_args)
-          img.start.attach(logger_opts, &Logger.new.method(logger_type))
+          img.start.attach(logger_opts, &logger.method(logger_type))
           status = img.json["State"]["ExitCode"]
 
           if status != 0
+            logger.simple(:stderr, img.logs(:stderr => true)) unless logger.output?
+            logger.simple(:stdout, img.logs(:stdout => true)) unless logger.output?
             raise Error::BadExitStatus, status
           end
         ensure
@@ -103,14 +104,14 @@ module Docker
           @rootfs.teardown
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def logger_type
           @repo.meta["tty"] ? :tty : :simple
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def logger_opts
@@ -119,7 +120,7 @@ module Docker
           }
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def create_args

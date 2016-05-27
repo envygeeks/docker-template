@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Mocks
   class Container
@@ -12,11 +10,12 @@ module Mocks
         :delete,
         :streaming_logs,
         :attach,
-        :stop
+        :stop,
+        :logs
       ]
     end
 
-    #
+    # --
 
     def json
       {
@@ -26,13 +25,13 @@ module Mocks
       }
     end
 
-    #
+    # --
 
     def start(*_)
       self
     end
 
-    #
+    # --
 
     def method_missing(method, *args, &block)
       if @mocked.include?(method)
