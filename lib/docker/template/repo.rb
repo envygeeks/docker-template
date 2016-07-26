@@ -41,6 +41,12 @@ module Docker
 
       # --
 
+      def clean_cache?
+        (meta["clean"] || meta["clean_only"])
+      end
+
+      # --
+
       def buildable?
         meta.build? && !meta["push_only"] && !meta["cache_only"] &&
           !meta[
