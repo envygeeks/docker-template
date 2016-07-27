@@ -21,6 +21,7 @@ module Docker
         return help(__method__) if options.help?
         self.options = options.merge(:cache => true) if options.force?
         self.options = options.merge(:cache_only => true)
+        self.options = options.merge(:clean => false)
         return build(
           *args
         )
