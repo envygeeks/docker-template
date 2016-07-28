@@ -17,10 +17,12 @@ module Docker
         builder.repo.cache_dir.rm_rf
         $stderr.puts Simple::Ansi.yellow(format("Copying context for %s", builder.repo))
         cache_dir = builder.repo.cache_dir
-        cache_dir.mkdir_p
+        cache_dir.parent.mkdir_p
 
         readme(builder)
-        context.join(".").cp_r(cache_dir)
+        context.cp_r(cache_dir.tap(
+          &:rm_rf
+        ))
       end
 
       # ----------------------------------------------------------------------
@@ -43,10 +45,9 @@ module Docker
       # ----------------------------------------------------------------------
 
       def cleanup(repo)
-        return unless repo.clean_cache?
         cache_dir = repo.cache_dir.parent
 
-        if cache_dir.exist?
+        if repo.cacheable? && cache_dir.exist?
           then cache_dir.children.each do |file|
             next unless repo.meta.tags.include?(file.basename)
             $stdout.puts Simple::Ansi.yellow(format("Removing %s.",
@@ -69,7 +70,7 @@ module Docker
         end
 
         return unless file
-        file.safe_copy(builder.repo.cache_dir.join(file.basename), {
+        file.safe_copy(builder.repo.cache_dir, {
           :root => file.parent
         })
       end
