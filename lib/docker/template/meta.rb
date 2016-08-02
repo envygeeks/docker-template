@@ -44,7 +44,7 @@ module Docker
         "repos_dir" => "repos",
         "copy_dir" => "copy",
         "tag" => "latest",
-        "clean" => true,
+        "clean" => false,
         "tty" => false,
         "tags" => {},
 
