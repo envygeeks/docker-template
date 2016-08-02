@@ -7,8 +7,7 @@ os: linux
 rvm:
   - &ruby1 2.3.0
   - &ruby2 2.2.4
-  - &ruby3 2.1.8
-  - &jruby jruby-9.0.5.0
+  - &jruby jruby-9.1.2.0
 
 #
 
