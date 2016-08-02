@@ -17,10 +17,10 @@ module Docker
         cache_dir = builder.repo.cache_dir
         cache_dir.parent.mkdir_p
 
-        readme(builder)
         context.cp_r(cache_dir.tap(
           &:rm_rf
         ))
+        readme(builder)
       end
 
       # --
