@@ -13,6 +13,7 @@ module Docker
 
       option :force, :type => :boolean, :desc => "Force caching."
       desc "cache [REPOS [OPTS]]", "Cache all (or some) of your repositories."
+      option :clean, :type => :boolean, :desc => "Cleanup your caches."
       option :help, :type => :boolean, :desc => "Output this."
 
       # --
