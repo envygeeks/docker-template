@@ -1,15 +1,19 @@
+# Frozen-string-literal: true
+# Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
+# Encoding: utf-8
+
 module Docker
   module Template
     module Auth
       module_function
 
-      # ----------------------------------------------------------------------
+      # --
 
       DEFAULT_SERVER = "https://index.docker.io/v1/"
 
-      # ----------------------------------------------------------------------
+      # --
       # Check to see if authing via the environment, that way we can alter.
-      # ----------------------------------------------------------------------
+      # --
 
       def env?
         ENV.key?("DOCKER_USERNAME") && \
@@ -17,7 +21,7 @@ module Docker
         ENV.key?("DOCKER_EMAIL")
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def hub
         unless Docker.creds
@@ -30,7 +34,7 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def _hub_env
         Docker.authenticate!({
@@ -41,7 +45,7 @@ module Docker
         })
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def _hub_config
         credentials = Pathutil.new("~/.docker/config.json")

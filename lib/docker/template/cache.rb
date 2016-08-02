@@ -1,17 +1,15 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
     module Cache
       module_function
 
-      # ----------------------------------------------------------------------
+      # --
       # Cache the context into the cache directory.
-      # ----------------------------------------------------------------------
+      # --
 
       def context(builder, context)
         builder.repo.cache_dir.rm_rf
@@ -25,9 +23,9 @@ module Docker
         ))
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # rubocop:disable Metrics/LineLength
-      # ----------------------------------------------------------------------
+      # --
 
       def aliased_context(builder)
         if builder.aliased_repo.cache_dir.exist?
@@ -38,11 +36,10 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Cleanup the context caches, removing the caches we no longer need.
-      # ----------------------------------------------------------------------
       # rubocop:enable Metrics/LineLength
-      # ----------------------------------------------------------------------
+      # --
 
       def cleanup(repo)
         cache_dir = repo.cache_dir.parent
@@ -59,10 +56,10 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Note: We normally expect but do not require you to have a README.
       # Search for and copy the readme if available.
-      # ----------------------------------------------------------------------
+      # --
 
       def readme(builder)
         file = builder.repo.root.children.find do |val|

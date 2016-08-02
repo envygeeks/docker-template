@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -16,7 +14,7 @@ module Docker
               @context.directory?
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def setup_context
           @context = @repo.tmpdir
@@ -25,7 +23,7 @@ module Docker
           @copy.mkdir
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def copy_dockerfile
@@ -40,7 +38,7 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def cache_context

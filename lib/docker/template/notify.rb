@@ -1,17 +1,15 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
     module Notify
       module_function
 
-      # ----------------------------------------------------------------------
+      # --
       # Notify the user of a push that is happening.
-      # ----------------------------------------------------------------------
+      # --
 
       def push(builder)
         $stderr.puts Simple::Ansi.green(
@@ -19,9 +17,9 @@ module Docker
         )
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Notify the user that we are tag aliasing.
-      # ----------------------------------------------------------------------
+      # --
 
       def alias(builder)
         repo = builder.repo
@@ -30,7 +28,7 @@ module Docker
         $stderr.puts msg
       end
 
-      # ----------------------------------------------------------------------
+      # --
 
       def build(repo, rootfs: false)
         build_start(repo, {
@@ -45,9 +43,9 @@ module Docker
         end
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Notify the user that we are building their repository.
-      # ----------------------------------------------------------------------
+      # --
 
       def build_start(repo, rootfs: false)
         if ENV["TRAVIS"] && !ENV.key?("RSPEC_RUNNING")
@@ -65,9 +63,9 @@ module Docker
         ))
       end
 
-      # ----------------------------------------------------------------------
+      # --
       # Notify the user that building their repository has ended.
-      # ----------------------------------------------------------------------
+      # --
 
       def build_end(repo, rootfs: false)
         if ENV["TRAVIS"] && !ENV.key?("RSPEC_RUNNING")

@@ -6,13 +6,13 @@ module Docker
           return new.build
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def initialize(images = Parser.new([], {}).parse)
           @images = images
         end
 
-        # ------------------------------------------------------------------------
+        # --
 
         def build
           out = ""
@@ -26,7 +26,7 @@ module Docker
           out
         end
 
-        # ------------------------------------------------------------------------
+        # --
 
         def repos(user, images)
           out = ""
@@ -42,7 +42,7 @@ module Docker
           out
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def tags(user, name, images)
           out = ""
@@ -57,7 +57,7 @@ module Docker
           out
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def remote_aliases(*args)
           out = ""
@@ -86,7 +86,7 @@ module Docker
           out
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def _remote_aliases(user, name, images)
           images.select do |image|
@@ -96,7 +96,7 @@ module Docker
           end
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         def aliases(user, name, tag, images, depth: 0)
           out = ""
@@ -123,14 +123,14 @@ module Docker
           out
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         private
         def aliased_remote?(image)
           return image.alias? && !image.aliased
         end
 
-        # --------------------------------------------------------------------
+        # --
 
         private
         def _aliases(user, name, tag, images)

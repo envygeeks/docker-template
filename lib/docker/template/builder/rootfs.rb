@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 module Docker
   module Template
@@ -10,7 +8,7 @@ module Docker
       class Rootfs < Builder
         extend Forwardable::Extended
 
-        # --------------------------------------------------------------------
+        # --
 
         def data
           Template.get(:rootfs, {
@@ -18,7 +16,7 @@ module Docker
           })
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def discover
           self.class.files.map do |file|
@@ -36,7 +34,7 @@ module Docker
           }"
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def builder_data
           Template.get(
@@ -46,12 +44,11 @@ module Docker
           )
         end
 
-        # ----------------------------------------------------------------------
+        # --
         # During a simple copy you store all the data (including rootfs) data
         # as a project unit, this helps us clean up data that is known to be for
         # just the rootfs image and remove it so it doesn't impact.
-        # ----------------------------------------------------------------------
-
+        # --
         def simple_cleanup(dir)
           file = dir.join("usr/local/bin/mkimg")
 
@@ -60,7 +57,7 @@ module Docker
           end
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         def teardown(img: true)
           @context.rmtree if @context && @context.directory?
@@ -68,7 +65,7 @@ module Docker
             rescue nil
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def setup_context
@@ -82,7 +79,7 @@ module Docker
           copy_rootfs
         end
 
-        # ----------------------------------------------------------------------
+        # --
 
         private
         def copy_rootfs
@@ -102,7 +99,7 @@ module Docker
             return true
           end
 
-          # ------------------------------------------------------------------
+          # --
 
           def files
             %w(

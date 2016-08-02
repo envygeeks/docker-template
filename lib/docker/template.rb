@@ -1,8 +1,6 @@
-# ----------------------------------------------------------------------------
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
-# ----------------------------------------------------------------------------
 
 require "docker"
 require "extras/all"
@@ -12,18 +10,18 @@ require "simple/ansi"
 require "pathutil"
 require "set"
 
-# ----------------------------------------------------------------------------
+# --
 
 Excon.defaults[ :read_timeout] = 1440
 Excon.defaults[:write_timeout] = 1440
 
-# ----------------------------------------------------------------------------
+# --
 
 module Docker
   module Template
     module_function
 
-    # ------------------------------------------------------------------------
+    # --
 
     def project?
       dir = root.join("docker")
@@ -33,7 +31,7 @@ module Docker
         :project)).file?
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def root
       @root ||= begin
@@ -41,7 +39,7 @@ module Docker
       end
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def gem_root
       @gem_root ||= begin
@@ -51,7 +49,7 @@ module Docker
       end
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def template_root
       @template_root ||= begin
@@ -59,10 +57,10 @@ module Docker
       end
     end
 
-    # ------------------------------------------------------------------------
+    # --
     # Pull a `template` from the `template_root` to parse it's data.
     # TODO: Rename this to get_template!
-    # ------------------------------------------------------------------------
+    # --
 
     def get(name, data = {})
       data = ERB::Context.new(data)
@@ -75,7 +73,7 @@ module Docker
       )
     end
 
-    # ------------------------------------------------------------------------
+    # --
 
     def _require(what)
       require what
@@ -91,9 +89,9 @@ module Docker
   end
 end
 
-# ----------------------------------------------------------------------------
+# --
 # Trick extras into merging array's into array's for us so users can inherit.
-# ----------------------------------------------------------------------------
+# --
 
 class Array
   def deep_merge(new_)
@@ -101,7 +99,7 @@ class Array
   end
 end
 
-# ----------------------------------------------------------------------------
+# --
 
 require "docker/template/error"
 require "docker/template/cache"
