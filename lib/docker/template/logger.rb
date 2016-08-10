@@ -31,8 +31,10 @@ module Docker
       # --
 
       def tty(stream)
-        $stdout.print stream
         @output = true
+        $stdout.print stream.encode(
+          "utf-8"
+        )
       end
 
       # --
@@ -40,7 +42,11 @@ module Docker
       # --
 
       def simple(type, str)
-        type == :stderr ? $stderr.print(str) : $stdout.print(str)
+        str ||= ""
+
+        type == :stderr ? $stderr.print(str.encode("utf-8")) : $stdout.print(
+          str.encode("utf-8")
+        )
       end
 
       # --
@@ -56,6 +62,7 @@ module Docker
       # --
 
       def api(part, *args)
+        part = part.encode("utf-8")
         chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
         chunked_part = part if !@chunks
         stream = JSON.parse(
