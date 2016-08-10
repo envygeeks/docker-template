@@ -20,6 +20,7 @@ module Docker
         context.cp_r(cache_dir.tap(
           &:rm_rf
         ))
+
         readme(builder)
       end
 
@@ -45,7 +46,7 @@ module Docker
         cache_dir = repo.cache_dir.parent
 
         if repo.cacheable? && cache_dir.exist?
-          then cache_dir.children.each do |file|
+          cache_dir.children.each do |file|
             next unless repo.meta.tags.include?(file.basename)
             $stdout.puts Simple::Ansi.yellow(format("Removing %s.",
               file.relative_path_from(Template.root)
@@ -62,11 +63,7 @@ module Docker
       # --
 
       def readme(builder)
-        file = builder.repo.root.children.find do |val|
-          val =~ /readme/i
-        end
-
-        return unless file
+        return unless file = builder.repo.root.children.find { |val| val =~ /readme/i }
         file.safe_copy(builder.repo.cache_dir, {
           :root => file.parent
         })
