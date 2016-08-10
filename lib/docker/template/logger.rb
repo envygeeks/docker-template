@@ -5,10 +5,27 @@
 module Docker
   module Template
     class Logger
-      def initialize(repo = nil)
-        @lines = { 0 => 0 }
-        @repo = \
-          repo
+      class << self
+        attr_writer :stdout, :stderr
+
+        def stdout
+          return @stdout ||
+            $stdout
+        end
+
+        def stderr
+          return @stderr ||
+            $stderr
+        end
+      end
+
+      def initialize(repo = nil, stdout = nil, stderr = nil)
+        @stdout = stdout || self.class.stdout
+        @stderr = stderr || self.class.stderr
+        @repo   = repo
+        @lines  = {
+          0 => 0
+        }
       end
 
       # --
@@ -32,7 +49,7 @@ module Docker
 
       def tty(stream)
         @output = true
-        $stdout.print(encode_str(
+        @stdout.print(encode_str(
           str
         ))
       end
@@ -43,8 +60,8 @@ module Docker
 
       def simple(type, str)
         str = encode_str(str ||= "")
-        type == :stderr ? $stderr.print(str) : \
-          $stdout.print(str)
+        type == :stderr ? @stderr.print(str) : \
+          @stdout.print(str)
       end
 
       # --
@@ -69,7 +86,7 @@ module Docker
 
         if chunked_part == part && @chunks && !@chunks.empty?
           then @chunks.each do |chunk|
-            $stderr.puts format("Unparsable JSON: %s",
+            @stderr.puts format("Unparsable JSON: %s",
               chunk
             )
           end
@@ -80,7 +97,7 @@ module Docker
         return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
         return progress_error(stream) if stream.any_key?("errorDetail", "error")
         warn Simple::Ansi.red("Unhandled Stream.")
-        $stdout.puts(
+        @stdout.puts(
           part
         )
 
@@ -95,7 +112,7 @@ module Docker
 
       def output(msg)
         unless filter_matches?(msg)
-          $stdout.puts msg
+          @stdout.puts msg
           increment
         end
 
@@ -110,6 +127,10 @@ module Docker
         )
       end
 
+      # --
+      # Some applications return some invalid ASCII so we need to work
+      # around that so that no errors happen.  This mostly happens
+      # with Node.js NPM.
       # --
 
       private
@@ -127,11 +148,11 @@ module Docker
 
         return unless id
         before, diff = progress_diff(id)
-        $stderr.print before if before
+        @stderr.print before if before
         str = stream["progress"] || stream["status"]
         str = "#{id}: #{str}\r"
 
-        $stderr.print(Object::Simple::Ansi.jump(
+        @stderr.print(Object::Simple::Ansi.jump(
           str, diff
         ))
       end

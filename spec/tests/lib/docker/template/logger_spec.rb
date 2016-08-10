@@ -35,6 +35,41 @@ describe Docker::Template::Logger do
 
   #
 
+  describe "#stdout" do
+    it "should default to using .stdout" do
+      expect(described_class.new.instance_variable_get(:@stdout)).to eq(
+        described_class.stdout
+      )
+    end
+
+    it "should be overrideable" do
+      val = described_class.new(nil, "hello").instance_variable_get(:@stdout)
+      expect(val).to eq(
+        "hello"
+      )
+    end
+  end
+
+  #
+
+  describe "#stderr" do
+    it "should default to using .stderr" do
+      expect(described_class.new.instance_variable_get(:@stderr)).to eq(
+        described_class.stderr
+      )
+    end
+
+    it "should be overrideable" do
+      val = described_class.new(nil, nil, "world").
+        instance_variable_get(:@stderr)
+      expect(val).to eq(
+        "world"
+      )
+    end
+  end
+
+  #
+
   describe "#progress_bar" do
     subject do
       log :stderr, {
