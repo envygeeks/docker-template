@@ -8,7 +8,7 @@ tmp=$(mktemp -d)
 
 mirrors="\nhttp://mirror.envygeeks.io/alpine/v<%= @meta.release %>/main"
 mirrors=$mirrors"\n@testing http://mirror.envygeeks.io/alpine/edge/testing"
-release_url="http://mirror.envygeeks.io/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" + "" %><%= @meta.release %>/main"
+release_url="http://mirror.envygeeks.io/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
 testing_url="http://mirror.envygeeks.io/alpine/edge/testing"
 apk --update add wget
 
