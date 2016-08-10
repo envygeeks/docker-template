@@ -32,9 +32,9 @@ module Docker
 
       def tty(stream)
         @output = true
-        $stdout.print stream.encode(
-          "utf-8"
-        )
+        $stdout.print(encode_str(
+          str
+        ))
       end
 
       # --
@@ -42,11 +42,9 @@ module Docker
       # --
 
       def simple(type, str)
-        str ||= ""
-
-        type == :stderr ? $stderr.print(str.encode("utf-8")) : $stdout.print(
-          str.encode("utf-8")
-        )
+        str = encode_str(str ||= "")
+        type == :stderr ? $stderr.print(str) : \
+          $stdout.print(str)
       end
 
       # --
@@ -62,7 +60,7 @@ module Docker
       # --
 
       def api(part, *args)
-        part = part.encode("utf-8")
+        part = encode_str(part)
         chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
         chunked_part = part if !@chunks
         stream = JSON.parse(
@@ -110,6 +108,15 @@ module Docker
         abort Object::Simple::Ansi.red(
           stream["errorDetail"]["message"]
         )
+      end
+
+      # --
+
+      private
+      def encode_str(str)
+        str.encode("utf-8", {
+          :invalid => :replace, :undef => :replace, :replace => ""
+        })
       end
 
       # --
