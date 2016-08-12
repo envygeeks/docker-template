@@ -50,7 +50,7 @@ module Docker
       def tty(stream)
         @output = true
         @stdout.print(encode_str(
-          str
+          stream
         ))
       end
 
