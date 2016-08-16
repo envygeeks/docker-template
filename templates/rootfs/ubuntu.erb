@@ -9,7 +9,7 @@ tmp=$(mktemp -d)
 
 cd $tmp
 apk --update add gnupg wget gawk sed ca-certificates
-gpg --keyserver keyserver.ubuntu.com --recv-keys 7db87c81
+gpg --keyserver keyserver.ubuntu.com --recv-keys 1A5D6C4C7DB87C81
 wget $partner_url/<%= @meta.release %>/current/SHA256SUMS.gpg
 wget $partner_url/<%= @meta.release %>/current/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
