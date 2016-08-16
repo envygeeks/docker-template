@@ -33,8 +33,8 @@ describe Docker::Template::Auth do
 
   before do
     allow(Pathutil).to receive(:new).and_call_original
-    allow(described_class).to receive(:env?).and_return false
     allow(Docker).to receive(:authenticate!).and_return(nil)
+    allow(described_class).to receive(:auth_with_env?).and_return false
     allow(Pathutil).to receive(:new).with("~/.docker/config.json") \
       .and_return(AuthPathutilWrapper.new)
   end
@@ -61,9 +61,9 @@ describe Docker::Template::Auth do
 
   #
 
-  describe "_hub_env" do
+  describe "auth_from_env" do
     before do
-      allow(described_class).to receive(:env?).and_return true
+      allow(described_class).to receive(:auth_with_env?).and_return true
       allow(ENV).to receive(:[]).with("DOCKER_SERVER").and_return("eserver.com")
       allow(ENV).to receive(:[]).with("DOCKER_EMAIL").and_return("euser@example.com")
       allow(ENV).to receive(:[]).with("DOCKER_PASSWORD").and_return("epassword")
