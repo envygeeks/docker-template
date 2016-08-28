@@ -47,6 +47,24 @@ chroot $rootfs sh -ec '{
 	ln -s /run /var/run
 }'
 
+<% if @meta.helpers? %>
+chroot $rootfs sh -ec '
+  mkdir -p /usr/src
+  cd /usr/src
+
+  apk --update add git
+  git clone https://github.com/envygeeks/docker-helper.git
+  mkdir -p /usr/local/share/docker
+  cp -R docker-helper/src/* \
+    /usr/local/share/docker
+
+  ln -s /usr/local/share/docker/docker-helper \
+    /usr/local/bin/docker-helper
+  apk --update del git
+  rm -rf /usr/src/*
+'
+<% end %>
+
 rm -rf $rootfs/etc/hosts
 rm -rf $rootfs/etc/resolv.conf
 docker-helper cleanup $rootfs

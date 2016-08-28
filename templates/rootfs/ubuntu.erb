@@ -62,6 +62,24 @@ chroot "$rootfs" sh -ec "{
 	rm -rf /tmp/remove
 }"
 
+<% if @meta.helpers? %>
+chroot $rootfs sh -ec '
+  mkdir -p /usr/src
+  cd /usr/src
+
+	apt-get update
+	apt-get install --no-install-recommends -yf git ca-certificates
+  git clone https://github.com/envygeeks/docker-helper.git
+  mkdir -p /usr/local/share/docker
+  cp -R docker-helper/src/* \
+    /usr/local/share/docker
+
+	apt-get autoremove --purge git ca-certificates -yf
+  ln -s /usr/local/share/docker/docker-helper /usr/local/bin/docker-helper
+  rm -rf /usr/src/*
+'
+<% end %>
+
 cp -R $COPY_DIR/* $rootfs
 <% if @meta.startup? %>
 mkdir -p $rootfs/etc/startup1.d
