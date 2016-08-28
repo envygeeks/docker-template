@@ -646,6 +646,9 @@ module Docker
       private
       def string_wrapper(obj, shell: false)
         return obj if obj == true || obj == false || obj.nil?
+        return obj.fallback if obj.is_a?(self.class) && obj.fallbackable? \
+          && (o = obj.fallback) && (o == true || o == false)
+
         return obj.to_s(:shell => shell) if obj.is_a?(self.class)
         !obj.is_a?(Array) ? obj.to_s : obj.join(
           "\s"

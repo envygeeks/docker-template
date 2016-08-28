@@ -1346,18 +1346,46 @@ describe Docker::Template::Meta do
     #
 
     context "when given another object" do
-      it "should run to_s" do
-        expect(subject).to receive(
-          :to_s
-        )
+      context "and that object is not a boolean" do
+        it "should run to_s" do
+          expect(subject).to receive(
+            :to_s
+          )
+        end
+
+        #
+
+        after do
+          subject.send(
+            :string_wrapper, subject
+          )
+        end
       end
 
       #
 
-      after do
-        subject.send(
-          :string_wrapper, subject
-        )
+      context "and that subject is a queryable boolean" do
+        subject do
+          described_class.new({ "all" => true }, {
+            :root => described_class.new({})
+          })
+        end
+
+        #
+
+        it "should return the boolean" do
+          expect(subject).to receive(
+            :fallback
+          )
+        end
+
+        #
+
+        after do
+          subject.send(
+            :string_wrapper, subject
+          )
+        end
       end
     end
   end
