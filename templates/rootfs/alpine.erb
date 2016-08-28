@@ -26,7 +26,7 @@ tar xzf alpine-base-*.apk && cp -a etc/* $rootfs/etc && rm -rf $tmp && mkdir -p 
 
 cd ~> /dev/null
 cp -R $COPY_DIR/* $rootfs 2> /dev/null || true
-<% unless @meta.skip_startup? %>
+<% if @meta.startup? %>
 mkdir -p $rootfs/etc/startup1.d
 mkdir -p $rootfs/etc/startup2.d
 mkdir -p $rootfs/etc/startup3.d

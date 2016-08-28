@@ -27,6 +27,7 @@ module Docker
       # --
 
       DEFAULTS = HashWithIndifferentAccess.new({
+        "startup" => true,
         "aliases" => {},
         "push" => false,
         "build" => true,
