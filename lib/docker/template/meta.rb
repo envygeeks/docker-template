@@ -334,11 +334,12 @@ module Docker
           return nil
 
         else
-          by_tag(:tag => tag, :query_data => query_data) || \
-            by_parent_tag(:tag => tag, :query_data => query_data) || \
-            by_group(:group => group, :query_data => query_data) || \
-            by_parent_group(:tag => tag, :query_data => query_data) || \
-            for_all(:query_data => query_data)
+          if !(v = by_tag(:tag => tag, :query_data => query_data)).nil? then return v
+            elsif !(v = by_parent_tag(:tag => tag, :query_data => query_data)).nil? then return v
+            elsif !(v = by_group(:group => group, :query_data => query_data)).nil? then return v
+            elsif !(v = by_parent_group(:tag => tag, :query_data => query_data)).nil? then return v
+            else return for_all(:query_data => query_data)
+          end
         end
       end
 
