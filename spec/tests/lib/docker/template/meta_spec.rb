@@ -1374,9 +1374,8 @@ describe Docker::Template::Meta do
         #
 
         it "should return the boolean" do
-          expect(subject).to receive(
-            :fallback
-          )
+          expect(subject).to receive(:fallback).exactly(2)
+            .times.and_call_original
         end
 
         #
