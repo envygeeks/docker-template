@@ -10,22 +10,22 @@ module Docker
       # --
 
       DEFAULT_SERVER = "https://index.docker.io/v1/"
-      # Check to see if authing via the environment, that way we can alter.
+
       # --
 
       def auth_with_env?
         ENV.key?("DOCKER_USERNAME") && \
         ENV.key?("DOCKER_PASSWORD") && \
-        ENV.key?(
-          "DOCKER_EMAIL"
-        )
+        ENV.key?("DOCKER_EMAIL")
       end
 
       # --
 
       def hub
         return if Docker.creds
-        auth_with_env?? auth_from_env : auth_from_config
+        return auth_from_env if auth_with_env?
+        auth_from_config
+
       rescue Docker::Error::AuthenticationError
         raise Error::UnsuccessfulAuth
       end
@@ -45,17 +45,17 @@ module Docker
 
       def auth_from_config
         credentials = Pathutil.new("~/.docker/config.json")
-        credentials = credentials.expand_path.read_json
+        credentials = credentials.expand_path
+          .read_json
 
         unless credentials.empty?
-          credentials["auths"].each do |server_, info|
-            username, password = Base64.decode64(info["auth"]).split(
-              ":", 2
-            )
+          credentials["auths"].each do |server, info|
+            username, password = Base64.decode64(info["auth"])
+              .split(":", 2)
 
             Docker.authenticate!({
               "username" => username,
-              "serveraddress" => server_,
+              "serveraddress" => server,
               "email" => info["email"],
               "password" => password
             })

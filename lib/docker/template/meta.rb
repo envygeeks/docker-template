@@ -61,11 +61,16 @@ module Docker
         #
 
         "project_copy_ignore" => %w(
-          vendor/bundle .bundle
-          .git .gitattributes .gitignore
-          Dockerfile docker
+          .git
+          .bundle
+          Dockerfile
+          vendor/bundle
+          .gitattributes
           .node_modules
-          tmp log
+          .gitignore
+          docker
+          tmp
+          log
         ),
       }).freeze
 
@@ -73,8 +78,9 @@ module Docker
 
       class << self
         def opts_file(force: nil)
-          force == :project || Template.project?? "docker/template.yml" : \
-            "opts.yml"
+          if force == :project || Template.project?
+            then "docker/template.yml" else "opts.yml"
+          end
         end
       end
 
@@ -93,31 +99,30 @@ module Docker
       # --
 
       def initialize(overrides, root: nil)
-        if root.is_a?(self.class)
-          then root = root.to_h({
-            :raw => true
-          })
-        end
-
-        if overrides.is_a?(self.class)
-          then overrides = overrides.to_h({
-            :raw => true
-          })
-        end
+        overrides = overrides.to_h :raw => true if overrides.is_a?(self.class)
+        root = root.to_h :raw => true if root.is_a?(self.class)
 
         if root.nil?
-          load_normal_config (overrides) if !Template.project?
-          load_project_config(overrides) if  Template.project?
-          @root = true
+          if Template.project?
+            load_project_config(
+              overrides
+            )
 
+          else
+            load_normal_config(
+              overrides
+            )
+          end
+
+          @root = true
         else
           @data = overrides.stringify.with_indifferent_access
-          @root_data = root.stringify \
-            .with_indifferent_access
+          @root_data = root.stringify.with_indifferent_access
         end
 
-        normalize!
         debug!
+        normalize!
+        return
       end
 
       # --
@@ -125,7 +130,8 @@ module Docker
       def normalize!
         if root?
           opts = {
-            :allowed_keys => [], :allowed_vals => []
+            :allowed_keys => [],
+            :allowed_vals => []
           }
 
           merge!({
@@ -141,6 +147,7 @@ module Docker
         if root? && root_data["debug"]
           if !key?(:env) || self[:env].queryable?
             self[:env] ||= {}
+
             merge!({
               :env => {
                 :all => {
