@@ -9,14 +9,16 @@ require "yaml"
 module Docker
   module Template
     class Meta
-      attr_reader :data
       extend Forwardable::Extended
+      attr_reader :data
 
       # --
       # rubocop:disable Style/MultilineBlockLayout
       # --
 
-      [Pathutil.allowed[:yaml][:classes], Array.allowed[:keys], Hash.allowed[:vals]].each do |v|
+      [Pathutil.allowed[:yaml][:classes], Array.allowed[:keys],
+          Hash.allowed[:vals]].each do |v|
+
         v.push(self,
           HashWithIndifferentAccess, Regexp
         )
