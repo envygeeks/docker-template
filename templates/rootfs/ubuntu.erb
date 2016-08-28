@@ -63,10 +63,12 @@ chroot "$rootfs" sh -ec "{
 }"
 
 cp -R $COPY_DIR/* $rootfs
+<% unless @meta.skip_startup? %>
 mkdir -p $rootfs/etc/startup1.d
 mkdir -p $rootfs/etc/startup2.d
 mkdir -p $rootfs/etc/startup3.d
 mkdir -p $rootfs/etc/shutdown.d
+<% end %>
 
 rm -rf $rootfs/etc/hosts
 rm -rf $rootfs/etc/resolv.conf
