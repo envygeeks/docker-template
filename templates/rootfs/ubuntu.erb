@@ -2,93 +2,116 @@
 [ "$DEBUG" ] && set -x
 set -e
 
-arch=$(uname -i)
-partner_url="https://partner-images.canonical.com/core"
-rootfs=$(mktemp -d)
-tmp=$(mktemp -d)
+ROOTFS=$(mktemp -d)
+PARTNER_URL="https://partner-images.canonical.com/core"
+TMP=$(mktemp -d)
 
-cd $tmp
-apk --update add gnupg wget gawk sed ca-certificates
+# --
+
+cd $TMP
+apk --update add \
+	wget \
+	gnupg \
+	ca-certificates \
+	gawk \
+	sed
+
+# --
+
 gpg --keyserver keyserver.ubuntu.com --recv-keys 1A5D6C4C7DB87C81
-wget $partner_url/<%= @meta.release %>/current/SHA256SUMS.gpg
-wget $partner_url/<%= @meta.release %>/current/SHA256SUMS
+wget $PARTNER_URL/<%= @meta.release %>/current/SHA256SUMS.gpg
+wget $PARTNER_URL/<%= @meta.release %>/current/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
 
 cat SHA256SUMS
-img=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $2 }' | sed -r 's/^\*//')
 sha=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $1 }')
+img=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $2 }' \
+	| sed -r 's/^\*//')
 
-wget "$partner_url/<%= @meta.release %>/current/$img"
+wget "$PARTNER_URL/<%= @meta.release %>/current/$img"
 if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
 	echo "Bailing, the SHA256sum did not match."
 fi
 
-tar xzf $img -C $rootfs
+# --
+
+tar xzf $img -C $ROOTFS
 cd -> /dev/null
 
-rm -rf $rootfs/etc/hosts
-rm -rf $rootfs/etc/resolv.conf
-cp /etc/resolv.conf $rootfs/etc/resolv.conf
-cp /etc/hosts $rootfs/etc/hosts
+# --
 
-chroot "$rootfs" sh -ec "{
+rm -rf $ROOTFS/etc/hosts
+rm -rf $ROOTFS/etc/resolv.conf
+cp /etc/resolv.conf $ROOTFS/etc/resolv.conf
+cp /etc/hosts $ROOTFS/etc/hosts
+
+# --
+
+chroot "$ROOTFS" sh -ec "{
 	dpkg-divert --local --rename --add /sbin/initctl
 	dpkg-divert --local --rename --add /usr/sbin/update-rc.d
 	ln -s /bin/true /usr/sbin/update-rc.d
 	ln -s /bin/true /sbin/initctl
 }"
 
-chroot "$rootfs" sh -ec "{
+# --
+
+chroot "$ROOTFS" sh -ec "{
 	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
 	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
-	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/local
+	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/03confdef
+	echo 'APT::Get::Install-Recommends \"false\"; APT::Get::Install-Suggests \"false\";' > /etc/apt/apt.conf.d/00norecommends
+	echo 'APT::Get::Assume-Yes \"true\"; APT::Get::force-yes \"true\";' > /etc/apt/apt.conf.d/01yes
+	echo 'Apt::Get::Purge \"true\";' > /etc/apt/apt.conf.d/02purge
 	echo \"exit 101\" > /usr/sbin/policy-rc.d policy-rc.d
 	sed -ri '/^(deb-src\s+|$|#)/d' /etc/apt/sources.list
 	chmod uog+x /usr/sbin/policy-rc.d
 
 	apt-get update
-	apt-get dist-upgrade -yf
-	apt-get install --no-install-recommends -yf \
-		locales deborphan
-
-  apt-get install --no-install-recommends -y <%= @meta.packages %>
-  echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove --purge -yf --force-yes --purge <%= @meta.package_cleanup %>
-  echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove --purge -yf --force-yes --purge <%= @meta.package_deep_cleanup %>
-	apt-get autoremove --purge \$(deborphan --guess-all) deborphan -yf
-  apt-get autoremove --purge
+  apt-get install locales deborphan <%= @meta.packages %>
+  echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove -f <%= @meta.package_cleanup %>
+  echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove -f <%= @meta.package_deep_cleanup %>
+	apt-get autoremove \$(deborphan --guess-all) deborphan
+  apt-get autoremove
 	apt-get autoclean
 	apt-get clean
 
 	rm -rf /tmp/remove
 }"
 
+# --
+
 <% if @meta.helpers? %>
-chroot $rootfs sh -ec '
-  mkdir -p /usr/src
-  cd /usr/src
+	chroot $ROOTFS sh -ec '{
+	  mkdir -p /usr/src
+	  cd /usr/src
 
-	apt-get update
-	apt-get install --no-install-recommends -yf git ca-certificates
-  git clone https://github.com/envygeeks/docker-helper.git
-  mkdir -p /usr/local/share/docker
-  cp -R docker-helper/src/* \
-    /usr/local/share/docker
+		apt-get update
+		apt-get install --no-install-recommends -yf git ca-certificates
+	  git clone https://github.com/envygeeks/docker-helper.git
+	  mkdir -p /usr/local/share/docker
+	  cp -R docker-helper/src/* \
+	    /usr/local/share/docker
 
-	apt-get autoremove --purge git ca-certificates -yf
-  ln -s /usr/local/share/docker/docker-helper /usr/local/bin/docker-helper
-  rm -rf /usr/src/*
-'
+		apt-get autoremove --purge git ca-certificates -yf
+	  ln -s /usr/local/share/docker/docker-helper /usr/local/bin/docker-helper
+	  rm -rf /usr/src/*
+	}'
 <% end %>
 
-cp -R $COPY_DIR/* $rootfs
+# --
+
+cp -R $COPY_DIR/* $ROOTFS
 <% if @meta.startup? %>
-mkdir -p $rootfs/etc/startup1.d
-mkdir -p $rootfs/etc/startup2.d
-mkdir -p $rootfs/etc/startup3.d
-mkdir -p $rootfs/etc/shutdown.d
+	mkdir -p $ROOTFS/etc/startup1.d
+	mkdir -p $ROOTFS/etc/startup2.d
+	mkdir -p $ROOTFS/etc/startup3.d
+	mkdir -p $ROOTFS/etc/shutdown.d
 <% end %>
 
-rm -rf $rootfs/etc/hosts
-rm -rf $rootfs/etc/resolv.conf
-docker-helper cleanup $rootfs
-tar -zf $TAR_GZ --numeric-owner -C $rootfs -c .
+# --
+
+rm -rf $ROOTFS/etc/hosts
+rm -rf $ROOTFS/etc/resolv.conf
+docker-helper cleanup $ROOTFS
+tar -zf $TAR_GZ --numeric-owner -C $ROOTFS -c .

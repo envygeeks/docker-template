@@ -2,44 +2,82 @@
 [ "$DEBUG" ] && set -x
 set -e
 
-arch=$(uname -i)
-rootfs=$(mktemp -d)
-tmp=$(mktemp -d)
+ROOTFS=$(mktemp -d)
+TMPDIR=$(mktemp -d)
 
-mirrors="\nhttp://mirror.envygeeks.io/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
-mirrors=$mirrors"\n@community http://mirror.envygeeks.io/alpine/edge/community"
-mirrors=$mirrors"\n@testing http://mirror.envygeeks.io/alpine/edge/testing"
-release_url="http://mirror.envygeeks.io/alpine/<%= @meta.release \
+MIRRORS="\nhttp://mirror.envygeeks.io/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
+MIRRORS=$MIRRORS"\n@community http://mirror.envygeeks.io/alpine/edge/community"
+MIRRORS=$MIRRORS"\n@testing http://mirror.envygeeks.io/alpine/edge/testing"
+RELEASE_URL="http://mirror.envygeeks.io/alpine/<%= @meta.release \
   =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
-apk --update add wget
 
-tar_ignore() {
-  sed -r "/tar: Ignoring unknown extended header/d"
-}
+# --
 
-cd $tmp
-apk --update fetch --repository=$release_url alpine-keys
-tar xzf alpine-keys-*.apk && mkdir -p $rootfs/etc && cp -a etc/* $rootfs/etc && rm -rf $tmp && mkdir -p $tmp && cd $tmp
-apk --initdb --root=$rootfs --repository=$release_url --update-cache add apk-tools busybox libc-utils alpine-baselayout alpine-keys musl
-apk --keys-dir=$rootfs/etc/apk/keys --root=$rootfs --repository=$release_url --update fetch alpine-base
-tar xzf alpine-base-*.apk && cp -a etc/* $rootfs/etc && rm -rf $tmp && mkdir -p $tmp
+cd $TMPDIR
+
+# --
+
+apk --update fetch --repository=$RELEASE_URL alpine-keys
+tar xzf alpine-keys-*.apk
+mkdir -p $ROOTFS/etc
+cp -a etc/* $ROOTFS/etc
+rm -rf $TMPDIR
+mkdir -p $TMPDIR
+cd $TMPDIR
+
+# --
+
+apk --initdb \
+    --root=$ROOTFS \
+    --repository=$RELEASE_URL \
+    --update-cache add \
+  \
+  apk-tools \
+  libc-utils \
+  alpine-baselayout \
+  alpine-keys \
+  busybox \
+  musl
+
+# --
+
+apk --keys-dir=$ROOTFS/etc/apk/keys \
+    --root=$ROOTFS \
+    --repository=$RELEASE_URL \
+    --update fetch \
+  \
+  alpine-base
+
+# --
+
+tar xzf alpine-base-*.apk
+cp -a etc/* $ROOTFS/etc
+rm -rf $TMPDIR
+mkdir -p $TMPDIR
+
+# --
 
 cd ~> /dev/null
-cp -R $COPY_DIR/* $rootfs 2> /dev/null || true
+cp -R $COPY_DIR/* $ROOTFS 2> /dev/null || true
+
+# --
+
 <% if @meta.startup? %>
-mkdir -p $rootfs/etc/startup1.d
-mkdir -p $rootfs/etc/startup2.d
-mkdir -p $rootfs/etc/startup3.d
-mkdir -p $rootfs/etc/shutdown.d
+  mkdir -p $ROOTFS/etc/startup1.d
+  mkdir -p $ROOTFS/etc/startup2.d
+  mkdir -p $ROOTFS/etc/startup3.d
+  mkdir -p $ROOTFS/etc/shutdown.d
 <% end %>
 
-cp /etc/hosts $rootfs/etc/hosts
-cp /etc/resolv.conf $rootfs/etc/resolv.conf
-printf "$mirrors" > $rootfs/etc/apk/repositories
-chroot $rootfs sh -ec "apk --update add <%= @meta.packages %>"
-chroot $rootfs sh -ec "apk del <%= @meta.package_cleanup %>"
-chroot $rootfs sh -ec "apk del <%= @meta.package_deep_cleanup %>"
-chroot $rootfs sh -ec '{
+# --
+
+cp /etc/hosts $ROOTFS/etc/hosts
+cp /etc/resolv.conf $ROOTFS/etc/resolv.conf
+printf "$MIRRORS" > $ROOTFS/etc/apk/repositories
+chroot $ROOTFS sh -ec "apk --update add <%= @meta.packages %>"
+chroot $ROOTFS sh -ec "apk del <%= @meta.package_cleanup %>"
+chroot $ROOTFS sh -ec "apk del <%= @meta.package_deep_cleanup %>"
+chroot $ROOTFS sh -ec '{
 	mv /var/run/* /run 2> /dev/null || true
 	mv /var/lock  /run 2> /dev/null || true
 	rm -rf /var/run /var/lock
@@ -47,25 +85,29 @@ chroot $rootfs sh -ec '{
 	ln -s /run /var/run
 }'
 
+# --
+
 <% if @meta.helpers? %>
-chroot $rootfs sh -ec '
-  mkdir -p /usr/src
-  cd /usr/src
+  chroot $ROOTFS sh -ec '{
+    mkdir -p /usr/src
+    cd /usr/src
 
-  apk --update add git
-  git clone https://github.com/envygeeks/docker-helper.git
-  mkdir -p /usr/local/share/docker
-  cp -R docker-helper/src/* \
-    /usr/local/share/docker
+    apk --update add git
+    git clone https://github.com/envygeeks/docker-helper.git
+    mkdir -p /usr/local/share/docker
+    cp -R docker-helper/src/* \
+      /usr/local/share/docker
 
-  ln -s /usr/local/share/docker/docker-helper \
-    /usr/local/bin/docker-helper
-  apk --update del git
-  rm -rf /usr/src/*
-'
+    ln -s /usr/local/share/docker/docker-helper \
+      /usr/local/bin/docker-helper
+    apk --update del git
+    rm -rf /usr/src/*
+  }'
 <% end %>
 
-rm -rf $rootfs/etc/hosts
-rm -rf $rootfs/etc/resolv.conf
-docker-helper cleanup $rootfs
-tar -zf $TAR_GZ --numeric-owner -C $rootfs -c .
+# --
+
+rm -rf $ROOTFS/etc/hosts
+rm -rf $ROOTFS/etc/resolv.conf
+docker-helper cleanup $ROOTFS
+tar -zf $TAR_GZ --numeric-owner -C $ROOTFS -c .
