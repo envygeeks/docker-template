@@ -311,7 +311,7 @@ module Docker
 
       def queryable?(query_data: @data)
         if query_data.is_a?(self.class)
-          then query_data \
+          then query_data
             .queryable?
 
         elsif !query_data || !query_data.is_a?(Hash) || query_data.empty?

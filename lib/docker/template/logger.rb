@@ -8,16 +8,20 @@ module Docker
       class << self
         attr_writer :stdout, :stderr
 
+        # --
+
         def stdout
-          return @stdout ||
-            $stdout
+          return @stdout || $stdout
         end
 
+        # --
+
         def stderr
-          return @stderr ||
-            $stderr
+          return @stderr || $stderr
         end
       end
+
+      # --
 
       def initialize(repo = nil, stdout = nil, stderr = nil)
         @stdout = stdout || self.class.stdout
