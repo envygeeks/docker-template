@@ -680,6 +680,7 @@ module Docker
           })
 
         else
+          val = val.fallback if val.is_a?(self.class) && val.queryable?
           [true, false].include?(val) ? val : \
             if val.respond_to?(:empty?)
               then !val.empty? else !!val
