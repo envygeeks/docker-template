@@ -121,5 +121,4 @@ module Docker
 end
 
 require "docker/template/cli/build"
-require "docker/template/cli/parser"
 require "docker/template/cli/list"
