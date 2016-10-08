@@ -89,29 +89,21 @@ chroot "$ROOTFS" sh -ec "{
 		apt-get update
 		apt-get install --no-install-recommends -yf git ca-certificates
 	  git clone https://github.com/envygeeks/docker-helper.git
-	  mkdir -p /usr/local/share/docker
-	  cp -R docker-helper/src/* \
-	    /usr/local/share/docker
-
-		apt-get autoremove --purge git ca-certificates -yf
-	  ln -s /usr/local/share/docker/docker-helper /usr/local/bin/docker-helper
+	  cp -R docker-helper/src/* /
 	  rm -rf /usr/src/*
+
+		apt-get autoremove --purge \
+			git ca-certificates -yf
 	}'
 <% end %>
 
 # --
 
 cp -R $COPY_DIR/* $ROOTFS
-<% if @meta.startup? %>
-	mkdir -p $ROOTFS/etc/startup1.d
-	mkdir -p $ROOTFS/etc/startup2.d
-	mkdir -p $ROOTFS/etc/startup3.d
-	mkdir -p $ROOTFS/etc/shutdown.d
-<% end %>
+cleanup $ROOTFS
 
 # --
 
 rm -rf $ROOTFS/etc/hosts
 rm -rf $ROOTFS/etc/resolv.conf
-docker-helper cleanup $ROOTFS
 tar -zf $TAR_GZ --numeric-owner -C $ROOTFS -c .

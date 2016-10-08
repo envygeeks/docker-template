@@ -62,15 +62,6 @@ cp -R $COPY_DIR/* $ROOTFS 2> /dev/null || true
 
 # --
 
-<% if @meta.startup? %>
-  mkdir -p $ROOTFS/etc/startup1.d
-  mkdir -p $ROOTFS/etc/startup2.d
-  mkdir -p $ROOTFS/etc/startup3.d
-  mkdir -p $ROOTFS/etc/shutdown.d
-<% end %>
-
-# --
-
 cp /etc/hosts $ROOTFS/etc/hosts
 cp /etc/resolv.conf $ROOTFS/etc/resolv.conf
 printf "$MIRRORS" > $ROOTFS/etc/apk/repositories
@@ -94,12 +85,7 @@ chroot $ROOTFS sh -ec '{
 
     apk --update add git
     git clone https://github.com/envygeeks/docker-helper.git
-    mkdir -p /usr/local/share/docker
-    cp -R docker-helper/src/* \
-      /usr/local/share/docker
-
-    ln -s /usr/local/share/docker/docker-helper \
-      /usr/local/bin/docker-helper
+    cp -R docker-helper/src/* /
     apk --update del git
     rm -rf /usr/src/*
   }'
@@ -107,7 +93,7 @@ chroot $ROOTFS sh -ec '{
 
 # --
 
+cleanup $ROOTFS
 rm -rf $ROOTFS/etc/hosts
 rm -rf $ROOTFS/etc/resolv.conf
-docker-helper cleanup $ROOTFS
 tar -zf $TAR_GZ --numeric-owner -C $ROOTFS -c .
