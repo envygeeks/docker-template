@@ -11,7 +11,7 @@ module Docker
         def teardown(img: false)
           @img.delete "force" => true if @img && img
           @context.rmtree if @context && \
-              @context.directory?
+            @context.directory?
         end
 
         # --
@@ -33,9 +33,7 @@ module Docker
           data = ERB::Context.new(:meta => @repo.meta)
           data = ERB.new(dockerfile).result(data._binding)
           context = @context.join("Dockerfile")
-          context.write(
-            data
-          )
+          context.write(data)
         end
 
         # --
@@ -49,7 +47,7 @@ module Docker
 
         class << self
           def files
-            return %w(
+            %w(
               Dockerfile
             )
           end

@@ -37,11 +37,9 @@ module Docker
         # --
 
         def builder_data
-          Template.get(
-            discover, {
-              :meta => @repo.meta
-            }
-          )
+          Template.get(discover, {
+            :meta => @repo.meta
+          })
         end
 
         # --
