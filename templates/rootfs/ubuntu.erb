@@ -9,12 +9,8 @@ TMP=$(mktemp -d)
 # --
 
 cd $TMP
-apk --update add \
-	wget \
-	gnupg \
-	ca-certificates \
-	gawk \
-	sed
+apk --update add wget gnupg ca-certificates \
+	gawk sed
 
 # --
 
