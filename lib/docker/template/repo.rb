@@ -59,12 +59,12 @@ module Docker
       # when you set the tag in the "alias" section of your `opts.yml`.
       # --
       def aliased
-        full = CLI::Parser.full_name?(
+        full = Parser.full_name?(
           meta.aliased_tag
         )
 
         if alias? && full
-          self.class.new(to_h.merge(CLI::Parser.to_repo_hash(
+          self.class.new(to_h.merge(Parser.to_repo_hash(
             meta.aliased_tag
           )))
 
@@ -175,7 +175,8 @@ module Docker
             set << self
           else
             tags.each do |tag|
-              hash = to_h.merge("tag" => tag)
+              hash = Parser.from_tag_to_repo_hash(tag)
+              hash = to_h.merge(hash)
               set << self.class.new(
                 hash, @cli_opts
               )
