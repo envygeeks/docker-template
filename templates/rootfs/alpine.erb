@@ -5,10 +5,11 @@ set -e
 ROOTFS=$(mktemp -d)
 TMPDIR=$(mktemp -d)
 
-MIRRORS="\nhttp://mirror.envygeeks.io/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
-MIRRORS=$MIRRORS"\n@community http://mirror.envygeeks.io/alpine/edge/community"
-MIRRORS=$MIRRORS"\n@testing http://mirror.envygeeks.io/alpine/edge/testing"
-RELEASE_URL="http://mirror.envygeeks.io/alpine/<%= @meta.release \
+: ${MIRROR_HOST:="mirror.envygeeks.io"}
+MIRRORS="\nhttp://$MIRROR_HOST/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
+MIRRORS=$MIRRORS"\n@community http://$MIRROR_HOST/alpine/edge/community"
+MIRRORS=$MIRRORS"\n@testing http://$MIRROR_HOST/alpine/edge/testing"
+RELEASE_URL="http://$MIRROR_HOST/alpine/<%= @meta.release \
   =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
 
 cd $TMPDIR
