@@ -75,6 +75,7 @@ module Docker
       option :push,       :type => :boolean, :desc => "Push Repo After Building."
       option :clean,      :type => :boolean, :desc => "Cleanup your caches."
       option :force,      :type => :boolean, :desc => "Force your build."
+      option :squash,     :type => :boolean, :desc => "Squash the build."
       option :help,       :type => :boolean, :desc => "Output this."
 
       # --
