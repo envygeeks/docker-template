@@ -5,7 +5,7 @@ set -e
 ROOTFS=$(mktemp -d)
 TMPDIR=$(mktemp -d)
 
-MIRROR_HOST="<% @meta.mirror_host %>"
+MIRROR_HOST="<%= @meta.mirror_host %>"
 [ "$MIRROR_HOST" ] || MIRROR_HOST="mirror.envygeeks.io"
 MIRRORS="\nhttp://$MIRROR_HOST/alpine/<%= @meta.release =~ /^[\d,\.]+$/ ? "v" : "" %><%= @meta.release %>/main"
 MIRRORS=$MIRRORS"\n@community http://$MIRROR_HOST/alpine/edge/community"

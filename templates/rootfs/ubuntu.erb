@@ -24,7 +24,7 @@ sha=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $1 }')
 img=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $2 }' \
 	| sed -r 's/^\*//')
 
-wget "$PARTNER_URL/<%= @meta.release %>/current/$img"
+wget --progress=bar "$PARTNER_URL/<%= @meta.release %>/current/$img"
 if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
 	echo "Bailing, the SHA256sum did not match."
 fi
