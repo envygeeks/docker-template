@@ -85,6 +85,7 @@ describe Docker::Template::Auth do
 
     context "when the user doesn't set a server" do
       before do
+        allow(ENV).to receive(:[]).with("bamboo_dockerServer").and_return nil
         allow(ENV).to receive(:[]).with("DOCKER_SERVER").and_return(
           nil
         )
