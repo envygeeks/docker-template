@@ -29,8 +29,6 @@ module Docker
       # --
 
       DEFAULTS = HashWithIndifferentAccess.new({
-        "envygeeks" => !!ENV["ENVYGEEKS"],
-        "ci" => !!ENV["CI"],
         "squash" => true,
         "startup" => true,
         "aliases" => {},
@@ -42,7 +40,9 @@ module Docker
         "project_data_dir" => "docker",
         "rootfs_base_img" => "envygeeks/alpine",
         "maintainer" => "Random User <random.user@example.com>",
+        "envygeeks" => ENV["ENVYGEEKS"] && ENV["ENVYGEEKS"] == "true",
         "user" => ENV["USER"] || ENV["USERNAME"] || "random",
+        "ci" => ENV["CI"] && ENV["CI"] == "true",
         "name" => Template.root.basename.to_s,
         "project_copy_dir" => "project",
         "rootfs_template" => "alpine",
