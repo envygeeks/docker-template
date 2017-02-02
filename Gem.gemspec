@@ -30,4 +30,5 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency("pathutil", "~> 0.7")
   spec.add_runtime_dependency("extras", "~> 0.1")
   spec.add_runtime_dependency("json", ">= 1.8")
+  spec.add_runtime_dependency("rugged", "~> 0.25.1")
 end

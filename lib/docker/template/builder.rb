@@ -18,7 +18,7 @@ module Docker
 
       ALIAS_SETUP = [:cache_context]
       SETUP = [:setup_context, :copy_global, :copy_project,
-        :copy_all, :copy_group, :copy_tag, :copy_cleanup, :build_context,
+        :copy_all, :copy_group, :copy_tag, :copy_cleanup, :copy_git, :build_context,
           :verify_context, :cache_context].freeze
 
       # --
@@ -219,6 +219,36 @@ module Docker
           $stderr.puts Simple::Ansi.red(
             "Context caching not supported"
           )
+        end
+      end
+
+      # --
+      # Copy any git repositories the user wishes us to copy.
+      # --
+
+      private
+      def copy_git
+        return if rootfs? || !@repo.meta.git?
+        require "rugged"
+
+        @repo.meta[:git].each do |repo|
+          credentials = Rugged::Credentials::SshKey.new({
+            :privatekey => Pathutil.new(repo[:key]).expand_path.to_s,
+             :publickey => Pathutil.new(repo[:pub]).expand_path.to_s,
+             :username => repo[:user]
+          })
+
+          dir = @copy.join(repo[:clone_to])
+          if !dir.exist?
+            $stderr.puts Simple::Ansi.green("Cloning #{repo[:repo]} to #{repo[:clone_to]}.")
+            Rugged::Repository.clone_at(repo[:repo], dir.to_s, {
+              :credentials => credentials
+            })
+          else
+            $stderr.puts Simple::Ansi.yellow(
+              "Skipping #{repo[:repo]}, exists already."
+            )
+          end
         end
       end
 
