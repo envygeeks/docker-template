@@ -14,9 +14,11 @@ module Docker
       # --
 
       def auth_with_env?
-        ENV.key?("DOCKER_USERNAME") && \
-        ENV.key?("DOCKER_PASSWORD") && \
-        ENV.key?("DOCKER_EMAIL")
+        $stderr.puts ENV["DOCKER_EMAIL"], ENV["DOCKER_USERNAME"]
+        if ENV.key?("DOCKER_USERNAME") && ENV.key?("DOCKER_PASSWORD") && ENV.key?("DOCKER_EMAIL")
+          $stderr.puts "Authenticating with environment."
+          return true
+        end
       end
 
       # --
@@ -44,8 +46,7 @@ module Docker
 
       def auth_from_config
         credentials = Pathutil.new("~/.docker/config.json")
-        credentials = credentials.expand_path
-          .read_json
+        credentials = credentials.expand_path.read_json
 
         unless credentials.empty?
           credentials["auths"].each do |server, info|
