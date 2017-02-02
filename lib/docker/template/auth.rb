@@ -22,10 +22,9 @@ module Docker
       # --
 
       def hub
-        return if Docker.creds
         return auth_from_env if auth_with_env?
-        auth_from_config
 
+        auth_from_config
       rescue Docker::Error::AuthenticationError
         raise Error::UnsuccessfulAuth
       end
