@@ -69,7 +69,7 @@ module Docker
       option :profile,    :type => :boolean, :desc => "Profile Memory."
       option :tty,        :type => :boolean, :desc => "Enable TTY Output."
       option :cache,      :type => :boolean, :desc => "Cache your repositories to cache."
-      option :exclude,    :type => :array,  :desc => "Build everything except for these images."
+      option :exclude,    :type => :array,   :desc => "Build everything except for these images."
       option :debug,      :type => :boolean, :desc => "Send the DEBUG=true env var to your instance."
       option :diff,       :type => :boolean, :desc => "Build only modified repositories."
       option :push,       :type => :boolean, :desc => "Push Repo After Building."

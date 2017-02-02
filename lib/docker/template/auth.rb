@@ -14,16 +14,9 @@ module Docker
       # --
 
       def auth_with_env?
-        (
-          ENV.key?("DOCKER_USERNAME") && \
-          ENV.key?("DOCKER_PASSWORD") && \
-          ENV.key?("DOCKER_EMAIL")
-        ) || \
-        (
-          ENV.key?("bamboo_dockerUsername") && \
-          ENV.key?("bamboo_dockerPassword") && \
-          ENV.key?("bambo_dockerEmail")
-        )
+        ENV.key?("DOCKER_USERNAME") && \
+        ENV.key?("DOCKER_PASSWORD") && \
+        ENV.key?("DOCKER_EMAIL")
       end
 
       # --
@@ -40,10 +33,10 @@ module Docker
 
       def auth_from_env
         Docker.authenticate!({
-          "username" => ENV["DOCKER_USERNAME"] || ENV["bamboo_dockerUsername"],
-          "serveraddress" => ENV["DOCKER_SERVER"] || ENV["bamboo_dockerServer"] || DEFAULT_SERVER,
-          "password" => ENV["DOCKER_PASSWORD"] || ENV["bamboo_dockerPassword"],
-          "email" => ENV["DOCKER_EMAIL"] || ENV["bamboo_dockerEmail"]
+          "username" => ENV["DOCKER_USERNAME"],
+          "serveraddress" => ENV["DOCKER_SERVER"] DEFAULT_SERVER,
+          "password" => ENV["DOCKER_PASSWORD"],
+          "email" => ENV["DOCKER_EMAIL"]
         })
       end
 
