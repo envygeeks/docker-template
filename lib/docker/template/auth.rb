@@ -34,7 +34,7 @@ module Docker
       def auth_from_env
         Docker.authenticate!({
           "username" => ENV["DOCKER_USERNAME"],
-          "serveraddress" => ENV["DOCKER_SERVER"] DEFAULT_SERVER,
+          "serveraddress" => ENV["DOCKER_SERVER"] || DEFAULT_SERVER,
           "password" => ENV["DOCKER_PASSWORD"],
           "email" => ENV["DOCKER_EMAIL"]
         })

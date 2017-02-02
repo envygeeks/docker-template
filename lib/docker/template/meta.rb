@@ -29,6 +29,8 @@ module Docker
       # --
 
       DEFAULTS = HashWithIndifferentAccess.new({
+        "envygeeks" => !!ENV["ENVYGEEKS"],
+        "ci" => !!ENV["CI"],
         "squash" => true,
         "startup" => true,
         "aliases" => {},
