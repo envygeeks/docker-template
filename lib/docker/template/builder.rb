@@ -228,7 +228,7 @@ module Docker
 
       private
       def copy_git
-        return if rootfs? || !@repo.meta.git?
+        return if rootfs? || !@repo.meta.git? || !@repo.meta.push_only?
         require "rugged"
 
         @repo.meta[:git].each do |repo|
