@@ -47,8 +47,8 @@ apk del --root=$ROOTFS <%= @meta.package_deep_cleanup %>
 mv $ROOTFS/var/run/* $ROOTFS/run 2> /dev/null || true
 mv $ROOTFS/var/lock  $ROOTFS/run 2> /dev/null || true
 rm -rf $ROOTFS/var/run $ROOTFS/var/lock
-ln -s $ROOTFS/run/lock $ROOTFS/var/lock
-ln -s $ROOTFS/run $ROOTFS/var/run
+ln -sf /run/lock $ROOTFS/var/lock
+ln -sf /run $ROOTFS/var/run
 
 # --
 
