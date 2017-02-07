@@ -228,10 +228,14 @@ module Docker
 
       private
       def copy_git
-        return if rootfs? || !@repo.meta.git? || !@repo.meta.push_only?
+        return if rootfs? || !@repo.meta.git? || @repo.meta.push_only?
         require "rugged"
 
-        @repo.meta[:git].each do |repo|
+        repos = @repo.meta[:git]
+        repos = repos.for_all + (repos.by_tag || []) +
+          (repos.by_type || [])
+
+        repos.each do |repo|
           credentials = Rugged::Credentials::SshKey.new({
             :privatekey => Pathutil.new(repo[:key]).expand_path.to_s,
              :publickey => Pathutil.new(repo[:pub]).expand_path.to_s,
