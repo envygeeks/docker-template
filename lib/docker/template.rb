@@ -86,6 +86,28 @@ module Docker
       $stderr.puts "You can install it with `gem install #{what}'"
       abort "Hope you install it so you can report back."
     end
+
+    # --
+
+    def tmpdir
+      if ENV["DOCKER_TEMPLATE_TMPDIR"]
+        # Don't destroy a user created directory.
+        return Pathutil.new(ENV["DOCKER_TEMPLATE_TMPDIR"]).tap(
+          &:mkdir_p
+        )
+      else
+        dir = root.join("tmp")
+
+        if !dir.exist?
+          # Make the directory and then throw it out at exit.
+          dir.mkdir_p; ObjectSpace.define_finalizer(dir, proc do
+            dir.rm_rf
+          end)
+        end
+
+        dir
+      end
+    end
   end
 end
 

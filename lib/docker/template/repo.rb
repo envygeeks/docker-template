@@ -142,7 +142,7 @@ module Docker
 
       # --
 
-      def tmpdir(*args, root: nil)
+      def tmpdir(*args, root: Template.tmpdir)
         args.unshift(user, name, tag)
         Pathutil.tmpdir(
           args, nil, root
@@ -151,7 +151,7 @@ module Docker
 
       # --
 
-      def tmpfile(*args, root: nil)
+      def tmpfile(*args, root: Template.tmpdir)
         args.unshift(user, name, tag)
         Pathutil.tmpfile(
           args, nil, root
