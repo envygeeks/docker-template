@@ -3,7 +3,9 @@
 set -e
 
 ROOTFS=$(mktemp -d)
-PARTNER_URL="https://partner-images.canonical.com/core"
+MIRROR_HOST="<%= @meta.mirror_host %>"
+[ "$MIRROR_HOST" ] || MIRROR_HOST="archive.ubuntu.com"
+PARTNER_URL="https://mirror.envygeeks.io/core-ubuntu"
 TMP=$(mktemp -d)
 
 # --
@@ -15,8 +17,8 @@ apk --update add wget gnupg ca-certificates \
 # --
 
 gpg --keyserver keyserver.ubuntu.com --recv-keys 1A5D6C4C7DB87C81
-wget $PARTNER_URL/<%= @meta.release %>/current/SHA256SUMS.gpg
-wget $PARTNER_URL/<%= @meta.release %>/current/SHA256SUMS
+wget $PARTNER_URL/<%= @meta.release %>/SHA256SUMS.gpg
+wget $PARTNER_URL/<%= @meta.release %>/SHA256SUMS
 gpg --verify SHA256SUMS.gpg SHA256SUMS
 
 cat SHA256SUMS
@@ -24,7 +26,7 @@ sha=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $1 }')
 img=$(cat SHA256SUMS | grep "amd64" | awk -F' *' '{ print $2 }' \
 	| sed -r 's/^\*//')
 
-wget --progress=bar "$PARTNER_URL/<%= @meta.release %>/current/$img"
+wget --progress=bar "$PARTNER_URL/<%= @meta.release %>/$img"
 if [ "$(sha256sum $img | awk '{ print $1 }')" != "$sha" ]; then
 	echo "Bailing, the SHA256sum did not match."
 fi
@@ -43,26 +45,29 @@ cp /etc/hosts $ROOTFS/etc/hosts
 
 # --
 
-chroot "$ROOTFS" sh -ec "{
-	dpkg-divert --local --rename --add /sbin/initctl
-	dpkg-divert --local --rename --add /usr/sbin/update-rc.d
-	ln -s /bin/true /usr/sbin/update-rc.d
-	ln -s /bin/true /sbin/initctl
-}"
+chroot "$ROOTFS" sh -ec "dpkg-divert --local --rename --add /sbin/initctl"
+chroot "$ROOTFS" sh -ec "dpkg-divert --local --rename --add /usr/sbin/update-rc.d"
+ln -s /bin/true $ROOTFS/usr/sbin/update-rc.d
+ln -s /bin/true $ROOTFS/sbin/initctl
 
 # --
 
-chroot "$ROOTFS" sh -ec "{
-	sed -i 's/^#\s*\(deb.*universe\)$/\1/g' /etc/apt/sources.list
-	echo \"debconf debconf/frontend select Noninteractive\" | debconf-set-selections
-	echo 'Dpkg::Options { \"--force-confdef\"; \"--force-confold\"; }' > /etc/apt/apt.conf.d/03confdef
-	echo 'APT::Get::Install-Recommends \"false\"; APT::Get::Install-Suggests \"false\";' > /etc/apt/apt.conf.d/00norecommends
-	echo 'APT::Get::Assume-Yes \"true\"; APT::Get::force-yes \"true\";' > /etc/apt/apt.conf.d/01yes
-	echo 'Apt::Get::Purge \"true\";' > /etc/apt/apt.conf.d/02purge
-	echo \"exit 101\" > /usr/sbin/policy-rc.d policy-rc.d
-	sed -ri '/^(deb-src\s+|$|#)/d' /etc/apt/sources.list
-	chmod uog+x /usr/sbin/policy-rc.d
+sed -i 's/^#\s*\(deb.*universe\)$/\1/g' $ROOTFS/etc/apt/sources.list
+sed -i "s/archive\.ubuntu\.com/$MIRROR_HOST/g" $ROOTFS/etc/apt/sources.list
+chroot "$ROOTFS" sh -ec 'echo "debconf debconf/frontend select Noninteractive" | debconf-set-selections'
+echo 'Dpkg::Options { "--force-confdef"; "--force-confold"; }' > $ROOTFS/etc/apt/apt.conf.d/03confdef
+echo 'APT::Get::Install-Recommends "false"; APT::Get::Install-Suggests "false";' > \
+	$ROOTFS/etc/apt/apt.conf.d/00norecommends
 
+# --
+
+echo "exit 101" > $ROOTFS/usr/sbin/policy-rc.d policy-rc.d
+echo 'APT::Get::Assume-Yes "true";' > $ROOTFS/etc/apt/apt.conf.d/01yes
+echo 'Apt::Get::Purge "true";' > $ROOTFS/etc/apt/apt.conf.d/02purge
+sed -ri '/^(deb-src\s+|$|#)/d' $ROOTFS/etc/apt/sources.list
+chmod uog+x $ROOTFS/usr/sbin/policy-rc.d
+
+chroot "$ROOTFS" sh -ec "{
 	apt-get update
   apt-get install locales deborphan <%= @meta.packages %>
   echo 'Yes, do as I say!' | SUDO_FORCE_REMOVE=yes apt-get autoremove -f <%= @meta.package_cleanup %>
@@ -78,19 +83,12 @@ chroot "$ROOTFS" sh -ec "{
 # --
 
 <% if @meta.helpers? %>
-	chroot $ROOTFS sh -ec '{
-	  mkdir -p /usr/src
-	  cd /usr/src
+  mkdir -p /usr/src
+  cd /usr/src
 
-		apt-get update
-		apt-get install --no-install-recommends -yf git ca-certificates
-	  git clone https://github.com/envygeeks/docker-helper.git
-	  cp -R docker-helper/src/* /
-	  rm -rf /usr/src/*
-
-		apt-get autoremove --purge \
-			git ca-certificates -yf
-	}'
+  apk --update add ca-certificates git
+  git clone --verbose https://github.com/envygeeks/docker-helper.git
+  cp -R docker-helper/src/* $ROOTFS/
 <% end %>
 
 # --
