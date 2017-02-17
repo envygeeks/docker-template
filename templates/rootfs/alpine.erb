@@ -63,7 +63,7 @@ ln -sf /run $ROOTFS/var/run
 
 # --
 
-cleanup $ROOTFS
+$ROOTFS/usr/bin/cleanup $ROOTFS || true
 rm -rf $ROOTFS/etc/hosts
 rm -rf $ROOTFS/etc/resolv.conf
 tar -zf $TAR_GZ --numeric-owner -C $ROOTFS -c .
