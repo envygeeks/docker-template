@@ -11,7 +11,8 @@ TMP=$(mktemp -d)
 # --
 
 cd $TMP
-apk --update add wget gnupg ca-certificates \
+apk update
+apk add wget gnupg ca-certificates \
 	gawk sed
 
 # --
@@ -86,7 +87,7 @@ chroot "$ROOTFS" sh -ec "{
   mkdir -p /usr/src
   cd /usr/src
 
-  apk --update add ca-certificates git
+  apk add ca-certificates git
   git clone --verbose https://github.com/envygeeks/docker-helper.git
   cp -R docker-helper/src/* $ROOTFS/
 <% end %>

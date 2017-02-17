@@ -40,10 +40,12 @@ cp -R $COPY_DIR/* $ROOTFS 2> /dev/null || true
 
 # --
 
-cp /etc/hosts $ROOTFS/etc/hosts
 cp /etc/resolv.conf $ROOTFS/etc/resolv.conf
 printf "$MIRRORS" > $ROOTFS/etc/apk/repositories
-apk --update --root=$ROOTFS add <%= @meta.packages %>
+cp /etc/hosts $ROOTFS/etc/hosts
+
+apk --root=$ROOTFS update
+apk --root=$ROOTFS add <%= @meta.packages %>
 apk del --root=$ROOTFS <%= @meta.package_cleanup %>
 apk del --root=$ROOTFS <%= @meta.package_deep_cleanup %>
 mv $ROOTFS/var/run/* $ROOTFS/run 2> /dev/null || true
@@ -58,7 +60,8 @@ ln -sf /run $ROOTFS/var/run
   mkdir -p /usr/src
   cd /usr/src
 
-  apk --update add ca-certificates git
+  apk update
+  apk add ca-certificates git
   git clone --verbose https://github.com/envygeeks/docker-helper.git
   cp -R docker-helper/src/* $ROOTFS/
 <% end %>
