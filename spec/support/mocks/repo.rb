@@ -12,7 +12,7 @@ module Mocks
       :project => [
         [:mkdir, "docker"],
         [:write, "docker/copy/all/usr/local/bin/hello", "world"],
-        [:write, "docker/template.yml", "--- {}\n"],
+        [:write, "docker/template.yml", "--- { force: false, push: false }\n"],
         [:touch, "Dockerfile"]
       ],
 
@@ -24,7 +24,10 @@ module Mocks
         [:mkdir, "copy/group/normal"],
         [:write, "copy/all/usr/local/bin/hello", "world"],
         [:touch, "Dockerfile"],
-        [:with_opts, {}]
+        [:with_opts, {
+          :force => false,
+          :push  => false
+        }]
       ],
 
       :scratch => [
@@ -36,7 +39,10 @@ module Mocks
         [:write, "copy/all/usr/local/bin/hello", "world"],
         [:write, "Rootfs", "hello"],
         [:mkdir, "copy/rootfs/"],
-        [:with_opts, {}]
+        [:with_opts, {
+          :force => false,
+          :push  => false
+        }]
       ]
     }
 

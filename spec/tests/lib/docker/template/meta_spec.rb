@@ -179,7 +179,7 @@ describe Docker::Template::Meta do
   describe "#include?" do
     context "when given another hash" do
       it "should verify each pair" do
-        expect(subject.include?(:push => false)).to eq(
+        expect(subject.include?(:push => true)).to eq(
           true
         )
       end
