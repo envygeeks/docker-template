@@ -148,17 +148,19 @@ module Docker
 
       private
       def progress_bar(stream)
-        id = stream["id"]
+        if ENV["CI"] != "true"
+          id = stream["id"]
 
-        return unless id
-        before, diff = progress_diff(id)
-        @stderr.print before if before
-        str = stream["progress"] || stream["status"]
-        str = "#{id}: #{str}\r"
+          return unless id
+          before, diff = progress_diff(id)
+          @stderr.print before if before
+          str = stream["progress"] || stream["status"]
+          str = "#{id}: #{str}\r"
 
-        @stderr.print(Object::Simple::Ansi.jump(
-          str, diff
-        ))
+          @stderr.print(Object::Simple::Ansi.jump(
+            str, diff
+          ))
+        end
       end
 
       # --
