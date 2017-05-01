@@ -12,7 +12,7 @@ module Mocks
       :project => [
         [:mkdir, "docker"],
         [:write, "docker/copy/all/usr/local/bin/hello", "world"],
-        [:write, "docker/template.yml", "--- { force: false, push: false }\n"],
+        [:write, "docker/template.yml", "--- { force: false, push: false, ci: false }\n"],
         [:touch, "Dockerfile"]
       ],
 
@@ -25,8 +25,9 @@ module Mocks
         [:write, "copy/all/usr/local/bin/hello", "world"],
         [:touch, "Dockerfile"],
         [:with_opts, {
+          :push  => false,
           :force => false,
-          :push  => false
+          :ci    => false
         }]
       ],
 
@@ -40,8 +41,9 @@ module Mocks
         [:write, "Rootfs", "hello"],
         [:mkdir, "copy/rootfs/"],
         [:with_opts, {
+          :push  => false,
           :force => false,
-          :push  => false
+          :ci    => false
         }]
       ]
     }
