@@ -9,16 +9,13 @@ gem "rake", :require => false
 gemspec
 
 group :test do
-  gem "rubocop", :require => false
   gem "rspec", :require => false
   gem "luna-rspec-formatters", :require => false
-  gem "codeclimate-test-reporter", :require => false
   gem "memory_profiler", :require => false, :platform => :mri
   gem "rugged", :require => false, :platform => :mri
-  gem "luna-rubocop-formatters", :require => false
   gem "benchmark-ips", :require => false
   gem "rspec-helpers", :require => false
-  gem "cucumber", :require => false
+  gem "simplecov", :require => false
 end
 
 group :development do
