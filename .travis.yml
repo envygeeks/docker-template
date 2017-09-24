@@ -1,87 +1,14 @@
 sudo: false
-cache: bundler
+cache: vendor
 os: linux
-
-#
-
-rvm:
-  - &ruby1 2.3.0
-  - &ruby2 2.2.4
-  - &jruby jruby-9.1.2.0
-
-#
-
-matrix:
-  allow_failures:
-    - rvm: *jruby
-
-  exclude:
-    - { rvm: *ruby2, branch: "/^v[0-9\\.]+$/" }
-    - { rvm: *jruby, branch: "/^v[0-9\\.]+$/" }
-
-#
-
+lang: go
+go:
+  - 1.9
 notifications:
   email:
     - jordon@envygeeks.io
-  slack:
-    secure: "\
-      v6u2DxGc/UP/lL+8OMqHTKLCnavqXMYEtKMF6HO+1NYkoFhXvuZwi00VVSvztkpqTm8PLyUZ\
-      eBR+SiMIOHe4YhorO7UwaQGMYko+YwiJ+sce+96q+1MziNknE+lqzGwlxRw0XOvXOr11iHBN\
-      bs2dOz8WeV8UtQ4pln9NwLSKcDdC+xWQh3h3mdzX/R+HhbTPYNWDxnFpSMhelXRno3lb6Dxe\
-      wzKHg5seTwunSjJWJX/1BqiCe8M0NXttY/iHhkNTFLh66pxLE2aK8Zgob9YvHaLJXAQXr4ZE\
-      yQbdpTzYFDHNnpfJHIWfDUP++0wIkQdLnoduxqzRHMtC5ntOKCa6JAog0Mqjn3ULQgjnJ9m7\
-      h2OyYl0LSeoGIiHVUlrY6CWXkeKRVbwK6b+VLtvdunoiszKwJKRM9yz02m/JzZ5JTpPzaWdf\
-      f2YHPwlxha+FsrpBBaXayKaobXp3lQENzncZaQtDSDj7SVNQh2sGr4bIMjTPJDGp3PLDXl7I\
-      5k0/hsitDzs2GSisQOdTrqqvPzxtLx3BMhk/NCHbcdrmaX9/lTnCaC8aSGIOUdLjTzCrmgBO\
-      yFYV9t/1vnUWL8VqjUwp14X3u8Wu+MVlIJSolcWAmk5Hv/UjJru4/+hoPa4fBxjupytS1r+E\
-      Vqkz5s22yejUtZF8OWMViZSjHyX3eP2c568=\
-    "
-
-#
-
 branches:
   only:
     - master
     - /^v[0-9\.]+$/
-
-#
-
-addons:
-  code_climate:
-    repo_token:
-      secure: "\
-        3R+7bdlMXVNYtEI/3j+jycs1ENreTNny2sl19Too9VePSQyV2N1BCgyVqQU1H4Wj+5gS28\
-        2852KEVVtLDEngux7cwn1NfEi8Jo9mTCtYzB8SV2/kct+s2+xOL+ctSxXqPFTeHlaPA3PK\
-        93zx25Wcou64fNAZ7+xpegeWw901mIlLZfQ3uOAht7DENs+WKVzkpS3JwW9NUpSRpymk4d\
-        AnYmr03eg825i7XOjin9aE8oAeHzfalCJtpCFm0BhAVWGSmTVmItcLVaFVpVfhwG1P3grq\
-        wkyvZXFUBj2iZxuge2NzNabXMgOuoSOo3tQ8Abz1mgXLMtMuv+f63xVTEhHXTAK9QvEMLN\
-        LeAmi6ubjfLHZ90ue6JgiHDB+GpuhmtAfPlmPCByJkR33RCV3Y+ktAkEkaqOWQA6g8acAZ\
-        LJSoa2yiR7YcojF6C39ggd1Cy28HNd+PpRZzDJ2QJgu2JBWroZFukL13550Ir85isjb13X\
-        BBNmrzLNdR9LumYAMGpoeEAps8skE01QJCWcCrA6X73ykkGjLrhExqbe984DJJ9pisJ7vp\
-        PNwjdv8B95AXuE6ujflug/9LjUyevnGWPFmoRtgxj5CqzsyFRIthYMpZwFV6p0ff5Tq2Z6\
-        HgRmvWpZ8AVc/n2EiobOZ1zEAt+gzykmO8+1BuT/xDsFdAa/+NO0w=\
-      "
-
-#
-
-deploy:
-  gem: docker-template
-  gemspec: Gem.gemspec
-  provider: rubygems
-  on:
-    tags: true
-
-  api_key:
-    secure: "\
-      h0NUosilAgCNLALOxqwBICTL+xb1LihIZbEyyEqoe/uBbKvvpfh7xowEgyfKCPfsW3H/FMGn\
-      tyQcJZPuBbj6yeM/Ip49AEBdWQxvszCXnj4n5zkqYvKLD+hIbWf2SQ1xcC9nwMbZXvc3SAig\
-      OxtZDqGfyaczv6FQd2gVWbByRi/Zut3Eohr/H3BTgytSkG6zLLbqKZWOevVFlEng4gvR+s9d\
-      GHfvaoEkRZ63M3yAP1nGGY+HIg1NF5cLgAe674ILoLTTPUvHVKBWzcI996ekBSGpm2Dswm8w\
-      DIrAtLN+N8lrydBk6NfEYrHAPGdvhFC0Sa88izS/yvmMJAH1iz3LDyrHecTSwnOIj7YnFEKb\
-      A2XMN2ew9CqpnArQSJTKuDOVCeYflAFqllIw1J5XOX4r5dSlr2WbP9+2sKL9lrMWUPHSjle+\
-      I2618es/13yfmh2jVpgQkkTKSUF+VKQPDdVZirVWjCn5V7v4S8MvPM/ikZ/AjZYLH5t2mWrH\
-      MyGjUtno2VaEcDovmY/qdJNUQ0hD6sEiI+YDoorXnpEEaf7KCRsfAfn93mWtmQswGThJb2Us\
-      gVkf/th8xns9IfzAkbRuuxljVvNhgRNvaoINKquYtfmO4xLhfLzzBLPD+RnxuWwz4aRDExY1\
-      HV4ihy7X2sDCwP8MC1XFO+Mtx8LWCZ0Frno=\
-    "
+    - golang
