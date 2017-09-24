@@ -1,7 +1,7 @@
 sudo: false
 cache: vendor
+language: go
 os: linux
-lang: go
 go:
   - 1.9
 notifications:
