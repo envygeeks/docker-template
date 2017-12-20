@@ -1,6 +1,7 @@
 # Frozen-string-literal: true
 # Copyright: 2015 - 2016 Jordon Bedwell - Apache v2.0 License
 # Encoding: utf-8
+STDOUT.sync = true
 
 module Docker
   module Template
@@ -81,31 +82,39 @@ module Docker
       # --
 
       def api(part, *args)
-        part = encode_str(part)
-        chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
-        chunked_part = part if !@chunks
-        stream = JSON.parse(
-          chunked_part
-        )
+        part = encode_str(part).each_line.to_a
+        if part.one? && part = part.first
+          chunked_part = @chunks.push(part).join if @chunks && !@chunks.empty?
+          chunked_part = part if !@chunks
+          stream = JSON.parse(
+            chunked_part
+          )
 
-        if chunked_part == part && @chunks && !@chunks.empty?
-          then @chunks.each do |chunk|
-            @stderr.puts format("Unparsable JSON: %s",
-              chunk
-            )
+          if chunked_part == part && @chunks && !@chunks.empty?
+            then @chunks.each do |chunk|
+              @stderr.puts format("Unparsable JSON: %s",
+                chunk
+              )
+            end
+          end
+
+          @chunks = nil
+          return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
+          return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
+          return progress_error(stream) if stream.any_key?("errorDetail", "error")
+          warn Simple::Ansi.red("Unhandled Stream.")
+          @stdout.puts(part)
+          @output = true
+        else
+          part.each do |v|
+            api(v, *args)
           end
         end
-
-        @chunks = nil
-        return progress_bar(stream) if stream.any_key?("progress", "progressDetail")
-        return output(stream["status"] || stream["stream"]) if stream.any_key?("status", "stream")
-        return progress_error(stream) if stream.any_key?("errorDetail", "error")
-        warn Simple::Ansi.red("Unhandled Stream.")
-        @stdout.puts(
-          part
-        )
-
-        @output = true
+      # --
+      # Sometimes we get undetectable chunks.
+      # When we do, we try to keep them passed along.
+      # That way we can throw them out later.
+      # --
       rescue JSON::ParserError => e
         (@chunks ||= []).push(
           part
