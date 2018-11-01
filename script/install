@@ -1,0 +1,20 @@
+#!/bin/bash
+# Copyright: 2017 - 2018 - MIT License
+# Source: https://github.com/envygeeks/devfiles
+# Author: Jordon Bedwell
+[ "$DEBUG" = "true" ] && set -x
+set -e
+
+f=script/script.d/install
+[ "$SKIP_SCRIPTD" != "true" ] && [ -x $f ] && exec $f "$@"
+if bundle check 1>/dev/null 2>&1; then
+  bundle update
+else
+  bundle install --path \
+    vendor/bundle
+fi
+
+bundle clean
+if [ -f package.json ]; then
+  yarn
+fi

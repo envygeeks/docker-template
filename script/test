@@ -1,0 +1,36 @@
+#!/bin/bash
+# Copyright: 2017 - 2018 - MIT License
+# Source: https://github.com/envygeeks/devfiles
+# Author: Jordon Bedwell
+[ "$DEBUG" = "true" ] && set -x
+set -e
+
+# --
+hasGem() {
+  if cat Gemfile | grep -qEi "^\s*gem\s+(\"|')$1(\\1)"; then
+    return 0
+  else
+    find . -maxdepth 1 -type f -name \*.gemspec | while read f; do
+      if cat "$f" | grep -qEi "(\"|')$1(\\1)"; then
+        return 1
+      fi
+    done && return 1 || return 0
+  fi
+
+  return 1
+}
+
+# --
+# This logic exists so that on CI's all you need do is
+#   set an environment variable to kick on linting, without
+#   having to do excessive customization of the CI.
+# --
+f=script/script.d/test
+[ "$SKIP_SCRIPTD" != "true" ] && [ -x $f ] && exec $f "$@"
+hasGem "minitest" && [ $# -gt 0 ] && exec ruby -rminitest/autorun "$@"
+hasGem "minitest" && exec ruby -rminitest/autorun test/**/*_{test,spec}.rb
+hasGem "rspec" && exec bundle exec rspec "$@"
+hasGem "rspec-rails" && exec bundle exec rspec "$@"
+[ -x bin/rails ] && exec bin/rails test "$@"
+[ $# -gt 0 ] && exec ruby -Itest "$@"
+exec ruby -Itest test/**/*_test.rb
