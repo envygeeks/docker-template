@@ -81,7 +81,8 @@ module Docker
       def push
         return if rootfs? || !@repo.pushable?
 
-        Notify.push(self); Auth.hub
+        Notify.push(self)
+        Auth.new(@repo).auth
         img = @img || Image.get(@repo.to_s)
         img.push nil, :repo_tag => @repo.to_s, \
           &Logger.new(repo).method(:api)

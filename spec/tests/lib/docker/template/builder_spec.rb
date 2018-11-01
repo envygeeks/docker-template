@@ -272,8 +272,8 @@ describe Docker::Template::Builder do
     #
 
     it "should try to auth" do
-      expect(Docker::Template::Auth).to \
-        receive(:hub).and_return(
+      expect_any_instance_of(Docker::Template::Auth).to \
+        receive(:auth).and_return(
           nil
         )
     end
@@ -282,8 +282,8 @@ describe Docker::Template::Builder do
 
     context do
       before do
-        allow(Docker::Template::Auth).to \
-          receive(:hub).and_return(
+        allow_any_instance_of(Docker::Template::Auth).to \
+          receive(:auth).and_return(
             nil
           )
       end

@@ -34,14 +34,14 @@ describe Docker::Template::Auth do
   before do
     allow(Pathutil).to receive(:new).and_call_original
     allow(Docker).to receive(:authenticate!).and_return(nil)
-    allow(described_class).to receive(:auth_with_env?).and_return false
+    allow_any_instance_of(described_class).to receive(:auth_with_env?).and_return false
     allow(Pathutil).to receive(:new).with("~/.docker/config.json") \
       .and_return(AuthPathutilWrapper.new)
   end
 
   #
 
-  describe "#hub", :skip_auth => true do
+  describe "#auth", :skip_auth => true do
     context "when it cannot authenticate" do
       before do
         allow(Docker).to receive :authenticate! do
@@ -49,10 +49,8 @@ describe Docker::Template::Auth do
         end
       end
 
-      #
-
       it "should throw" do
-        expect { described_class.hub }.to raise_error(
+        expect { described_class.new(mocked_repo.to_repo).auth }.to raise_error(
           Docker::Template::Error::UnsuccessfulAuth
         )
       end
@@ -63,7 +61,7 @@ describe Docker::Template::Auth do
 
   describe "auth_from_env" do
     before do
-      allow(described_class).to receive(:auth_with_env?).and_return true
+      allow_any_instance_of(described_class).to receive(:auth_with_env?).and_return true
       allow(ENV).to receive(:[]).with("DOCKER_SERVER").and_return("eserver.com")
       allow(ENV).to receive(:[]).with("DOCKER_EMAIL").and_return("euser@example.com")
       allow(ENV).to receive(:[]).with("DOCKER_PASSWORD").and_return("epassword")
@@ -131,7 +129,7 @@ describe Docker::Template::Auth do
 
   after do |ex|
     unless ex.metadata[:skip_auth]
-      described_class.hub
+      described_class.new(mocked_repo.to_repo).auth
     end
   end
 end
