@@ -143,7 +143,7 @@ module Docker
       # --
 
       def tmpdir(*args, root: Template.tmpdir)
-        args.unshift(user, name, tag)
+        args.unshift(user.gsub(/[^A-Za-z0-9_\-]+/, "--"), name, tag)
         out = Pathutil.tmpdir(args, nil, root)
         out.realpath
       end
