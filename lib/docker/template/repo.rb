@@ -144,9 +144,8 @@ module Docker
 
       def tmpdir(*args, root: Template.tmpdir)
         args.unshift(user, name, tag)
-        Pathutil.tmpdir(
-          args, nil, root
-        )
+        out = Pathutil.tmpdir(args, nil, root)
+        out.realpath
       end
 
       # --

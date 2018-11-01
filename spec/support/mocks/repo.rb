@@ -64,7 +64,7 @@ module Mocks
 
     def initialize(context)
       @original_pwd = Dir.pwd
-      @root = Pathutil.new(Dir.mktmpdir)
+      @root = Pathutil.new(Dir.mktmpdir).realpath
       @context = context
 
       @hashes = HashWithIndifferentAccess.new({

@@ -39,7 +39,9 @@ module Docker
         # --
 
         def changed!
-          Template._require "rugged" do
+          Template._require "rugged" do |loaded|
+            return true unless loaded
+
             git = Rugged::Repository.new(Template.root.to_s)
             dir = Template.root.join(@opts.repos_dir)
 

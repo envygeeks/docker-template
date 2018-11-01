@@ -35,7 +35,7 @@ module Docker
 
     def root
       @root ||= begin
-        Pathutil.new(Dir.pwd)
+        Pathutil.new(Dir.pwd).realpath
       end
     end
 
@@ -78,26 +78,22 @@ module Docker
     def _require(what)
       require what
       if block_given?
-        yield
+        yield true
       end
-
     rescue LoadError
-      $stderr.puts "The gem '#{what}' wasn't found."
-      $stderr.puts "You can install it with `gem install #{what}'"
-      abort "Hope you install it so you can report back."
+      if block_given?
+        yield false
+      end
     end
 
     # --
 
     def tmpdir
       if ENV["DOCKER_TEMPLATE_TMPDIR"]
-        # Don't destroy a user created directory.
-        return Pathutil.new(ENV["DOCKER_TEMPLATE_TMPDIR"]).tap(
-          &:mkdir_p
-        )
+        dir = Pathutil.new(ENV["DOCKER_TEMPLATE_TMPDIR"])
+          .tap(&:mkdir_p)
       else
         dir = root.join("tmp")
-
         if !dir.exist?
           # Make the directory and then throw it out at exit.
           dir.mkdir_p; ObjectSpace.define_finalizer(dir, proc do
@@ -107,6 +103,8 @@ module Docker
 
         dir
       end
+
+      dir.realpath
     end
   end
 end
