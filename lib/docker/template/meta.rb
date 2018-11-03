@@ -29,7 +29,7 @@ module Docker
       # --
 
       DEFAULTS = HashWithIndifferentAccess.new({
-        "squash" => true,
+        "squash" => false,
         "startup" => true,
         "aliases" => {},
         "build" => true,
